@@ -8,13 +8,7 @@ The collection source is generated from the API spec to keep modules aligned wit
 
 For more information about the platform, visit [Databasus](https://databasus.com/).
 
-## Disclaimer
-
-This project is currently under active development.
-
-It is not recommended for production use at this stage.
-
-Use it at your own risk.
+**Disclaimer** This project is currently under active development. It is not recommended for production use at this stage. Use it at your own risk.
 
 ## Development
 
@@ -33,6 +27,10 @@ What this command does:
 - Reads the API spec from `openapi.json`.
 - Regenerates `galaxy.yml`, module files, and the collection README.
 - Writes output into `zeqk/databasus`.
+
+**Notes**
+- Re-run this command every time `openapi.json` changes.
+- Generated files are overwritten to keep the collection in sync with the API spec.
 
 ### Generate docs
 
@@ -74,7 +72,3 @@ export DATABASUS_TEST_NAME="Ansible Tests"
 export DATABASUS_TEST_PASSWORD="Databasus!example123"
 ```
 
-### Notes
-
-- Re-run this command every time `openapi.json` changes.
-- Generated files are overwritten to keep the collection in sync with the API spec.
