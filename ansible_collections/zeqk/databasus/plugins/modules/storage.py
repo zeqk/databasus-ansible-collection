@@ -317,19 +317,20 @@ def run_module() -> None:
     if READ_ONLY:
         if GET_PATH and _has_required(params, GET_PATH_PARAMS):
             get_url = _build_url(api_url, GET_PATH, _collect_params(params, GET_PATH_PARAMS), _collect_params(params, GET_QUERY_PARAMS))
-            _, current = _request_json(module, GET_METHOD, get_url, api_token, expected_statuses=[200])
+            current = _request_json(module, GET_METHOD, get_url, api_token, expected_statuses=[200])[1]
             result['resource'] = current if isinstance(current, dict) else {'value': current}
             result['msg'] = 'Single-resource query completed'
             module.exit_json(**result)
 
         if LIST_PATH:
             list_url = _build_url(api_url, LIST_PATH, _collect_params(params, LIST_PATH_PARAMS), _collect_params(params, LIST_QUERY_PARAMS))
-            _, listing = _request_json(module, LIST_METHOD, list_url, api_token, expected_statuses=[200])
+            listing = _request_json(module, LIST_METHOD, list_url, api_token, expected_statuses=[200])[1]
             result['resource'] = listing if isinstance(listing, dict) else {'items': listing}
             result['msg'] = 'List query completed'
             module.exit_json(**result)
 
-        module.fail_json(msg='No usable GET endpoint for this module', **result)
+        result['msg'] = 'No usable GET endpoint for this module'
+        module.fail_json(**result)
 
     exists = False
     current: Any = {}
@@ -345,7 +346,8 @@ def run_module() -> None:
 
     if state == 'absent':
         if not DELETE_PATH:
-            module.fail_json(msg='Resource does not support delete operation', **result)
+            result['msg'] = 'Resource does not support delete operation'
+            module.fail_json(**result)
         _ensure_required(module, params, REQUIRED_DELETE_PATH_PARAMS or DELETE_PATH_PARAMS, 'delete')
 
         if not exists:
@@ -379,7 +381,7 @@ def run_module() -> None:
 
             _ensure_required(module, params, UPDATE_PATH_PARAMS, 'update')
             update_url = _build_url(api_url, UPDATE_PATH, _collect_params(params, UPDATE_PATH_PARAMS), _collect_params(params, UPDATE_QUERY_PARAMS))
-            _, updated = _request_json(module, UPDATE_METHOD, update_url, api_token, payload=desired, expected_statuses=[200, 201])
+            updated = _request_json(module, UPDATE_METHOD, update_url, api_token, payload=desired, expected_statuses=[200, 201])[1]
             result['changed'] = True
             result['resource'] = updated if isinstance(updated, dict) else {'value': updated}
             result['msg'] = 'Resource updated'
@@ -390,7 +392,8 @@ def run_module() -> None:
         module.exit_json(**result)
 
     if not CREATE_PATH:
-        module.fail_json(msg='Resource does not exist and there is no create endpoint', **result)
+        result['msg'] = 'Resource does not exist and there is no create endpoint'
+        module.fail_json(**result)
 
     _ensure_required(module, params, REQUIRED_CREATE_PATH_PARAMS or CREATE_PATH_PARAMS, 'create')
 
@@ -400,7 +403,7 @@ def run_module() -> None:
         module.exit_json(**result)
 
     create_url = _build_url(api_url, CREATE_PATH, _collect_params(params, CREATE_PATH_PARAMS), _collect_params(params, CREATE_QUERY_PARAMS))
-    _, created = _request_json(module, CREATE_METHOD, create_url, api_token, payload=desired, expected_statuses=[200, 201, 202])
+    created = _request_json(module, CREATE_METHOD, create_url, api_token, payload=desired, expected_statuses=[200, 201, 202])[1]
     result['changed'] = True
     result['resource'] = created if isinstance(created, dict) else {'value': created}
     result['msg'] = 'Resource created'
