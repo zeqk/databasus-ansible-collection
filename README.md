@@ -8,6 +8,14 @@ The collection source is generated from the API spec to keep modules aligned wit
 
 For more information about the platform, visit [Databasus](https://databasus.com/).
 
+## Disclaimer
+
+This project is currently under active development.
+
+It is not recommended for production use at this stage.
+
+Use it at your own risk.
+
 ## Development
 
 Use the generator script to rebuild the Ansible collection from the OpenAPI/Swagger spec.
