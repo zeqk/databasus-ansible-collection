@@ -1,12 +1,8 @@
-from __future__ import annotations
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
 
-import json
-from typing import Any, Dict, List, Optional, Tuple
-from urllib import error, parse
-
-from ansible.module_utils.basic import AnsibleModule
-from ansible.module_utils.urls import open_url
-
+# Copyright: (c) 2026, zeqk (@zeqk)
+# GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 DOCUMENTATION = r"""
 ---
@@ -34,7 +30,6 @@ options:
       - Bearer authentication token.
     type: str
     required: true
-    no_log: true
   before_date:
     description:
       - Filter backups created before this date (RFC3339)
@@ -63,8 +58,9 @@ options:
     description:
       - Filter by backup status (can be repeated)
     type: list
+    elements: str
 author:
-  - zeqk
+    - zeqk (@zeqk)
 """
 
 EXAMPLES = r"""
@@ -95,6 +91,14 @@ msg:
     type: str
     returned: always
 """
+
+
+import json
+from typing import Any, Dict, List, Optional, Tuple
+from urllib import error, parse
+
+from ansible.module_utils.basic import AnsibleModule
+from ansible.module_utils.urls import open_url
 
 
 CREATE_METHOD = 'POST'
@@ -237,7 +241,7 @@ def run_module() -> None:
         limit=dict(type='int'),
         offset=dict(type='int'),
         pg_wal_backup_type=dict(type='str'),
-        status=dict(type='list'),
+        status=dict(type='list', elements='str'),
     )
     module = AnsibleModule(argument_spec=module_args, supports_check_mode=not READ_ONLY)
     params = module.params

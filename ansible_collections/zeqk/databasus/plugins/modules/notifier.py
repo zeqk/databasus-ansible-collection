@@ -1,12 +1,8 @@
-from __future__ import annotations
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
 
-import json
-from typing import Any, Dict, List, Optional, Tuple
-from urllib import error, parse
-
-from ansible.module_utils.basic import AnsibleModule
-from ansible.module_utils.urls import open_url
-
+# Copyright: (c) 2026, zeqk (@zeqk)
+# GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 DOCUMENTATION = r"""
 ---
@@ -34,7 +30,6 @@ options:
       - Bearer authentication token.
     type: str
     required: true
-    no_log: true
   discord_notifier:
     description:
       - Body field discordNotifier.
@@ -81,7 +76,7 @@ options:
       - Workspace ID
     type: str
 author:
-  - zeqk
+    - zeqk (@zeqk)
 """
 
 EXAMPLES = r"""
@@ -113,6 +108,14 @@ msg:
     type: str
     returned: always
 """
+
+
+import json
+from typing import Any, Dict, List, Optional, Tuple
+from urllib import error, parse
+
+from ansible.module_utils.basic import AnsibleModule
+from ansible.module_utils.urls import open_url
 
 
 CREATE_METHOD = 'POST'

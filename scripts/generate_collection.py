@@ -12,6 +12,7 @@ from __future__ import annotations
 import argparse
 import json
 import re
+import textwrap
 from collections import defaultdict
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
@@ -126,13 +127,23 @@ def extract_body_fields(schema: Dict[str, Any], definitions: Dict[str, Any]) -> 
     for api_name, pdef in props.items():
         pdef = resolve_schema(pdef, definitions)
         name = snake(api_name)
+        ptype = json_type_to_ansible(pdef.get("type", "string"))
+        elements = None
+        if ptype == "list":
+            items = resolve_schema(pdef.get("items", {}), definitions)
+            elements = json_type_to_ansible(items.get("type", "string"))
         out[name] = {
             "api_name": api_name,
             "description": sanitize_text(pdef.get("description") or f"Body field {api_name}."),
-            "type": json_type_to_ansible(pdef.get("type", "string")),
+            "type": ptype,
             "required": api_name in required,
             "source": "body",
         }
+        if elements:
+            out[name]["elements"] = elements
+        lname = api_name.lower()
+        if any(secret in lname for secret in ("token", "secret", "password", "apikey", "api_key", "key")):
+            out[name]["no_log"] = True
     return out
 
 
@@ -147,6 +158,8 @@ def option_doc_block(name: str, meta: Dict[str, Any]) -> str:
     lines.append("    description:")
     lines.append(f"      - {sanitize_text(meta.get('description', 'No description.')).replace(':', ';')}")
     lines.append(f"    type: {meta.get('type', 'str')}")
+    if meta.get("type") == "list":
+        lines.append(f"    elements: {meta.get('elements', 'str')}")
     if meta.get("required"):
         lines.append("    required: true")
     if "choices" in meta:
@@ -155,13 +168,13 @@ def option_doc_block(name: str, meta: Dict[str, Any]) -> str:
             lines.append(f"      - {choice}")
     if "default" in meta:
         lines.append(f"    default: {meta['default']}")
-    if meta.get("no_log"):
-        lines.append("    no_log: true")
     return "\n".join(lines)
 
 
 def arg_spec_line(meta: Dict[str, Any]) -> str:
     chunks = [f"type='{meta.get('type', 'str')}'"]
+    if meta.get("type") == "list":
+        chunks.append(f"elements='{meta.get('elements', 'str')}'")
     if meta.get("required"):
         chunks.append("required=True")
     if "default" in meta:
@@ -256,6 +269,9 @@ def build_resources(spec: Dict[str, Any]) -> Dict[str, Dict[str, Any]]:
                 source = "path" if pin == "path" else "query"
                 desc = sanitize_text(p.get("description") or f"Parameter {p.get('name', pname)}.")
                 ptype = json_type_to_ansible(p.get("type", "string"))
+                elements = None
+                if ptype == "list":
+                    elements = json_type_to_ansible(p.get("items", {}).get("type", "string"))
 
                 if existing:
                     existing["required"] = existing.get("required", False) or required
@@ -269,6 +285,11 @@ def build_resources(spec: Dict[str, Any]) -> Dict[str, Dict[str, Any]]:
                     "source": source,
                     "required_in_api": required,
                 }
+                if elements:
+                    params[pname]["elements"] = elements
+                lname = str(p.get("name", pname)).lower()
+                if any(secret in lname for secret in ("token", "secret", "password", "apikey", "api_key", "key")):
+                    params[pname]["no_log"] = True
 
         resources[resource] = {
             "name": resource,
@@ -417,15 +438,13 @@ def generate_collection(spec_path: Path, output_dir: Path) -> Tuple[int, List[Tu
 
         api_name_map = {k: v["api_name"] for k, v in params.items() if "api_name" in v}
 
-        code = f'''from __future__ import annotations
+        code = textwrap.dedent(
+            f'''
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
 
-import json
-from typing import Any, Dict, List, Optional, Tuple
-from urllib import error, parse
-
-from ansible.module_utils.basic import AnsibleModule
-from ansible.module_utils.urls import open_url
-
+# Copyright: (c) 2026, zeqk (@zeqk)
+# GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 DOCUMENTATION = r"""
 ---
@@ -436,7 +455,7 @@ description:
 options:
 {chr(10).join(option_blocks)}
 author:
-  - zeqk
+    - zeqk (@zeqk)
 """
 
 EXAMPLES = r"""
@@ -457,6 +476,14 @@ msg:
     type: str
     returned: always
 """
+
+
+import json
+from typing import Any, Dict, List, Optional, Tuple
+from urllib import error, parse
+
+from ansible.module_utils.basic import AnsibleModule
+from ansible.module_utils.urls import open_url
 
 
 CREATE_METHOD = {c_method}
@@ -701,6 +728,7 @@ def main() -> None:
 if __name__ == '__main__':
     main()
 '''
+        ).lstrip()
 
         (modules_dir / f"{resource}.py").write_text(code)
         module_rows.append((resource, ", ".join(sorted(data["ops_present"]))))
