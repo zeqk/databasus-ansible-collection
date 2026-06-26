@@ -13,7 +13,7 @@ module: database_backup
 short_description: Gestiona recursos database_backup en Databasus.
 description:
   - Permite gestionar recursos database_backup usando la API de Databasus.
-  - Referencia operationId: list=backups_physical_list.
+  - Referencia operationId (list=backups_physical_list).
   - Este modulo es de solo lectura y no admite state=absent.
 options:
   api_url:

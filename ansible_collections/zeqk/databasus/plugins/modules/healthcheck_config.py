@@ -13,7 +13,7 @@ module: healthcheck_config
 short_description: Gestiona recursos healthcheck_config en Databasus.
 description:
   - Permite gestionar recursos healthcheck_config usando la API de Databasus.
-  - Referencia operationId: create=healthcheck_config_create, get=healthcheck_config_retrieve.
+  - Referencia operationId (create=healthcheck_config_create, get=healthcheck_config_retrieve).
 options:
   state:
     description:

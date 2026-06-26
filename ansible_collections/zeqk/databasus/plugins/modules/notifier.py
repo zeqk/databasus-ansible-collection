@@ -13,7 +13,7 @@ module: notifier
 short_description: Gestiona recursos notifier en Databasus.
 description:
   - Permite gestionar recursos notifier usando la API de Databasus.
-  - Referencia operationId: create=notifiers_create, list=notifiers_list, get=notifiers_retrieve, delete=notifiers_destroy.
+  - Referencia operationId (create=notifiers_create, list=notifiers_list, get=notifiers_retrieve, delete=notifiers_destroy).
 options:
   state:
     description:

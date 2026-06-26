@@ -13,7 +13,7 @@ module: database
 short_description: Gestiona recursos database en Databasus.
 description:
   - Permite gestionar recursos database usando la API de Databasus.
-  - Referencia operationId: create=databases_create, list=databases_list, get=databases_retrieve, delete=databases_destroy.
+  - Referencia operationId (create=databases_create, list=databases_list, get=databases_retrieve, delete=databases_destroy).
 options:
   state:
     description:

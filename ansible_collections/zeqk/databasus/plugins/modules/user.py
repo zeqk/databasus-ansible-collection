@@ -13,7 +13,7 @@ module: user
 short_description: Gestiona recursos user en Databasus.
 description:
   - Permite gestionar recursos user usando la API de Databasus.
-  - Referencia operationId: list=users_list, get=users_retrieve.
+  - Referencia operationId (list=users_list, get=users_retrieve).
 options:
   state:
     description:

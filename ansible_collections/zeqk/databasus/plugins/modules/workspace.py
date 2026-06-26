@@ -13,7 +13,7 @@ module: workspace
 short_description: Gestiona recursos workspace en Databasus.
 description:
   - Permite gestionar recursos workspace usando la API de Databasus.
-  - Referencia operationId: create=workspaces_create, list=workspaces_list, get=workspaces_retrieve, update=workspaces_partial_update, delete=workspaces_destroy.
+  - Referencia operationId (create=workspaces_create, list=workspaces_list, get=workspaces_retrieve, update=workspaces_partial_update, delete=workspaces_destroy).
 options:
   state:
     description:

@@ -13,7 +13,7 @@ module: storage
 short_description: Gestiona recursos storage en Databasus.
 description:
   - Permite gestionar recursos storage usando la API de Databasus.
-  - Referencia operationId: create=storages_create, list=storages_list, get=storages_retrieve, delete=storages_destroy.
+  - Referencia operationId (create=storages_create, list=storages_list, get=storages_retrieve, delete=storages_destroy).
 options:
   state:
     description:

@@ -13,7 +13,7 @@ module: database_trigger
 short_description: Gestiona recursos database_trigger en Databasus.
 description:
   - Permite gestionar recursos database_trigger usando la API de Databasus.
-  - Referencia operationId: create=backups_physical_create.
+  - Referencia operationId (create=backups_physical_create).
 options:
   state:
     description:

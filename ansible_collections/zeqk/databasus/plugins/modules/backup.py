@@ -13,7 +13,7 @@ module: backup
 short_description: Gestiona recursos backup en Databasus.
 description:
   - Permite gestionar recursos backup usando la API de Databasus.
-  - Referencia operationId: create=backups_create, list=backups_list, delete=backups_destroy.
+  - Referencia operationId (create=backups_create, list=backups_list, delete=backups_destroy).
 options:
   state:
     description:

@@ -13,7 +13,7 @@ module: verification
 short_description: Gestiona recursos verification en Databasus.
 description:
   - Permite gestionar recursos verification usando la API de Databasus.
-  - Referencia operationId: create=verification_agents_create, list=verification_agents_list, delete=verification_agents_destroy.
+  - Referencia operationId (create=verification_agents_create, list=verification_agents_list, delete=verification_agents_destroy).
 options:
   state:
     description:

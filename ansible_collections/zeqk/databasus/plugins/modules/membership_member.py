@@ -13,7 +13,7 @@ module: membership_member
 short_description: Gestiona recursos membership_member en Databasus.
 description:
   - Permite gestionar recursos membership_member usando la API de Databasus.
-  - Referencia operationId: create=workspace_members_create, list=workspace_members_list, delete=workspace_members_destroy.
+  - Referencia operationId (create=workspace_members_create, list=workspace_members_list, delete=workspace_members_destroy).
 options:
   state:
     description:

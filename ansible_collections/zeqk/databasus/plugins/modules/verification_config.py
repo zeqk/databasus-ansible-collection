@@ -13,7 +13,7 @@ module: verification_config
 short_description: Gestiona recursos verification_config en Databasus.
 description:
   - Permite gestionar recursos verification_config usando la API de Databasus.
-  - Referencia operationId: get=verification_config_retrieve, update=verification_config_partial_update.
+  - Referencia operationId (get=verification_config_retrieve, update=verification_config_partial_update).
 options:
   state:
     description:
