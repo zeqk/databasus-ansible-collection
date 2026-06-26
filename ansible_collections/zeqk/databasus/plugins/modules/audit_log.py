@@ -56,16 +56,16 @@ EXAMPLES = r"""
 RETURN = r"""
 resource:
     description: Resource object as returned by the API.
-  type: dict
-  returned: always
+    type: dict
+    returned: always
 changed:
     description: Indicates whether any change was made.
-  type: bool
-  returned: always
+    type: bool
+    returned: always
 msg:
     description: Descriptive operation message.
-  type: str
-  returned: always
+    type: str
+    returned: always
 """
 
 
