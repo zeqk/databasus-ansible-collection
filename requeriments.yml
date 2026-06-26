@@ -1,0 +1,15 @@
+# ansible-galaxy role install -r requeriments.yml
+# roles:
+#   - src: geerlingguy.docker
+#     version: "7.0.2"
+
+
+# ansible-galaxy collection install -r requeriments.yml
+collections:
+  - name: git+https://github.com/ansible-community/ansible.content_builder.git
+  - name: ansible.utils
+  - name: ansible.netcommon
+
+  # - name: community.docker
+  #   version: "3.5.0"
+

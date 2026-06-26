@@ -1,0 +1,15 @@
+collection:
+  path: collections/ansible_collections/zeqk/databasus
+  namespace: zeqk
+  name: databasus
+plugins:
+  - type: module_openapi
+    name: "zeqk_databasus"
+    content: databasus
+    api_object_path: "/workspace"
+    resource: workspace
+    action: generate_all
+    unique_key: ""
+    rm_swagger_json: "/home/zeqk/MyProjects/databasus-ansible-collection/openapi.json"
+    module_version: "1.0.0"
+    author: "Ansible Cloud Team"
