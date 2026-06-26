@@ -1,0 +1,14 @@
+namespace: zeqk
+name: databasus
+version: 1.0.0
+readme: README.md
+description: Coleccion Ansible para gestionar recursos de Databasus via API REST.
+license:
+  - MIT
+authors:
+  - zeqk
+tags:
+  - database
+  - api
+  - crud
+dependencies: {}
