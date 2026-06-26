@@ -31,6 +31,29 @@ wheels = [
 ]
 
 [[package]]
+name = "ansible-doc-extractor"
+version = "0.1.11"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "antsibull-docs-parser" },
+    { name = "jinja2" },
+    { name = "pyyaml" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/2a/13/8255e94554c3157ea3502ae4322cbb9ce909ad47fe20d5523541a75fd3d6/ansible-doc-extractor-0.1.11.tar.gz", hash = "sha256:65afdb030ab5e78cf30ef44c55b8202c761f6666f9cb340b7ac1813acb1c1d3f", size = 27897, upload-time = "2024-02-27T07:07:18.27Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/0f/c6/2d6e3f1617ef9dd24f3b843e0256c860a481a366f4405a3ba21331e4534e/ansible_doc_extractor-0.1.11-py3-none-any.whl", hash = "sha256:526b336917be331aa8db04cae924547047c16f8831871afa2664b9451902dfba", size = 20435, upload-time = "2024-02-27T07:07:14.613Z" },
+]
+
+[[package]]
+name = "antsibull-docs-parser"
+version = "1.2.2"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/0f/bf/69b95e12ba05fba0d52e8307ae5eea5f1765d51ee7a9d38d8bc840607c12/antsibull_docs_parser-1.2.2.tar.gz", hash = "sha256:52d647b1683466f9a27e93ae997b9eda955617c7fa7670b1268a6922d24b7340", size = 55663, upload-time = "2025-09-28T19:15:08.109Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/a2/56/fcf484630134248790cfed657631f49221afa3664677b688e4ad6226a1da/antsibull_docs_parser-1.2.2-py3-none-any.whl", hash = "sha256:5919e3b1484a5d07c67915bd032b2b7101956139dcc4c43cadddb38cb9a9d6a5", size = 33747, upload-time = "2025-09-28T19:15:05.463Z" },
+]
+
+[[package]]
 name = "argparse"
 version = "1.4.0"
 source = { registry = "https://pypi.org/simple" }
@@ -152,12 +175,14 @@ version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
     { name = "ansible" },
+    { name = "ansible-doc-extractor" },
     { name = "argparse" },
 ]
 
 [package.metadata]
 requires-dist = [
     { name = "ansible", specifier = ">=14.1.0" },
+    { name = "ansible-doc-extractor", specifier = ">=0.1.11" },
     { name = "argparse", specifier = ">=1.4.0" },
 ]
 

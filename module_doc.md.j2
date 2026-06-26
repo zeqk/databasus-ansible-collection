@@ -1,0 +1,44 @@
+{% if short_description %}
+{%   set title = module + ' -- ' + short_description | md_ify %}
+{% else %}
+{%   set title = module %}
+{% endif %}
+# {{ title }}
+
+{% if description -%}
+## Synopsis
+{%   for desc in description %}
+{{ desc | md_ify }}
+
+{%   endfor %}
+{% endif %}
+
+{% macro render_rows(opts, prefix='') -%}
+{%   for name, spec in opts.items() %}
+{%     set full_name = prefix + name %}
+{%     set req = spec.required | default('optional') %}
+{%     set typ = spec.type | default('any') %}
+{%     set def_val = spec.default | default('None') %}
+{%     set desc = spec.description | default([]) %}
+| {{ full_name }} | {{ req }}, {{ typ }}, default={{ def_val }}{% if desc %}. {% if desc is string %}{{ desc | md_ify | replace('\n', ' ') | replace('|', '\\|') }}{% else %}{% for para in desc %}{{ para | md_ify | replace('\n', ' ') | replace('|', '\\|') }}{% if not loop.last %} {% endif %}{% endfor %}{% endif %}{% endif %} |
+{%     if spec.suboptions %}
+{{ render_rows(spec.suboptions, full_name + '.') }}
+{%     endif %}
+{%   endfor %}
+{%- endmacro %}
+
+{% if options -%}
+## Parameters
+
+| parameter | comments |
+|---|---|
+{{ render_rows(options) }}
+{% endif %}
+
+{% if examples -%}
+## Examples
+
+```yaml
+{{ examples | indent(4, True) }}
+```
+{% endif %}
