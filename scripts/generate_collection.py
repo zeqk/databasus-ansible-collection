@@ -375,7 +375,7 @@ def generate_collection(spec_path: Path, output_dir: Path) -> Tuple[int, List[Tu
 
         desc_lines = [f"  - Permite gestionar recursos {resource} usando la API de Databasus."]
         if operation_ids:
-            desc_lines.append(f"  - Referencia operationId: {', '.join(operation_ids)}.")
+            desc_lines.append(f"  - Referencia operationId ({', '.join(operation_ids)}).")
         if not mutable:
             desc_lines.append("  - Este modulo es de solo lectura y no admite state=absent.")
 
