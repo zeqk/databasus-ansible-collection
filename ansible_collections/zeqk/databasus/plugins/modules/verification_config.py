@@ -2,9 +2,10 @@ from __future__ import annotations
 
 import json
 from typing import Any, Dict, List, Optional, Tuple
-from urllib import error, parse, request
+from urllib import error, parse
 
 from ansible.module_utils.basic import AnsibleModule
+from ansible.module_utils.urls import open_url
 
 
 DOCUMENTATION = r"""
@@ -149,9 +150,14 @@ def _request_json(
         headers['Content-Type'] = 'application/json'
         data = json.dumps(payload).encode('utf-8')
 
-    req = request.Request(url=url, data=data, headers=headers, method=method)
     try:
-        with request.urlopen(req, timeout=30) as response:
+        with open_url(
+            url,
+            data=data,
+            headers=headers,
+            method=method,
+            timeout=30,
+        ) as response:
             status = int(response.getcode())
             raw = response.read().decode('utf-8')
     except error.HTTPError as exc:
