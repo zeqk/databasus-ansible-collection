@@ -7,7 +7,7 @@ Use the generator script to rebuild the Ansible collection from the OpenAPI/Swag
 Run the command below from the repository root:
 
 ```bash
-python3 scripts/generate_collection.py --spec openapi.json --output zeqk/databasus
+python3 scripts/generate_collection.py --spec openapi.json --output ansible_collections/zeqk/databasus
 ```
 
 What this command does:
