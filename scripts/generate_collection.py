@@ -128,7 +128,7 @@ def extract_body_fields(schema: Dict[str, Any], definitions: Dict[str, Any]) -> 
         name = snake(api_name)
         out[name] = {
             "api_name": api_name,
-            "description": sanitize_text(pdef.get("description") or f"Campo {api_name} del body."),
+            "description": sanitize_text(pdef.get("description") or f"Body field {api_name}."),
             "type": json_type_to_ansible(pdef.get("type", "string")),
             "required": api_name in required,
             "source": "body",
@@ -145,7 +145,7 @@ def pick_best(ops: List[Dict[str, Any]]) -> Optional[Dict[str, Any]]:
 def option_doc_block(name: str, meta: Dict[str, Any]) -> str:
     lines = [f"  {name}:"]
     lines.append("    description:")
-    lines.append(f"      - {sanitize_text(meta.get('description', 'Sin descripcion.')).replace(':', ';')}")
+    lines.append(f"      - {sanitize_text(meta.get('description', 'No description.')).replace(':', ';')}")
     lines.append(f"    type: {meta.get('type', 'str')}")
     if meta.get("required"):
         lines.append("    required: true")
@@ -210,14 +210,14 @@ def build_resources(spec: Dict[str, Any]) -> Dict[str, Dict[str, Any]]:
         params: Dict[str, Dict[str, Any]] = {
             "api_url": {
                 "api_name": "api_url",
-                "description": "URL base de la API.",
+                "description": "Base API URL.",
                 "type": "str",
                 "required": True,
                 "source": "base",
             },
             "api_token": {
                 "api_name": "api_token",
-                "description": "Token de autenticacion Bearer.",
+                "description": "Bearer authentication token.",
                 "type": "str",
                 "required": True,
                 "source": "base",
@@ -227,7 +227,7 @@ def build_resources(spec: Dict[str, Any]) -> Dict[str, Dict[str, Any]]:
         if mutable:
             params["state"] = {
                 "api_name": "state",
-                "description": "Estado deseado del recurso.",
+                "description": "Desired state of the resource.",
                 "type": "str",
                 "required": False,
                 "default": "present",
@@ -254,7 +254,7 @@ def build_resources(spec: Dict[str, Any]) -> Dict[str, Dict[str, Any]]:
                 existing = params.get(pname)
                 required = bool(p.get("required", False))
                 source = "path" if pin == "path" else "query"
-                desc = sanitize_text(p.get("description") or f"Parametro {p.get('name', pname)}.")
+                desc = sanitize_text(p.get("description") or f"Parameter {p.get('name', pname)}.")
                 ptype = json_type_to_ansible(p.get("type", "string"))
 
                 if existing:
@@ -298,7 +298,7 @@ def generate_collection(spec_path: Path, output_dir: Path) -> Tuple[int, List[Tu
                 "name: databasus",
                 "version: 1.0.0",
                 "readme: README.md",
-                "description: Coleccion Ansible para gestionar recursos de Databasus via API REST.",
+                "description: Ansible collection to manage Databasus resources via REST API.",
                 "license:",
                 "  - MIT",
                 "authors:",
@@ -373,21 +373,21 @@ def generate_collection(spec_path: Path, output_dir: Path) -> Tuple[int, List[Tu
             if k in params:
                 option_blocks.append(option_doc_block(k, params[k]))
 
-        desc_lines = [f"  - Permite gestionar recursos {resource} usando la API de Databasus."]
+        desc_lines = [f"  - Allows managing {resource} resources using the Databasus API."]
         if operation_ids:
-            desc_lines.append(f"  - Referencia operationId ({', '.join(operation_ids)}).")
+            desc_lines.append(f"  - operationId reference ({', '.join(operation_ids)}).")
         if not mutable:
-            desc_lines.append("  - Este modulo es de solo lectura y no admite state=absent.")
+            desc_lines.append("  - This module is read-only and does not support state=absent.")
 
         examples = [
-            "- name: Consultar recurso",
+            "- name: Query resource",
             f"  zeqk.databasus.{resource}:",
             "    api_url: https://api.example.com",
             '    api_token: "{{ databasus_token }}"',
         ]
         if mutable:
             examples = [
-                "- name: Crear o actualizar recurso",
+                "- name: Create or update resource",
                 f"  zeqk.databasus.{resource}:",
                 "    state: present",
                 "    api_url: https://api.example.com",
@@ -402,7 +402,7 @@ def generate_collection(spec_path: Path, output_dir: Path) -> Tuple[int, List[Tu
         if ops.get("delete"):
             examples += [
                 "",
-                "- name: Eliminar recurso",
+                "- name: Delete resource",
                 f"  zeqk.databasus.{resource}:",
                 "    state: absent",
                 "    api_url: https://api.example.com",
@@ -429,7 +429,7 @@ from ansible.module_utils.basic import AnsibleModule
 DOCUMENTATION = r"""
 ---
 module: {resource}
-short_description: Gestiona recursos {resource} en Databasus.
+short_description: Manage {resource} resources in Databasus.
 description:
 {chr(10).join(desc_lines)}
 options:
@@ -444,15 +444,15 @@ EXAMPLES = r"""
 
 RETURN = r"""
 resource:
-  description: Objeto del recurso tal como lo retorna la API.
+    description: Resource object as returned by the API.
   type: dict
   returned: always
 changed:
-  description: Indica si se realizo algun cambio.
+    description: Indicates whether any change was made.
   type: bool
   returned: always
 msg:
-  description: Mensaje descriptivo de la operacion.
+    description: Descriptive operation message.
   type: str
   returned: always
 """
@@ -533,12 +533,12 @@ def _request_json(
         raw = exc.read().decode('utf-8', errors='replace')
         if allow_statuses and status in allow_statuses:
             return status, _decode_body(raw)
-        module.fail_json(msg=f'HTTP {{status}} en {{method}} {{url}}: {{raw}}')
+        module.fail_json(msg=f'HTTP {{status}} on {{method}} {{url}}: {{raw}}')
     except error.URLError as exc:
-        module.fail_json(msg=f'Error de conexion en {{method}} {{url}}: {{exc}}')
+        module.fail_json(msg=f'Connection error on {{method}} {{url}}: {{exc}}')
 
     if expected_statuses and status not in expected_statuses:
-        module.fail_json(msg=f'HTTP {{status}} inesperado en {{method}} {{url}}: {{raw}}')
+        module.fail_json(msg=f'Unexpected HTTP {{status}} on {{method}} {{url}}: {{raw}}')
 
     return status, _decode_body(raw)
 
@@ -579,7 +579,7 @@ def _has_required(module_params: Dict[str, Any], names: List[str]) -> bool:
 def _ensure_required(module: AnsibleModule, module_params: Dict[str, Any], names: List[str], context: str) -> None:
     missing = [name for name in names if module_params.get(name) is None]
     if missing:
-        module.fail_json(msg=f'Faltan parametros requeridos para {{context}}: {{", ".join(missing)}}')
+        module.fail_json(msg=f'Missing required parameters for {{context}}: {{", ".join(missing)}}')
 
 
 def run_module() -> None:
@@ -593,24 +593,24 @@ def run_module() -> None:
     api_token = params['api_token']
     state = params.get('state', 'present')
 
-    result: Dict[str, Any] = dict(changed=False, resource={{}}, msg='Sin cambios')
+    result: Dict[str, Any] = dict(changed=False, resource={{}}, msg='No changes')
 
     if READ_ONLY:
         if GET_PATH and _has_required(params, GET_PATH_PARAMS):
             get_url = _build_url(api_url, GET_PATH, _collect_params(params, GET_PATH_PARAMS), _collect_params(params, GET_QUERY_PARAMS))
             _, current = _request_json(module, GET_METHOD, get_url, api_token, expected_statuses=[200])
             result['resource'] = current if isinstance(current, dict) else {{'value': current}}
-            result['msg'] = 'Consulta individual completada'
+            result['msg'] = 'Single-resource query completed'
             module.exit_json(**result)
 
         if LIST_PATH:
             list_url = _build_url(api_url, LIST_PATH, _collect_params(params, LIST_PATH_PARAMS), _collect_params(params, LIST_QUERY_PARAMS))
             _, listing = _request_json(module, LIST_METHOD, list_url, api_token, expected_statuses=[200])
             result['resource'] = listing if isinstance(listing, dict) else {{'items': listing}}
-            result['msg'] = 'Consulta de lista completada'
+            result['msg'] = 'List query completed'
             module.exit_json(**result)
 
-        module.fail_json(msg='No hay endpoint GET utilizable para este modulo', **result)
+        module.fail_json(msg='No usable GET endpoint for this module', **result)
 
     exists = False
     current: Any = {{}}
@@ -626,36 +626,36 @@ def run_module() -> None:
 
     if state == 'absent':
         if not DELETE_PATH:
-            module.fail_json(msg='El recurso no soporta operacion delete', **result)
+            module.fail_json(msg='Resource does not support delete operation', **result)
         _ensure_required(module, params, REQUIRED_DELETE_PATH_PARAMS or DELETE_PATH_PARAMS, 'delete')
 
         if not exists:
-            result['msg'] = 'Recurso ya ausente'
+            result['msg'] = 'Resource is already absent'
             module.exit_json(**result)
 
         if module.check_mode:
             result['changed'] = True
-            result['msg'] = 'Delete planificado (check_mode)'
+            result['msg'] = 'Delete planned (check_mode)'
             module.exit_json(**result)
 
         delete_url = _build_url(api_url, DELETE_PATH, _collect_params(params, DELETE_PATH_PARAMS), _collect_params(params, DELETE_QUERY_PARAMS))
         _request_json(module, DELETE_METHOD, delete_url, api_token, expected_statuses=[200, 202, 204])
         result['changed'] = True
         result['resource'] = {{}}
-        result['msg'] = 'Recurso eliminado'
+        result['msg'] = 'Resource deleted'
         module.exit_json(**result)
 
     if exists:
         if UPDATE_PATH:
             if not _needs_update(current, desired):
                 result['resource'] = current if isinstance(current, dict) else {{'value': current}}
-                result['msg'] = 'Recurso ya en estado deseado'
+                result['msg'] = 'Resource already in desired state'
                 module.exit_json(**result)
 
             if module.check_mode:
                 result['changed'] = True
                 result['resource'] = current if isinstance(current, dict) else {{'value': current}}
-                result['msg'] = 'Update planificado (check_mode)'
+                result['msg'] = 'Update planned (check_mode)'
                 module.exit_json(**result)
 
             _ensure_required(module, params, UPDATE_PATH_PARAMS, 'update')
@@ -663,28 +663,28 @@ def run_module() -> None:
             _, updated = _request_json(module, UPDATE_METHOD, update_url, api_token, payload=desired, expected_statuses=[200, 201])
             result['changed'] = True
             result['resource'] = updated if isinstance(updated, dict) else {{'value': updated}}
-            result['msg'] = 'Recurso actualizado'
+            result['msg'] = 'Resource updated'
             module.exit_json(**result)
 
         result['resource'] = current if isinstance(current, dict) else {{'value': current}}
-        result['msg'] = 'Recurso existente; no hay endpoint de update'
+        result['msg'] = 'Resource exists; no update endpoint available'
         module.exit_json(**result)
 
     if not CREATE_PATH:
-        module.fail_json(msg='El recurso no existe y no hay endpoint create', **result)
+        module.fail_json(msg='Resource does not exist and there is no create endpoint', **result)
 
     _ensure_required(module, params, REQUIRED_CREATE_PATH_PARAMS or CREATE_PATH_PARAMS, 'create')
 
     if module.check_mode:
         result['changed'] = True
-        result['msg'] = 'Create planificado (check_mode)'
+        result['msg'] = 'Create planned (check_mode)'
         module.exit_json(**result)
 
     create_url = _build_url(api_url, CREATE_PATH, _collect_params(params, CREATE_PATH_PARAMS), _collect_params(params, CREATE_QUERY_PARAMS))
     _, created = _request_json(module, CREATE_METHOD, create_url, api_token, payload=desired, expected_statuses=[200, 201, 202])
     result['changed'] = True
     result['resource'] = created if isinstance(created, dict) else {{'value': created}}
-    result['msg'] = 'Recurso creado'
+    result['msg'] = 'Resource created'
     module.exit_json(**result)
 
 
@@ -702,16 +702,16 @@ if __name__ == '__main__':
     readme = [
         "# zeqk.databasus",
         "",
-        "Coleccion Ansible generada desde `openapi.json` para gestionar recursos del API Databasus.",
+        "Ansible collection generated from `openapi.json` to manage Databasus API resources.",
         "",
-        "## Requisitos",
+        "## Requirements",
         "",
         "- Ansible Core 2.14+",
-        "- Python 3 en el nodo controlador",
+        "- Python 3 on the controller node",
         "",
-        "## Modulos generados",
+        "## Generated modules",
         "",
-        "| Modulo | FQCN | Operaciones detectadas |",
+        "| Module | FQCN | Detected operations |",
         "|---|---|---|",
     ]
     for module_name, ops_text in sorted(module_rows):
@@ -719,20 +719,20 @@ if __name__ == '__main__':
 
     readme += [
         "",
-        "## Uso basico",
+        "## Basic usage",
         "",
         "```yaml",
-        "- name: Gestionar base de datos",
+        "- name: Manage database",
         "  hosts: localhost",
         "  tasks:",
-        "    - name: Crear base de datos",
+        "    - name: Create database",
         "      zeqk.databasus.database:",
         "        state: present",
         "        api_url: \"https://api.databasus.example.com\"",
         "        api_token: \"{{ lookup('env', 'DATABASUS_TOKEN') }}\"",
-        "        name: \"produccion-db\"",
+        "        name: \"production-db\"",
         "",
-        "    - name: Eliminar base de datos",
+        "    - name: Delete database",
         "      zeqk.databasus.database:",
         "        state: absent",
         "        api_url: \"https://api.databasus.example.com\"",

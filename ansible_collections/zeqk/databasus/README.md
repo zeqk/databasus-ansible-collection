@@ -1,15 +1,15 @@
 # zeqk.databasus
 
-Coleccion Ansible generada desde `openapi.json` para gestionar recursos del API Databasus.
+Ansible collection generated from `openapi.json` to manage Databasus API resources.
 
-## Requisitos
+## Requirements
 
 - Ansible Core 2.14+
-- Python 3 en el nodo controlador
+- Python 3 on the controller node
 
-## Modulos generados
+## Generated modules
 
-| Modulo | FQCN | Operaciones detectadas |
+| Module | FQCN | Detected operations |
 |---|---|---|
 | `agent` | `zeqk.databasus.agent` | `create, list` |
 | `agent_rotate_token` | `zeqk.databasus.agent_rotate_token` | `create` |
@@ -57,20 +57,20 @@ Coleccion Ansible generada desde `openapi.json` para gestionar recursos del API 
 | `workspace` | `zeqk.databasus.workspace` | `create, delete, get, list, update` |
 | `workspace_audit_log` | `zeqk.databasus.workspace_audit_log` | `list` |
 
-## Uso basico
+## Basic usage
 
 ```yaml
-- name: Gestionar base de datos
+- name: Manage database
   hosts: localhost
   tasks:
-    - name: Crear base de datos
+    - name: Create database
       zeqk.databasus.database:
         state: present
         api_url: "https://api.databasus.example.com"
         api_token: "{{ lookup('env', 'DATABASUS_TOKEN') }}"
-        name: "produccion-db"
+        name: "production-db"
 
-    - name: Eliminar base de datos
+    - name: Delete database
       zeqk.databasus.database:
         state: absent
         api_url: "https://api.databasus.example.com"
