@@ -218,3 +218,6 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+
+ansible_collections/zeqk/databasus/tests/output
