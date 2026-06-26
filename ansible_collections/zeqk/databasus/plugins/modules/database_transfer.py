@@ -112,9 +112,25 @@ DELETE_METHOD = None
 DELETE_PATH = None
 DELETE_PATH_PARAMS = []
 DELETE_QUERY_PARAMS = []
-BODY_FIELDS = ['is_transfer_with_notifiers', 'is_transfer_with_storage', 'target_notifier_ids', 'target_storage_id', 'target_workspace_id']
+BODY_FIELDS = [
+    'is_transfer_with_notifiers',
+    'is_transfer_with_storage',
+    'target_notifier_ids',
+    'target_storage_id',
+    'target_workspace_id',
+]
 READ_ONLY = False
-API_NAME_MAP = {'api_url': 'api_url', 'api_token': 'api_token', 'state': 'state', 'id': 'id', 'is_transfer_with_notifiers': 'isTransferWithNotifiers', 'is_transfer_with_storage': 'isTransferWithStorage', 'target_notifier_ids': 'targetNotifierIds', 'target_storage_id': 'targetStorageId', 'target_workspace_id': 'targetWorkspaceId'}
+API_NAME_MAP = {
+    'api_url': 'api_url',
+    'api_token': 'api_token',
+    'state': 'state',
+    'id': 'id',
+    'is_transfer_with_notifiers': 'isTransferWithNotifiers',
+    'is_transfer_with_storage': 'isTransferWithStorage',
+    'target_notifier_ids': 'targetNotifierIds',
+    'target_storage_id': 'targetStorageId',
+    'target_workspace_id': 'targetWorkspaceId',
+}
 REQUIRED_DELETE_PATH_PARAMS = []
 REQUIRED_GET_PATH_PARAMS = []
 REQUIRED_CREATE_PATH_PARAMS = ['id']

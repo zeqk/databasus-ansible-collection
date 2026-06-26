@@ -10,7 +10,7 @@ module: healthcheck_config
 short_description: Manage healthcheck_config resources in Databasus.
 description:
   - Allows managing healthcheck_config resources using the Databasus API.
-  - operationId reference (create=healthcheck_config_create, get=healthcheck_config_retrieve).
+  - operationId references are included in generated operation constants.
 options:
   state:
     description:
@@ -112,9 +112,26 @@ DELETE_METHOD = None
 DELETE_PATH = None
 DELETE_PATH_PARAMS = []
 DELETE_QUERY_PARAMS = []
-BODY_FIELDS = ['attempts_before_concidered_as_down', 'database_id', 'interval_minutes', 'is_healthcheck_enabled', 'is_sent_notification_when_unavailable', 'store_attempts_days']
+BODY_FIELDS = [
+    'attempts_before_concidered_as_down',
+    'database_id',
+    'interval_minutes',
+    'is_healthcheck_enabled',
+    'is_sent_notification_when_unavailable',
+    'store_attempts_days',
+]
 READ_ONLY = False
-API_NAME_MAP = {'api_url': 'api_url', 'api_token': 'api_token', 'state': 'state', 'attempts_before_concidered_as_down': 'attemptsBeforeConcideredAsDown', 'database_id': 'databaseId', 'interval_minutes': 'intervalMinutes', 'is_healthcheck_enabled': 'isHealthcheckEnabled', 'is_sent_notification_when_unavailable': 'isSentNotificationWhenUnavailable', 'store_attempts_days': 'storeAttemptsDays'}
+API_NAME_MAP = {
+    'api_url': 'api_url',
+    'api_token': 'api_token',
+    'state': 'state',
+    'attempts_before_concidered_as_down': 'attemptsBeforeConcideredAsDown',
+    'database_id': 'databaseId',
+    'interval_minutes': 'intervalMinutes',
+    'is_healthcheck_enabled': 'isHealthcheckEnabled',
+    'is_sent_notification_when_unavailable': 'isSentNotificationWhenUnavailable',
+    'store_attempts_days': 'storeAttemptsDays',
+}
 REQUIRED_DELETE_PATH_PARAMS = []
 REQUIRED_GET_PATH_PARAMS = []
 REQUIRED_CREATE_PATH_PARAMS = []

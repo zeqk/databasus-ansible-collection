@@ -10,7 +10,7 @@ module: database
 short_description: Manage database resources in Databasus.
 description:
   - Allows managing database resources using the Databasus API.
-  - operationId reference (create=databases_create, list=databases_list, get=databases_retrieve, delete=databases_destroy).
+  - operationId references are included in generated operation constants.
 options:
   state:
     description:
@@ -147,9 +147,40 @@ DELETE_METHOD = 'DELETE'
 DELETE_PATH = '/databases/{id}'
 DELETE_PATH_PARAMS = ['id']
 DELETE_QUERY_PARAMS = []
-BODY_FIELDS = ['health_status', 'id', 'last_backup_error_message', 'last_backup_time', 'mariadb', 'mongodb', 'mysql', 'name', 'notifiers', 'postgresql_logical', 'postgresql_physical', 'type', 'workspace_id']
+BODY_FIELDS = [
+    'health_status',
+    'id',
+    'last_backup_error_message',
+    'last_backup_time',
+    'mariadb',
+    'mongodb',
+    'mysql',
+    'name',
+    'notifiers',
+    'postgresql_logical',
+    'postgresql_physical',
+    'type',
+    'workspace_id',
+]
 READ_ONLY = False
-API_NAME_MAP = {'api_url': 'api_url', 'api_token': 'api_token', 'state': 'state', 'workspace_id': 'workspace_id', 'health_status': 'healthStatus', 'id': 'id', 'last_backup_error_message': 'lastBackupErrorMessage', 'last_backup_time': 'lastBackupTime', 'mariadb': 'mariadb', 'mongodb': 'mongodb', 'mysql': 'mysql', 'name': 'name', 'notifiers': 'notifiers', 'postgresql_logical': 'postgresqlLogical', 'postgresql_physical': 'postgresqlPhysical', 'type': 'type'}
+API_NAME_MAP = {
+    'api_url': 'api_url',
+    'api_token': 'api_token',
+    'state': 'state',
+    'workspace_id': 'workspace_id',
+    'health_status': 'healthStatus',
+    'id': 'id',
+    'last_backup_error_message': 'lastBackupErrorMessage',
+    'last_backup_time': 'lastBackupTime',
+    'mariadb': 'mariadb',
+    'mongodb': 'mongodb',
+    'mysql': 'mysql',
+    'name': 'name',
+    'notifiers': 'notifiers',
+    'postgresql_logical': 'postgresqlLogical',
+    'postgresql_physical': 'postgresqlPhysical',
+    'type': 'type',
+}
 REQUIRED_DELETE_PATH_PARAMS = []
 REQUIRED_GET_PATH_PARAMS = []
 REQUIRED_CREATE_PATH_PARAMS = []

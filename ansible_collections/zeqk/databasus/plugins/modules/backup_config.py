@@ -159,9 +159,49 @@ DELETE_METHOD = None
 DELETE_PATH = None
 DELETE_PATH_PARAMS = []
 DELETE_QUERY_PARAMS = []
-BODY_FIELDS = ['backup_interval', 'database_id', 'encryption', 'is_backups_enabled', 'is_retry_if_failed', 'max_failed_tries_count', 'retention_count', 'retention_gfs_days', 'retention_gfs_hours', 'retention_gfs_months', 'retention_gfs_weeks', 'retention_gfs_years', 'retention_policy_type', 'retention_time_period', 'send_notifications_on', 'storage', 'storage_id']
+BODY_FIELDS = [
+    'backup_interval',
+    'database_id',
+    'encryption',
+    'is_backups_enabled',
+    'is_retry_if_failed',
+    'max_failed_tries_count',
+    'retention_count',
+    'retention_gfs_days',
+    'retention_gfs_hours',
+    'retention_gfs_months',
+    'retention_gfs_weeks',
+    'retention_gfs_years',
+    'retention_policy_type',
+    'retention_time_period',
+    'send_notifications_on',
+    'storage',
+    'storage_id',
+]
 READ_ONLY = False
-API_NAME_MAP = {'api_url': 'api_url', 'api_token': 'api_token', 'state': 'state', 'id': 'id', 'backup_interval': 'backupInterval', 'database_id': 'databaseId', 'encryption': 'encryption', 'is_backups_enabled': 'isBackupsEnabled', 'is_retry_if_failed': 'isRetryIfFailed', 'max_failed_tries_count': 'maxFailedTriesCount', 'retention_count': 'retentionCount', 'retention_gfs_days': 'retentionGfsDays', 'retention_gfs_hours': 'retentionGfsHours', 'retention_gfs_months': 'retentionGfsMonths', 'retention_gfs_weeks': 'retentionGfsWeeks', 'retention_gfs_years': 'retentionGfsYears', 'retention_policy_type': 'retentionPolicyType', 'retention_time_period': 'retentionTimePeriod', 'send_notifications_on': 'sendNotificationsOn', 'storage': 'storage', 'storage_id': 'storageId'}
+API_NAME_MAP = {
+    'api_url': 'api_url',
+    'api_token': 'api_token',
+    'state': 'state',
+    'id': 'id',
+    'backup_interval': 'backupInterval',
+    'database_id': 'databaseId',
+    'encryption': 'encryption',
+    'is_backups_enabled': 'isBackupsEnabled',
+    'is_retry_if_failed': 'isRetryIfFailed',
+    'max_failed_tries_count': 'maxFailedTriesCount',
+    'retention_count': 'retentionCount',
+    'retention_gfs_days': 'retentionGfsDays',
+    'retention_gfs_hours': 'retentionGfsHours',
+    'retention_gfs_months': 'retentionGfsMonths',
+    'retention_gfs_weeks': 'retentionGfsWeeks',
+    'retention_gfs_years': 'retentionGfsYears',
+    'retention_policy_type': 'retentionPolicyType',
+    'retention_time_period': 'retentionTimePeriod',
+    'send_notifications_on': 'sendNotificationsOn',
+    'storage': 'storage',
+    'storage_id': 'storageId',
+}
 REQUIRED_DELETE_PATH_PARAMS = []
 REQUIRED_GET_PATH_PARAMS = ['id']
 REQUIRED_CREATE_PATH_PARAMS = []

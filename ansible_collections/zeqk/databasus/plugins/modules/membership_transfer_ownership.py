@@ -95,9 +95,17 @@ DELETE_METHOD = None
 DELETE_PATH = None
 DELETE_PATH_PARAMS = []
 DELETE_QUERY_PARAMS = []
-BODY_FIELDS = ['new_owner_email']
+BODY_FIELDS = [
+    'new_owner_email',
+]
 READ_ONLY = False
-API_NAME_MAP = {'api_url': 'api_url', 'api_token': 'api_token', 'state': 'state', 'id': 'id', 'new_owner_email': 'newOwnerEmail'}
+API_NAME_MAP = {
+    'api_url': 'api_url',
+    'api_token': 'api_token',
+    'state': 'state',
+    'id': 'id',
+    'new_owner_email': 'newOwnerEmail',
+}
 REQUIRED_DELETE_PATH_PARAMS = []
 REQUIRED_GET_PATH_PARAMS = []
 REQUIRED_CREATE_PATH_PARAMS = ['id']

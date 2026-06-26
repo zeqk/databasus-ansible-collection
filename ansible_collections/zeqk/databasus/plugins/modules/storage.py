@@ -10,7 +10,7 @@ module: storage
 short_description: Manage storage resources in Databasus.
 description:
   - Allows managing storage resources using the Databasus API.
-  - operationId reference (create=storages_create, list=storages_list, get=storages_retrieve, delete=storages_destroy).
+  - operationId references are included in generated operation constants.
 options:
   state:
     description:
@@ -146,9 +146,40 @@ DELETE_METHOD = 'DELETE'
 DELETE_PATH = '/storages/{id}'
 DELETE_PATH_PARAMS = ['id']
 DELETE_QUERY_PARAMS = []
-BODY_FIELDS = ['azure_blob_storage', 'ftp_storage', 'google_drive_storage', 'id', 'last_save_error', 'local_storage', 'name', 'nas_storage', 'rclone_storage', 's3_storage', 'sftp_storage', 'type', 'workspace_id']
+BODY_FIELDS = [
+    'azure_blob_storage',
+    'ftp_storage',
+    'google_drive_storage',
+    'id',
+    'last_save_error',
+    'local_storage',
+    'name',
+    'nas_storage',
+    'rclone_storage',
+    's3_storage',
+    'sftp_storage',
+    'type',
+    'workspace_id',
+]
 READ_ONLY = False
-API_NAME_MAP = {'api_url': 'api_url', 'api_token': 'api_token', 'state': 'state', 'workspace_id': 'workspace_id', 'azure_blob_storage': 'azureBlobStorage', 'ftp_storage': 'ftpStorage', 'google_drive_storage': 'googleDriveStorage', 'id': 'id', 'last_save_error': 'lastSaveError', 'local_storage': 'localStorage', 'name': 'name', 'nas_storage': 'nasStorage', 'rclone_storage': 'rcloneStorage', 's3_storage': 's3Storage', 'sftp_storage': 'sftpStorage', 'type': 'type'}
+API_NAME_MAP = {
+    'api_url': 'api_url',
+    'api_token': 'api_token',
+    'state': 'state',
+    'workspace_id': 'workspace_id',
+    'azure_blob_storage': 'azureBlobStorage',
+    'ftp_storage': 'ftpStorage',
+    'google_drive_storage': 'googleDriveStorage',
+    'id': 'id',
+    'last_save_error': 'lastSaveError',
+    'local_storage': 'localStorage',
+    'name': 'name',
+    'nas_storage': 'nasStorage',
+    'rclone_storage': 'rcloneStorage',
+    's3_storage': 's3Storage',
+    'sftp_storage': 'sftpStorage',
+    'type': 'type',
+}
 REQUIRED_DELETE_PATH_PARAMS = []
 REQUIRED_GET_PATH_PARAMS = []
 REQUIRED_CREATE_PATH_PARAMS = []

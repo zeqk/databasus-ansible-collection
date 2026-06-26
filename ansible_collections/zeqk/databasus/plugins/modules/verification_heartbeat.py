@@ -111,9 +111,25 @@ DELETE_METHOD = None
 DELETE_PATH = None
 DELETE_PATH_PARAMS = []
 DELETE_QUERY_PARAMS = []
-BODY_FIELDS = ['current_verification_ids', 'max_concurrent_jobs', 'max_cpu', 'max_disk_gb', 'max_ram_gb']
+BODY_FIELDS = [
+    'current_verification_ids',
+    'max_concurrent_jobs',
+    'max_cpu',
+    'max_disk_gb',
+    'max_ram_gb',
+]
 READ_ONLY = False
-API_NAME_MAP = {'api_url': 'api_url', 'api_token': 'api_token', 'state': 'state', 'agent_id': 'agentId', 'current_verification_ids': 'currentVerificationIds', 'max_concurrent_jobs': 'maxConcurrentJobs', 'max_cpu': 'maxCpu', 'max_disk_gb': 'maxDiskGb', 'max_ram_gb': 'maxRamGb'}
+API_NAME_MAP = {
+    'api_url': 'api_url',
+    'api_token': 'api_token',
+    'state': 'state',
+    'agent_id': 'agentId',
+    'current_verification_ids': 'currentVerificationIds',
+    'max_concurrent_jobs': 'maxConcurrentJobs',
+    'max_cpu': 'maxCpu',
+    'max_disk_gb': 'maxDiskGb',
+    'max_ram_gb': 'maxRamGb',
+}
 REQUIRED_DELETE_PATH_PARAMS = []
 REQUIRED_GET_PATH_PARAMS = []
 REQUIRED_CREATE_PATH_PARAMS = ['agent_id']

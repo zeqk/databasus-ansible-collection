@@ -10,7 +10,7 @@ module: backup
 short_description: Manage backup resources in Databasus.
 description:
   - Allows managing backup resources using the Databasus API.
-  - operationId reference (create=backups_create, list=backups_list, delete=backups_destroy).
+  - operationId references are included in generated operation constants.
 options:
   state:
     description:
@@ -121,9 +121,22 @@ DELETE_METHOD = 'DELETE'
 DELETE_PATH = '/backups/{id}'
 DELETE_PATH_PARAMS = ['id']
 DELETE_QUERY_PARAMS = []
-BODY_FIELDS = ['database_id']
+BODY_FIELDS = [
+    'database_id',
+]
 READ_ONLY = False
-API_NAME_MAP = {'api_url': 'api_url', 'api_token': 'api_token', 'state': 'state', 'database_id': 'database_id', 'limit': 'limit', 'offset': 'offset', 'status': 'status', 'before_date': 'beforeDate', 'pg_wal_backup_type': 'pgWalBackupType', 'id': 'id'}
+API_NAME_MAP = {
+    'api_url': 'api_url',
+    'api_token': 'api_token',
+    'state': 'state',
+    'database_id': 'database_id',
+    'limit': 'limit',
+    'offset': 'offset',
+    'status': 'status',
+    'before_date': 'beforeDate',
+    'pg_wal_backup_type': 'pgWalBackupType',
+    'id': 'id',
+}
 REQUIRED_DELETE_PATH_PARAMS = ['id']
 REQUIRED_GET_PATH_PARAMS = []
 REQUIRED_CREATE_PATH_PARAMS = []

@@ -10,7 +10,7 @@ module: user
 short_description: Manage user resources in Databasus.
 description:
   - Allows managing user resources using the Databasus API.
-  - operationId reference (list=users_list, get=users_retrieve).
+  - operationId references are included in generated operation constants.
 options:
   state:
     description:
@@ -120,9 +120,25 @@ DELETE_METHOD = None
 DELETE_PATH = None
 DELETE_PATH_PARAMS = []
 DELETE_QUERY_PARAMS = []
-BODY_FIELDS = ['email', 'intended_workspace_id', 'intended_workspace_role']
+BODY_FIELDS = [
+    'email',
+    'intended_workspace_id',
+    'intended_workspace_role',
+]
 READ_ONLY = False
-API_NAME_MAP = {'api_url': 'api_url', 'api_token': 'api_token', 'state': 'state', 'limit': 'limit', 'offset': 'offset', 'before_date': 'beforeDate', 'query': 'query', 'email': 'email', 'intended_workspace_id': 'intendedWorkspaceId', 'intended_workspace_role': 'intendedWorkspaceRole', 'id': 'id'}
+API_NAME_MAP = {
+    'api_url': 'api_url',
+    'api_token': 'api_token',
+    'state': 'state',
+    'limit': 'limit',
+    'offset': 'offset',
+    'before_date': 'beforeDate',
+    'query': 'query',
+    'email': 'email',
+    'intended_workspace_id': 'intendedWorkspaceId',
+    'intended_workspace_role': 'intendedWorkspaceRole',
+    'id': 'id',
+}
 REQUIRED_DELETE_PATH_PARAMS = []
 REQUIRED_GET_PATH_PARAMS = ['id']
 REQUIRED_CREATE_PATH_PARAMS = []

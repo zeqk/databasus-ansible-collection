@@ -187,6 +187,19 @@ def arg_spec_line(meta: Dict[str, Any]) -> str:
     return f"dict({', '.join(chunks)})"
 
 
+def format_list_literal(values: List[str]) -> str:
+    if not values:
+        return "[]"
+    return "[\n" + "\n".join(f"    {repr(value)}," for value in values) + "\n]"
+
+
+def format_dict_literal(values: Dict[str, str]) -> str:
+    if not values:
+        return "{}"
+    lines = [f"    {repr(key)}: {repr(val)}," for key, val in values.items()]
+    return "{\n" + "\n".join(lines) + "\n}"
+
+
 def build_resources(spec: Dict[str, Any]) -> Dict[str, Dict[str, Any]]:
     paths = spec.get("paths", {})
     definitions = spec.get("definitions", {})
@@ -396,7 +409,7 @@ def generate_collection(spec_path: Path, output_dir: Path) -> Tuple[int, List[Tu
 
         desc_lines = [f"  - Allows managing {resource} resources using the Databasus API."]
         if operation_ids:
-            desc_lines.append(f"  - operationId reference ({', '.join(operation_ids)}).")
+            desc_lines.append("  - operationId references are included in generated operation constants.")
         if not mutable:
             desc_lines.append("  - This module is read-only and does not support state=absent.")
 
@@ -437,6 +450,9 @@ def generate_collection(spec_path: Path, output_dir: Path) -> Tuple[int, List[Tu
         required_create = [p for p in path_params_by_op.get("create", []) if params.get(p, {}).get("required_in_api")]
 
         api_name_map = {k: v["api_name"] for k, v in params.items() if "api_name" in v}
+
+        body_fields_literal = format_list_literal(body_field_names)
+        api_name_map_literal = format_dict_literal(api_name_map)
 
         code = textwrap.dedent(
             f'''
@@ -506,9 +522,9 @@ DELETE_METHOD = {d_method}
 DELETE_PATH = {d_path}
 DELETE_PATH_PARAMS = {d_pp}
 DELETE_QUERY_PARAMS = {d_qp}
-BODY_FIELDS = {repr(body_field_names)}
+BODY_FIELDS = {body_fields_literal}
 READ_ONLY = {str(not mutable)}
-API_NAME_MAP = {repr(api_name_map)}
+API_NAME_MAP = {api_name_map_literal}
 REQUIRED_DELETE_PATH_PARAMS = {repr(required_delete)}
 REQUIRED_GET_PATH_PARAMS = {repr(required_get)}
 REQUIRED_CREATE_PATH_PARAMS = {repr(required_create)}

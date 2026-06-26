@@ -10,7 +10,7 @@ module: workspace
 short_description: Manage workspace resources in Databasus.
 description:
   - Allows managing workspace resources using the Databasus API.
-  - operationId reference (create=workspaces_create, list=workspaces_list, get=workspaces_retrieve, update=workspaces_partial_update, delete=workspaces_destroy).
+  - operationId references are included in generated operation constants.
 options:
   state:
     description:
@@ -106,9 +106,20 @@ DELETE_METHOD = 'DELETE'
 DELETE_PATH = '/workspaces/{id}'
 DELETE_PATH_PARAMS = ['id']
 DELETE_QUERY_PARAMS = []
-BODY_FIELDS = ['created_at', 'id', 'name']
+BODY_FIELDS = [
+    'created_at',
+    'id',
+    'name',
+]
 READ_ONLY = False
-API_NAME_MAP = {'api_url': 'api_url', 'api_token': 'api_token', 'state': 'state', 'name': 'name', 'id': 'id', 'created_at': 'createdAt'}
+API_NAME_MAP = {
+    'api_url': 'api_url',
+    'api_token': 'api_token',
+    'state': 'state',
+    'name': 'name',
+    'id': 'id',
+    'created_at': 'createdAt',
+}
 REQUIRED_DELETE_PATH_PARAMS = ['id']
 REQUIRED_GET_PATH_PARAMS = ['id']
 REQUIRED_CREATE_PATH_PARAMS = []

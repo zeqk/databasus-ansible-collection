@@ -138,9 +138,36 @@ DELETE_METHOD = None
 DELETE_PATH = None
 DELETE_PATH_PARAMS = []
 DELETE_QUERY_PARAMS = []
-BODY_FIELDS = ['db_size_bytes_after_restore', 'fail_message', 'failure_kind', 'pg_restore_exit_code', 'restore_duration_ms', 'schema_count', 'status', 'table_count', 'table_stats', 'verify_duration_ms']
+BODY_FIELDS = [
+    'db_size_bytes_after_restore',
+    'fail_message',
+    'failure_kind',
+    'pg_restore_exit_code',
+    'restore_duration_ms',
+    'schema_count',
+    'status',
+    'table_count',
+    'table_stats',
+    'verify_duration_ms',
+]
 READ_ONLY = False
-API_NAME_MAP = {'api_url': 'api_url', 'api_token': 'api_token', 'state': 'state', 'agent_id': 'agentId', 'id': 'id', 'db_size_bytes_after_restore': 'dbSizeBytesAfterRestore', 'fail_message': 'failMessage', 'failure_kind': 'failureKind', 'pg_restore_exit_code': 'pgRestoreExitCode', 'restore_duration_ms': 'restoreDurationMs', 'schema_count': 'schemaCount', 'status': 'status', 'table_count': 'tableCount', 'table_stats': 'tableStats', 'verify_duration_ms': 'verifyDurationMs'}
+API_NAME_MAP = {
+    'api_url': 'api_url',
+    'api_token': 'api_token',
+    'state': 'state',
+    'agent_id': 'agentId',
+    'id': 'id',
+    'db_size_bytes_after_restore': 'dbSizeBytesAfterRestore',
+    'fail_message': 'failMessage',
+    'failure_kind': 'failureKind',
+    'pg_restore_exit_code': 'pgRestoreExitCode',
+    'restore_duration_ms': 'restoreDurationMs',
+    'schema_count': 'schemaCount',
+    'status': 'status',
+    'table_count': 'tableCount',
+    'table_stats': 'tableStats',
+    'verify_duration_ms': 'verifyDurationMs',
+}
 REQUIRED_DELETE_PATH_PARAMS = []
 REQUIRED_GET_PATH_PARAMS = []
 REQUIRED_CREATE_PATH_PARAMS = ['agent_id', 'id']

@@ -10,7 +10,7 @@ module: database_trigger
 short_description: Manage database_trigger resources in Databasus.
 description:
   - Allows managing database_trigger resources using the Databasus API.
-  - operationId reference (create=backups_physical_create).
+  - operationId references are included in generated operation constants.
 options:
   state:
     description:
@@ -96,9 +96,17 @@ DELETE_METHOD = None
 DELETE_PATH = None
 DELETE_PATH_PARAMS = []
 DELETE_QUERY_PARAMS = []
-BODY_FIELDS = ['type']
+BODY_FIELDS = [
+    'type',
+]
 READ_ONLY = False
-API_NAME_MAP = {'api_url': 'api_url', 'api_token': 'api_token', 'state': 'state', 'id': 'id', 'type': 'type'}
+API_NAME_MAP = {
+    'api_url': 'api_url',
+    'api_token': 'api_token',
+    'state': 'state',
+    'id': 'id',
+    'type': 'type',
+}
 REQUIRED_DELETE_PATH_PARAMS = []
 REQUIRED_GET_PATH_PARAMS = []
 REQUIRED_CREATE_PATH_PARAMS = ['id']

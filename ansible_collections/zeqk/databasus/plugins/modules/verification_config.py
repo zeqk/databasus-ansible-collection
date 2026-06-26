@@ -10,7 +10,7 @@ module: verification_config
 short_description: Manage verification_config resources in Databasus.
 description:
   - Allows managing verification_config resources using the Databasus API.
-  - operationId reference (get=verification_config_retrieve, update=verification_config_partial_update).
+  - operationId references are included in generated operation constants.
 options:
   state:
     description:
@@ -109,9 +109,23 @@ DELETE_METHOD = None
 DELETE_PATH = None
 DELETE_PATH_PARAMS = []
 DELETE_QUERY_PARAMS = []
-BODY_FIELDS = ['is_scheduled_verification_enabled', 'schedule_type', 'send_notifications_on', 'verification_interval']
+BODY_FIELDS = [
+    'is_scheduled_verification_enabled',
+    'schedule_type',
+    'send_notifications_on',
+    'verification_interval',
+]
 READ_ONLY = False
-API_NAME_MAP = {'api_url': 'api_url', 'api_token': 'api_token', 'state': 'state', 'database_id': 'databaseId', 'is_scheduled_verification_enabled': 'isScheduledVerificationEnabled', 'schedule_type': 'scheduleType', 'send_notifications_on': 'sendNotificationsOn', 'verification_interval': 'verificationInterval'}
+API_NAME_MAP = {
+    'api_url': 'api_url',
+    'api_token': 'api_token',
+    'state': 'state',
+    'database_id': 'databaseId',
+    'is_scheduled_verification_enabled': 'isScheduledVerificationEnabled',
+    'schedule_type': 'scheduleType',
+    'send_notifications_on': 'sendNotificationsOn',
+    'verification_interval': 'verificationInterval',
+}
 REQUIRED_DELETE_PATH_PARAMS = []
 REQUIRED_GET_PATH_PARAMS = ['database_id']
 REQUIRED_CREATE_PATH_PARAMS = []

@@ -10,7 +10,7 @@ module: notifier
 short_description: Manage notifier resources in Databasus.
 description:
   - Allows managing notifier resources using the Databasus API.
-  - operationId reference (create=notifiers_create, list=notifiers_list, get=notifiers_retrieve, delete=notifiers_destroy).
+  - operationId references are included in generated operation constants.
 options:
   state:
     description:
@@ -138,9 +138,36 @@ DELETE_METHOD = 'DELETE'
 DELETE_PATH = '/notifiers/{id}'
 DELETE_PATH_PARAMS = ['id']
 DELETE_QUERY_PARAMS = []
-BODY_FIELDS = ['discord_notifier', 'email_notifier', 'id', 'last_send_error', 'name', 'notifier_type', 'slack_notifier', 'teams_notifier', 'telegram_notifier', 'webhook_notifier', 'workspace_id']
+BODY_FIELDS = [
+    'discord_notifier',
+    'email_notifier',
+    'id',
+    'last_send_error',
+    'name',
+    'notifier_type',
+    'slack_notifier',
+    'teams_notifier',
+    'telegram_notifier',
+    'webhook_notifier',
+    'workspace_id',
+]
 READ_ONLY = False
-API_NAME_MAP = {'api_url': 'api_url', 'api_token': 'api_token', 'state': 'state', 'workspace_id': 'workspace_id', 'discord_notifier': 'discordNotifier', 'email_notifier': 'emailNotifier', 'id': 'id', 'last_send_error': 'lastSendError', 'name': 'name', 'notifier_type': 'notifierType', 'slack_notifier': 'slackNotifier', 'teams_notifier': 'teamsNotifier', 'telegram_notifier': 'telegramNotifier', 'webhook_notifier': 'webhookNotifier'}
+API_NAME_MAP = {
+    'api_url': 'api_url',
+    'api_token': 'api_token',
+    'state': 'state',
+    'workspace_id': 'workspace_id',
+    'discord_notifier': 'discordNotifier',
+    'email_notifier': 'emailNotifier',
+    'id': 'id',
+    'last_send_error': 'lastSendError',
+    'name': 'name',
+    'notifier_type': 'notifierType',
+    'slack_notifier': 'slackNotifier',
+    'teams_notifier': 'teamsNotifier',
+    'telegram_notifier': 'telegramNotifier',
+    'webhook_notifier': 'webhookNotifier',
+}
 REQUIRED_DELETE_PATH_PARAMS = []
 REQUIRED_GET_PATH_PARAMS = []
 REQUIRED_CREATE_PATH_PARAMS = []

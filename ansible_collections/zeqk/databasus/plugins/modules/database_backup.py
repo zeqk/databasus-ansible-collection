@@ -10,7 +10,7 @@ module: database_backup
 short_description: Manage database_backup resources in Databasus.
 description:
   - Allows managing database_backup resources using the Databasus API.
-  - operationId reference (list=backups_physical_list).
+  - operationId references are included in generated operation constants.
   - This module is read-only and does not support state=absent.
 options:
   api_url:
@@ -106,7 +106,16 @@ DELETE_PATH_PARAMS = []
 DELETE_QUERY_PARAMS = []
 BODY_FIELDS = []
 READ_ONLY = True
-API_NAME_MAP = {'api_url': 'api_url', 'api_token': 'api_token', 'id': 'id', 'limit': 'limit', 'offset': 'offset', 'type': 'type', 'status': 'status', 'before_date': 'beforeDate'}
+API_NAME_MAP = {
+    'api_url': 'api_url',
+    'api_token': 'api_token',
+    'id': 'id',
+    'limit': 'limit',
+    'offset': 'offset',
+    'type': 'type',
+    'status': 'status',
+    'before_date': 'beforeDate',
+}
 REQUIRED_DELETE_PATH_PARAMS = []
 REQUIRED_GET_PATH_PARAMS = []
 REQUIRED_CREATE_PATH_PARAMS = []

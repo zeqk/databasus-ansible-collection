@@ -95,7 +95,14 @@ DELETE_PATH_PARAMS = []
 DELETE_QUERY_PARAMS = []
 BODY_FIELDS = []
 READ_ONLY = True
-API_NAME_MAP = {'api_url': 'api_url', 'api_token': 'api_token', 'id': 'id', 'limit': 'limit', 'offset': 'offset', 'before_date': 'beforeDate'}
+API_NAME_MAP = {
+    'api_url': 'api_url',
+    'api_token': 'api_token',
+    'id': 'id',
+    'limit': 'limit',
+    'offset': 'offset',
+    'before_date': 'beforeDate',
+}
 REQUIRED_DELETE_PATH_PARAMS = []
 REQUIRED_GET_PATH_PARAMS = []
 REQUIRED_CREATE_PATH_PARAMS = []

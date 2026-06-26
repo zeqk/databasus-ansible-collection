@@ -10,7 +10,7 @@ module: membership_member
 short_description: Manage membership_member resources in Databasus.
 description:
   - Allows managing membership_member resources using the Databasus API.
-  - operationId reference (create=workspace_members_create, list=workspace_members_list, delete=workspace_members_destroy).
+  - operationId references are included in generated operation constants.
 options:
   state:
     description:
@@ -112,9 +112,20 @@ DELETE_METHOD = 'DELETE'
 DELETE_PATH = '/workspaces/memberships/{id}/members/{userId}'
 DELETE_PATH_PARAMS = ['id', 'user_id']
 DELETE_QUERY_PARAMS = []
-BODY_FIELDS = ['email', 'role']
+BODY_FIELDS = [
+    'email',
+    'role',
+]
 READ_ONLY = False
-API_NAME_MAP = {'api_url': 'api_url', 'api_token': 'api_token', 'state': 'state', 'id': 'id', 'email': 'email', 'role': 'role', 'user_id': 'userId'}
+API_NAME_MAP = {
+    'api_url': 'api_url',
+    'api_token': 'api_token',
+    'state': 'state',
+    'id': 'id',
+    'email': 'email',
+    'role': 'role',
+    'user_id': 'userId',
+}
 REQUIRED_DELETE_PATH_PARAMS = ['id', 'user_id']
 REQUIRED_GET_PATH_PARAMS = []
 REQUIRED_CREATE_PATH_PARAMS = ['id']
