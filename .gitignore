@@ -221,3 +221,6 @@ __marimo__/
 
 
 ansible_collections/zeqk/databasus/tests/output
+ansible_collections/zeqk/databasus/tests/integration/inventory
+
+databasus-data

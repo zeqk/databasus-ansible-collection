@@ -44,6 +44,36 @@ uv run ansible-doc-extractor \
     --template module_doc.md.j2
 ```
 
+### Run tests
+
+Run tests from the repository root.
+
+Sanity checks:
+
+```bash
+cd ansible_collections/zeqk/databasus
+uv run ansible-test sanity
+```
+
+Integration test for workspace module using Databasus container:
+
+```bash
+docker compose up -d
+cd ansible_collections/zeqk/databasus
+uv run ansible-test integration workspace -v
+
+docker compose down
+```
+
+Optional test environment variables:
+
+```bash
+export DATABASUS_API_URL="http://127.0.0.1:4005/api/v1"
+export DATABASUS_TEST_EMAIL="ansible-tests@example.com"
+export DATABASUS_TEST_NAME="Ansible Tests"
+export DATABASUS_TEST_PASSWORD="Databasus!example123"
+```
+
 ### Notes
 
 - Re-run this command every time `openapi.json` changes.

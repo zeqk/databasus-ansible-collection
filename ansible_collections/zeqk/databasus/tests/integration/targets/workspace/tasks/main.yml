@@ -1,0 +1,163 @@
+---
+- name: Resolve Databasus API settings
+  ansible.builtin.set_fact:
+    databasus_api_url: "{{ lookup('ansible.builtin.env', 'DATABASUS_API_URL') | default('http://127.0.0.1:4005/api/v1', true) }}"
+    databasus_email: "{{ lookup('ansible.builtin.env', 'DATABASUS_TEST_EMAIL') | default('', true) }}"
+    databasus_name: "{{ lookup('ansible.builtin.env', 'DATABASUS_TEST_NAME') | default('', true) }}"
+    databasus_password: "{{ lookup('ansible.builtin.env', 'DATABASUS_TEST_PASSWORD') | default('', true) }}"
+
+- name: Generate fallback unique credentials
+  ansible.builtin.set_fact:
+    databasus_suffix: "{{ lookup('ansible.builtin.password', '/dev/null chars=ascii_lowercase,digits length=10') }}"
+
+- name: Fill missing credentials with generated values
+  ansible.builtin.set_fact:
+    databasus_email: "{{ databasus_email if databasus_email else ('ansible+' ~ databasus_suffix ~ '@example.com') }}"
+    databasus_name: "{{ databasus_name if databasus_name else ('Ansible Test ' ~ databasus_suffix) }}"
+    databasus_password: "{{ databasus_password if databasus_password else ('Databasus!' ~ databasus_suffix) }}"
+
+- name: Wait for Databasus port
+  ansible.builtin.wait_for:
+    host: "{{ databasus_api_url | regex_replace('^https?://([^/:]+).*$', '\\1') }}"
+    port: "{{ (databasus_api_url | regex_replace('^https?://[^/:]+:?(\\d+)?/.*$', '\\1') | default('4005', true)) | int }}"
+    timeout: 180
+
+- name: Wait for Databasus HTTP health endpoint
+  ansible.builtin.uri:
+    url: "{{ databasus_api_url }}/system/health"
+    method: GET
+    status_code: [200, 401]
+    return_content: true
+  register: databasus_health
+  retries: 30
+  delay: 4
+  until: databasus_health.status in [200, 401]
+
+- name: Try signup to get JWT token
+  ansible.builtin.uri:
+    url: "{{ databasus_api_url }}/users/signup"
+    method: POST
+    body_format: json
+    body:
+      email: "{{ databasus_email }}"
+      name: "{{ databasus_name }}"
+      password: "{{ databasus_password }}"
+    status_code: [200, 400, 409]
+    return_content: true
+  register: databasus_signup
+
+- name: Sign in when signup did not return token
+  when: databasus_signup.status != 200 or (databasus_signup.json is not defined) or (databasus_signup.json.token is not defined)
+  ansible.builtin.uri:
+    url: "{{ databasus_api_url }}/users/signin"
+    method: POST
+    body_format: json
+    body:
+      email: "{{ databasus_email }}"
+      password: "{{ databasus_password }}"
+    status_code: 200
+    return_content: true
+  register: databasus_signin
+
+- name: Pick JWT token
+  ansible.builtin.set_fact:
+    databasus_token: "{{ databasus_signup.json.token if (databasus_signup.status == 200 and databasus_signup.json is defined and databasus_signup.json.token is defined) else databasus_signin.json.token }}"
+
+- name: Validate JWT token exists
+  ansible.builtin.assert:
+    that:
+      - databasus_token is string
+      - databasus_token | length > 10
+
+- name: Create workspace using raw API
+  ansible.builtin.uri:
+    url: "{{ databasus_api_url }}/workspaces"
+    method: POST
+    headers:
+      Authorization: "Bearer {{ databasus_token }}"
+    body_format: json
+    body:
+      name: "ansible-workspace-{{ databasus_suffix }}"
+    status_code: 200
+    return_content: true
+  register: created_workspace
+
+- name: Ensure workspace payload has id
+  ansible.builtin.assert:
+    that:
+      - created_workspace.json is defined
+      - created_workspace.json.id is defined
+      - created_workspace.json.id | length > 0
+
+- name: Ensure workspace is idempotent when unchanged
+  zeqk.databasus.workspace:
+    state: present
+    api_url: "{{ databasus_api_url }}"
+    api_token: "{{ databasus_token }}"
+    id: "{{ created_workspace.json.id }}"
+    name: "{{ created_workspace.json.name }}"
+  register: workspace_same
+
+- name: Assert no changes on same desired state
+  ansible.builtin.assert:
+    that:
+      - workspace_same.changed == false
+      - workspace_same.msg == 'Resource already in desired state'
+
+- name: Update workspace using module
+  zeqk.databasus.workspace:
+    state: present
+    api_url: "{{ databasus_api_url }}"
+    api_token: "{{ databasus_token }}"
+    id: "{{ created_workspace.json.id }}"
+    name: "ansible-workspace-updated-{{ databasus_suffix }}"
+  register: workspace_updated
+
+- name: Assert workspace update happened
+  ansible.builtin.assert:
+    that:
+      - workspace_updated.changed == true
+      - workspace_updated.resource.name == ('ansible-workspace-updated-' ~ databasus_suffix)
+
+- name: Ensure workspace stays idempotent after update
+  zeqk.databasus.workspace:
+    state: present
+    api_url: "{{ databasus_api_url }}"
+    api_token: "{{ databasus_token }}"
+    id: "{{ created_workspace.json.id }}"
+    name: "ansible-workspace-updated-{{ databasus_suffix }}"
+  register: workspace_updated_same
+
+- name: Assert no changes after repeated update state
+  ansible.builtin.assert:
+    that:
+      - workspace_updated_same.changed == false
+
+- name: Delete workspace using module
+  zeqk.databasus.workspace:
+    state: absent
+    api_url: "{{ databasus_api_url }}"
+    api_token: "{{ databasus_token }}"
+    id: "{{ created_workspace.json.id }}"
+  register: workspace_deleted
+
+- name: Assert workspace deletion happened
+  ansible.builtin.assert:
+    that:
+      - workspace_deleted.changed == true
+      - workspace_deleted.msg == 'Resource deleted'
+
+- name: Verify workspace is no longer accessible after delete
+  ansible.builtin.uri:
+    url: "{{ databasus_api_url }}/workspaces/{{ created_workspace.json.id }}"
+    method: GET
+    headers:
+      Authorization: "Bearer {{ databasus_token }}"
+    status_code: [403, 404]
+    return_content: true
+  register: workspace_get_after_delete
+
+- name: Assert delete produced inaccessible resource state
+  ansible.builtin.assert:
+    that:
+      - workspace_get_after_delete.status in [403, 404]
