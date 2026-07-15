@@ -760,6 +760,7 @@ NAME_FIELD = ''
 NAME_API = ''
 ID_FIELD = ''
 ID_API = ''
+MATCH_FIELDS = []
 CREATE_IS_UPSERT = False
 
 
@@ -911,11 +912,25 @@ def _extract_items(listing: Any) -> List[Any]:
     return []
 
 
-def _find_by_name(listing: Any, name_api: str, desired_name: str) -> Optional[Dict[str, Any]]:
+def _find_by_name(
+    listing: Any,
+    name_api: str,
+    desired_name: str,
+    match_fields: List[Tuple[str, Any]],
+) -> Optional[Dict[str, Any]]:
     if not name_api or desired_name is None:
         return None
     for item in _extract_items(listing):
-        if isinstance(item, dict) and item.get(name_api) == desired_name:
+        if not isinstance(item, dict) or item.get(name_api) != desired_name:
+            continue
+        matches_scope = True
+        for field_api_name, desired_value in match_fields:
+            if desired_value is None:
+                continue
+            if item.get(field_api_name) != desired_value:
+                matches_scope = False
+                break
+        if matches_scope:
             return item
     return None
 
@@ -975,7 +990,8 @@ def run_module() -> None:
 
         list_url = _build_url(api_url, LIST_PATH, _collect_params(params, LIST_PATH_PARAMS), _collect_params(params, LIST_QUERY_PARAMS))
         listing = _request_json(module, LIST_METHOD, list_url, api_token, expected_statuses=[200])[1]
-        matched = _find_by_name(listing, NAME_API, params.get(NAME_FIELD))
+        scoped_match_fields = [(api_name, params.get(field_name)) for field_name, api_name in MATCH_FIELDS]
+        matched = _find_by_name(listing, NAME_API, params.get(NAME_FIELD), scoped_match_fields)
         if matched is not None:
             exists = True
             current = matched

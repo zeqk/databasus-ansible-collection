@@ -504,6 +504,14 @@ def generate_collection(spec_path: Path, output_dir: Path) -> Tuple[int, List[Tu
         id_field = "id" if name_addressable and "id" in params else ""
         name_api = body_field_api_map.get(name_field, name_field) if name_field else ""
         id_api = body_field_api_map.get(id_field, id_field) if id_field else ""
+        match_fields: List[Tuple[str, str]] = []
+        if name_addressable:
+            for field_name in sorted(body_field_names):
+                field_api_name = body_field_api_map.get(field_name, field_name)
+                if re.fullmatch(r"workspace_?id", field_name, flags=re.IGNORECASE) or re.fullmatch(
+                    r"workspace_?id", field_api_name, flags=re.IGNORECASE
+                ):
+                    match_fields.append((field_name, field_api_name))
 
         def op_const(name: str) -> Tuple[str, str, str, str]:
             op = ops.get(name)
@@ -589,6 +597,7 @@ def generate_collection(spec_path: Path, output_dir: Path) -> Tuple[int, List[Tu
 
         body_fields_literal = format_list_literal(body_field_names)
         body_field_map_literal = format_dict_literal(body_field_api_map)
+        match_fields_literal = repr(match_fields)
         api_name_map_literal = format_dict_literal(api_name_map)
         resource_return_fields = resource_response_fields(ops, definitions)
         return_resource_contains_block = ""
@@ -637,6 +646,7 @@ def generate_collection(spec_path: Path, output_dir: Path) -> Tuple[int, List[Tu
             name_api_repr=repr(name_api),
             id_field_repr=repr(id_field),
             id_api_repr=repr(id_api),
+            match_fields_literal=match_fields_literal,
             create_is_upsert=str(create_is_upsert),
             arg_lines_block="\n".join(arg_lines),
         )
