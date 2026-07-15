@@ -287,7 +287,12 @@ def build_resources(spec: Dict[str, Any]) -> Dict[str, Dict[str, Any]]:
                     elements = json_type_to_ansible(p.get("items", {}).get("type", "string"))
 
                 if existing:
-                    existing["required"] = existing.get("required", False) or required
+                    # Path/query requiredness is operation-specific and enforced at runtime.
+                    # Do not promote it to a global argument requirement.
+                    if source in {"path", "query"}:
+                        existing["required_in_api"] = existing.get("required_in_api", False) or required
+                    else:
+                        existing["required"] = existing.get("required", False) or required
                     continue
 
                 params[pname] = {
@@ -377,6 +382,11 @@ def generate_collection(spec_path: Path, output_dir: Path) -> Tuple[int, List[Tu
             query_params_by_op[opname] = sorted(set(qnames))
 
         body_field_names = sorted(set(body_field_names))
+
+        # If the resource is name-addressable, id should not be a globally required input.
+        # Path-level id checks are still enforced per operation via REQUIRED_*_PATH_PARAMS.
+        if "name" in body_field_names and "id" in params:
+            params["id"]["required"] = False
 
         def op_const(name: str) -> Tuple[str, str, str, str]:
             op = ops.get(name)

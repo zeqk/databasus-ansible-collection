@@ -38,7 +38,6 @@ options:
     description:
       - Body field id.
     type: str
-    required: true
   last_backup_error_message:
     description:
       - Body field lastBackupErrorMessage.
@@ -181,8 +180,8 @@ API_NAME_MAP = {
     'postgresql_physical': 'postgresqlPhysical',
     'type': 'type',
 }
-REQUIRED_DELETE_PATH_PARAMS = []
-REQUIRED_GET_PATH_PARAMS = []
+REQUIRED_DELETE_PATH_PARAMS = ['id']
+REQUIRED_GET_PATH_PARAMS = ['id']
 REQUIRED_CREATE_PATH_PARAMS = []
 
 
@@ -293,7 +292,7 @@ def run_module() -> None:
         api_url=dict(type='str', required=True),
         api_token=dict(type='str', required=True, no_log=True),
         health_status=dict(type='str'),
-        id=dict(type='str', required=True),
+        id=dict(type='str'),
         last_backup_error_message=dict(type='str'),
         last_backup_time=dict(type='str'),
         mariadb=dict(type='dict'),

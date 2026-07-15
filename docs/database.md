@@ -15,7 +15,7 @@ operationId references are included in generated operation constants\.
 | api_url | True, str, default=None. Base API URL\. |
 | api_token | True, str, default=None. Bearer authentication token\. |
 | health_status | optional, str, default=None. Body field healthStatus\. |
-| id | True, str, default=None. Body field id\. |
+| id | optional, str, default=None. Body field id\. |
 | last_backup_error_message | optional, str, default=None. Body field lastBackupErrorMessage\. |
 | last_backup_time | optional, str, default=None. these fields are not reliable\, but they are used for pretty UI |
 | mariadb | optional, dict, default=None. Body field mariadb\. |

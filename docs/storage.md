@@ -17,7 +17,7 @@ operationId references are included in generated operation constants\.
 | azure_blob_storage | optional, dict, default=None. Body field azureBlobStorage\. |
 | ftp_storage | optional, dict, default=None. Body field ftpStorage\. |
 | google_drive_storage | optional, dict, default=None. Body field googleDriveStorage\. |
-| id | True, str, default=None. Body field id\. |
+| id | optional, str, default=None. Body field id\. |
 | last_save_error | optional, str, default=None. Body field lastSaveError\. |
 | local_storage | optional, dict, default=None. Body field localStorage\. |
 | name | optional, str, default=None. Body field name\. |

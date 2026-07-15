@@ -34,7 +34,6 @@ options:
     description:
       - Database ID
     type: str
-    required: true
   is_scheduled_verification_enabled:
     description:
       - Body field isScheduledVerificationEnabled.
@@ -237,7 +236,7 @@ def run_module() -> None:
         state=dict(type='str', default='present', choices=['present', 'absent']),
         api_url=dict(type='str', required=True),
         api_token=dict(type='str', required=True, no_log=True),
-        database_id=dict(type='str', required=True),
+        database_id=dict(type='str'),
         is_scheduled_verification_enabled=dict(type='bool'),
         schedule_type=dict(type='str'),
         send_notifications_on=dict(type='list', elements='str'),

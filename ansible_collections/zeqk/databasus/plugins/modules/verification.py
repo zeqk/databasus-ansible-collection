@@ -34,7 +34,6 @@ options:
     description:
       - Agent ID
     type: str
-    required: true
   name:
     description:
       - Body field name.
@@ -225,7 +224,7 @@ def run_module() -> None:
         state=dict(type='str', default='present', choices=['present', 'absent']),
         api_url=dict(type='str', required=True),
         api_token=dict(type='str', required=True, no_log=True),
-        id=dict(type='str', required=True),
+        id=dict(type='str'),
         name=dict(type='str', required=True),
     )
     module = AnsibleModule(argument_spec=module_args, supports_check_mode=not READ_ONLY)

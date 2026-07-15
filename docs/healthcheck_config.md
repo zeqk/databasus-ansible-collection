@@ -15,7 +15,7 @@ operationId references are included in generated operation constants\.
 | api_url | True, str, default=None. Base API URL\. |
 | api_token | True, str, default=None. Bearer authentication token\. |
 | attempts_before_concidered_as_down | optional, int, default=None. Body field attemptsBeforeConcideredAsDown\. |
-| database_id | True, str, default=None. Body field databaseId\. |
+| database_id | optional, str, default=None. Body field databaseId\. |
 | interval_minutes | optional, int, default=None. Body field intervalMinutes\. |
 | is_healthcheck_enabled | optional, bool, default=None. Body field isHealthcheckEnabled\. |
 | is_sent_notification_when_unavailable | optional, bool, default=None. Body field isSentNotificationWhenUnavailable\. |

@@ -14,7 +14,7 @@ operationId references are included in generated operation constants\.
 | state | optional, str, default=present. Desired state of the resource\. |
 | api_url | True, str, default=None. Base API URL\. |
 | api_token | True, str, default=None. Bearer authentication token\. |
-| database_id | True, str, default=None. Database ID |
+| database_id | optional, str, default=None. Database ID |
 | is_scheduled_verification_enabled | optional, bool, default=None. Body field isScheduledVerificationEnabled\. |
 | schedule_type | optional, str, default=None. Body field scheduleType\. |
 | send_notifications_on | optional, list, default=None. Body field sendNotificationsOn\. |

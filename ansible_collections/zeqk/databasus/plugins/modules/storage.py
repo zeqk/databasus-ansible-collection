@@ -46,7 +46,6 @@ options:
     description:
       - Body field id.
     type: str
-    required: true
   last_save_error:
     description:
       - Body field lastSaveError.
@@ -180,8 +179,8 @@ API_NAME_MAP = {
     'sftp_storage': 'sftpStorage',
     'type': 'type',
 }
-REQUIRED_DELETE_PATH_PARAMS = []
-REQUIRED_GET_PATH_PARAMS = []
+REQUIRED_DELETE_PATH_PARAMS = ['id']
+REQUIRED_GET_PATH_PARAMS = ['id']
 REQUIRED_CREATE_PATH_PARAMS = []
 
 
@@ -294,7 +293,7 @@ def run_module() -> None:
         azure_blob_storage=dict(type='dict'),
         ftp_storage=dict(type='dict'),
         google_drive_storage=dict(type='dict'),
-        id=dict(type='str', required=True),
+        id=dict(type='str'),
         last_save_error=dict(type='str'),
         local_storage=dict(type='dict'),
         name=dict(type='str'),

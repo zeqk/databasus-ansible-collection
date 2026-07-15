@@ -38,7 +38,6 @@ options:
     description:
       - Body field databaseId.
     type: str
-    required: true
   interval_minutes:
     description:
       - Body field intervalMinutes.
@@ -133,7 +132,7 @@ API_NAME_MAP = {
     'store_attempts_days': 'storeAttemptsDays',
 }
 REQUIRED_DELETE_PATH_PARAMS = []
-REQUIRED_GET_PATH_PARAMS = []
+REQUIRED_GET_PATH_PARAMS = ['database_id']
 REQUIRED_CREATE_PATH_PARAMS = []
 
 
@@ -244,7 +243,7 @@ def run_module() -> None:
         api_url=dict(type='str', required=True),
         api_token=dict(type='str', required=True, no_log=True),
         attempts_before_concidered_as_down=dict(type='int'),
-        database_id=dict(type='str', required=True),
+        database_id=dict(type='str'),
         interval_minutes=dict(type='int'),
         is_healthcheck_enabled=dict(type='bool'),
         is_sent_notification_when_unavailable=dict(type='bool'),

@@ -12,11 +12,11 @@ Allows managing agent resources using the Databasus API\.
 | state | optional, str, default=present. Desired state of the resource\. |
 | api_url | True, str, default=None. Base API URL\. |
 | api_token | True, str, default=None. Bearer authentication token\. |
-| agent_id | True, str, default=None. Agent UUID |
+| agent_id | optional, str, default=None. Agent UUID |
 | db_size_bytes_after_restore | optional, int, default=None. Body field dbSizeBytesAfterRestore\. |
 | fail_message | optional, str, default=None. Body field failMessage\. |
 | failure_kind | optional, str, default=None. Body field failureKind\. |
-| id | True, str, default=None. Verification UUID |
+| id | optional, str, default=None. Verification UUID |
 | pg_restore_exit_code | optional, int, default=None. Body field pgRestoreExitCode\. |
 | restore_duration_ms | optional, int, default=None. Body field restoreDurationMs\. |
 | schema_count | optional, int, default=None. Body field schemaCount\. |

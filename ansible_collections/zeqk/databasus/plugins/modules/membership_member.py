@@ -39,7 +39,6 @@ options:
     description:
       - Workspace ID
     type: str
-    required: true
   role:
     description:
       - Body field role.
@@ -238,7 +237,7 @@ def run_module() -> None:
         api_url=dict(type='str', required=True),
         api_token=dict(type='str', required=True, no_log=True),
         email=dict(type='str', required=True),
-        id=dict(type='str', required=True),
+        id=dict(type='str'),
         role=dict(type='str', required=True),
         user_id=dict(type='str'),
     )

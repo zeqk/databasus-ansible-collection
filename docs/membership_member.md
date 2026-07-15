@@ -15,7 +15,7 @@ operationId references are included in generated operation constants\.
 | api_url | True, str, default=None. Base API URL\. |
 | api_token | True, str, default=None. Bearer authentication token\. |
 | email | True, str, default=None. Body field email\. |
-| id | True, str, default=None. Workspace ID |
+| id | optional, str, default=None. Workspace ID |
 | role | True, str, default=None. Body field role\. |
 | user_id | optional, str, default=None. User ID |
 

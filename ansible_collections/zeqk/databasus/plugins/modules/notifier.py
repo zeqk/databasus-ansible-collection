@@ -42,7 +42,6 @@ options:
     description:
       - Body field id.
     type: str
-    required: true
   last_send_error:
     description:
       - Body field lastSendError.
@@ -168,8 +167,8 @@ API_NAME_MAP = {
     'telegram_notifier': 'telegramNotifier',
     'webhook_notifier': 'webhookNotifier',
 }
-REQUIRED_DELETE_PATH_PARAMS = []
-REQUIRED_GET_PATH_PARAMS = []
+REQUIRED_DELETE_PATH_PARAMS = ['id']
+REQUIRED_GET_PATH_PARAMS = ['id']
 REQUIRED_CREATE_PATH_PARAMS = []
 
 
@@ -281,7 +280,7 @@ def run_module() -> None:
         api_token=dict(type='str', required=True, no_log=True),
         discord_notifier=dict(type='dict'),
         email_notifier=dict(type='dict'),
-        id=dict(type='str', required=True),
+        id=dict(type='str'),
         last_send_error=dict(type='str'),
         name=dict(type='str'),
         notifier_type=dict(type='str'),

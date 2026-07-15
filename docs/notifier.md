@@ -16,7 +16,7 @@ operationId references are included in generated operation constants\.
 | api_token | True, str, default=None. Bearer authentication token\. |
 | discord_notifier | optional, dict, default=None. Body field discordNotifier\. |
 | email_notifier | optional, dict, default=None. Body field emailNotifier\. |
-| id | True, str, default=None. Body field id\. |
+| id | optional, str, default=None. Body field id\. |
 | last_send_error | optional, str, default=None. Body field lastSendError\. |
 | name | optional, str, default=None. Body field name\. |
 | notifier_type | optional, str, default=None. Body field notifierType\. |

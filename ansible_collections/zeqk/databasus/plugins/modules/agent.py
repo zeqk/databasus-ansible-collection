@@ -33,7 +33,6 @@ options:
     description:
       - Agent UUID
     type: str
-    required: true
   db_size_bytes_after_restore:
     description:
       - Body field dbSizeBytesAfterRestore.
@@ -50,7 +49,6 @@ options:
     description:
       - Verification UUID
     type: str
-    required: true
   pg_restore_exit_code:
     description:
       - Body field pgRestoreExitCode.
@@ -279,11 +277,11 @@ def run_module() -> None:
         state=dict(type='str', default='present', choices=['present', 'absent']),
         api_url=dict(type='str', required=True),
         api_token=dict(type='str', required=True, no_log=True),
-        agent_id=dict(type='str', required=True),
+        agent_id=dict(type='str'),
         db_size_bytes_after_restore=dict(type='int'),
         fail_message=dict(type='str'),
         failure_kind=dict(type='str'),
-        id=dict(type='str', required=True),
+        id=dict(type='str'),
         pg_restore_exit_code=dict(type='int'),
         restore_duration_ms=dict(type='int'),
         schema_count=dict(type='int'),
