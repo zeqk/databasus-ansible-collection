@@ -161,6 +161,21 @@ BODY_FIELDS = [
     'type',
     'workspace_id',
 ]
+BODY_FIELD_MAP = {
+    'health_status': 'healthStatus',
+    'id': 'id',
+    'last_backup_error_message': 'lastBackupErrorMessage',
+    'last_backup_time': 'lastBackupTime',
+    'mariadb': 'mariadb',
+    'mongodb': 'mongodb',
+    'mysql': 'mysql',
+    'name': 'name',
+    'notifiers': 'notifiers',
+    'postgresql_logical': 'postgresqlLogical',
+    'postgresql_physical': 'postgresqlPhysical',
+    'type': 'type',
+    'workspace_id': 'workspaceId',
+}
 READ_ONLY = False
 API_NAME_MAP = {
     'api_url': 'api_url',
@@ -261,7 +276,7 @@ def _desired_payload(module_params: Dict[str, Any]) -> Dict[str, Any]:
     for name in BODY_FIELDS:
         value = module_params.get(name)
         if value is not None:
-            payload[API_NAME_MAP.get(name, name)] = value
+            payload[BODY_FIELD_MAP.get(name, API_NAME_MAP.get(name, name))] = value
     return payload
 
 

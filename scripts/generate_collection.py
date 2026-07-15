@@ -363,6 +363,7 @@ def generate_collection(spec_path: Path, output_dir: Path) -> Tuple[int, List[Tu
         mutable = data["mutable"]
 
         body_field_names: List[str] = []
+        body_field_api_map: Dict[str, str] = {}
         path_params_by_op: Dict[str, List[str]] = {}
         query_params_by_op: Dict[str, List[str]] = {}
 
@@ -377,7 +378,10 @@ def generate_collection(spec_path: Path, output_dir: Path) -> Tuple[int, List[Tu
                 elif p.get("in") == "query":
                     qnames.append(snake(p["name"]))
                 elif p.get("in") == "body":
-                    body_field_names.extend(extract_body_fields(p.get("schema", {}), definitions).keys())
+                    fields = extract_body_fields(p.get("schema", {}), definitions)
+                    body_field_names.extend(fields.keys())
+                    for field_name, field_meta in fields.items():
+                        body_field_api_map[field_name] = field_meta.get("api_name", field_name)
             path_params_by_op[opname] = sorted(set(pnames))
             query_params_by_op[opname] = sorted(set(qnames))
 
@@ -462,6 +466,7 @@ def generate_collection(spec_path: Path, output_dir: Path) -> Tuple[int, List[Tu
         api_name_map = {k: v["api_name"] for k, v in params.items() if "api_name" in v}
 
         body_fields_literal = format_list_literal(body_field_names)
+        body_field_map_literal = format_dict_literal(body_field_api_map)
         api_name_map_literal = format_dict_literal(api_name_map)
 
         code = textwrap.dedent(
@@ -533,6 +538,7 @@ DELETE_PATH = {d_path}
 DELETE_PATH_PARAMS = {d_pp}
 DELETE_QUERY_PARAMS = {d_qp}
 BODY_FIELDS = {body_fields_literal}
+BODY_FIELD_MAP = {body_field_map_literal}
 READ_ONLY = {str(not mutable)}
 API_NAME_MAP = {api_name_map_literal}
 REQUIRED_DELETE_PATH_PARAMS = {repr(required_delete)}
@@ -616,7 +622,7 @@ def _desired_payload(module_params: Dict[str, Any]) -> Dict[str, Any]:
     for name in BODY_FIELDS:
         value = module_params.get(name)
         if value is not None:
-            payload[API_NAME_MAP.get(name, name)] = value
+            payload[BODY_FIELD_MAP.get(name, API_NAME_MAP.get(name, name))] = value
     return payload
 
 

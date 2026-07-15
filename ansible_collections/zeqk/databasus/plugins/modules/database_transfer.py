@@ -119,6 +119,13 @@ BODY_FIELDS = [
     'target_storage_id',
     'target_workspace_id',
 ]
+BODY_FIELD_MAP = {
+    'is_transfer_with_notifiers': 'isTransferWithNotifiers',
+    'is_transfer_with_storage': 'isTransferWithStorage',
+    'target_notifier_ids': 'targetNotifierIds',
+    'target_storage_id': 'targetStorageId',
+    'target_workspace_id': 'targetWorkspaceId',
+}
 READ_ONLY = False
 API_NAME_MAP = {
     'api_url': 'api_url',
@@ -212,7 +219,7 @@ def _desired_payload(module_params: Dict[str, Any]) -> Dict[str, Any]:
     for name in BODY_FIELDS:
         value = module_params.get(name)
         if value is not None:
-            payload[API_NAME_MAP.get(name, name)] = value
+            payload[BODY_FIELD_MAP.get(name, API_NAME_MAP.get(name, name))] = value
     return payload
 
 
