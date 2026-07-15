@@ -15,13 +15,12 @@ operationId references are included in generated operation constants\.
 | api_url | True, str, default=None. Base API URL\. |
 | api_token | True, str, default=None. Bearer authentication token\. |
 | health_status | optional, str, default=None. Body field healthStatus\. |
-| id | optional, str, default=None. Body field id\. |
 | last_backup_error_message | optional, str, default=None. Body field lastBackupErrorMessage\. |
 | last_backup_time | optional, str, default=None. these fields are not reliable\, but they are used for pretty UI |
 | mariadb | optional, dict, default=None. Body field mariadb\. |
 | mongodb | optional, dict, default=None. Body field mongodb\. |
 | mysql | optional, dict, default=None. Body field mysql\. |
-| name | optional, str, default=None. Body field name\. |
+| name | True, str, default=None. Body field name\. |
 | notifiers | optional, list, default=None. Body field notifiers\. |
 | postgresql_logical | optional, dict, default=None. Body field postgresqlLogical\. |
 | postgresql_physical | optional, dict, default=None. Body field postgresqlPhysical\. |
@@ -38,6 +37,7 @@ operationId references are included in generated operation constants\.
         state: present
         api_url: https://api.example.com
         api_token: "{{ databasus_token }}"
+        name: example-name
         health_status: null
 
     - name: Delete resource
@@ -45,6 +45,7 @@ operationId references are included in generated operation constants\.
         state: absent
         api_url: https://api.example.com
         api_token: "{{ databasus_token }}"
+        name: example-name
 
 ```
 

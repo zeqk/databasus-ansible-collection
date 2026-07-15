@@ -14,7 +14,6 @@ operationId references are included in generated operation constants\.
 | state | optional, str, default=present. Desired state of the resource\. |
 | api_url | True, str, default=None. Base API URL\. |
 | api_token | True, str, default=None. Bearer authentication token\. |
-| id | optional, str, default=None. Agent ID |
 | name | True, str, default=None. Body field name\. |
 
 
@@ -27,13 +26,14 @@ operationId references are included in generated operation constants\.
         state: present
         api_url: https://api.example.com
         api_token: "{{ databasus_token }}"
-        name: null
+        name: example-name
 
     - name: Delete resource
       zeqk.databasus.verification:
         state: absent
         api_url: https://api.example.com
         api_token: "{{ databasus_token }}"
+        name: example-name
 
 ```
 

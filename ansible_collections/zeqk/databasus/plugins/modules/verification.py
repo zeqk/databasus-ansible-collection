@@ -30,10 +30,6 @@ options:
       - Bearer authentication token.
     type: str
     required: true
-  id:
-    description:
-      - Agent ID
-    type: str
   name:
     description:
       - Body field name.
@@ -49,13 +45,14 @@ EXAMPLES = r"""
     state: present
     api_url: https://api.example.com
     api_token: "{{ databasus_token }}"
-    name: null
+    name: example-name
 
 - name: Delete resource
   zeqk.databasus.verification:
     state: absent
     api_url: https://api.example.com
     api_token: "{{ databasus_token }}"
+    name: example-name
 """
 
 RETURN = r"""
@@ -233,6 +230,13 @@ API_NAME_MAP = {
 REQUIRED_DELETE_PATH_PARAMS = ['id']
 REQUIRED_GET_PATH_PARAMS = ['id']
 REQUIRED_CREATE_PATH_PARAMS = []
+REQUIRED_LIST_QUERY_PARAMS = []
+NAME_ADDRESSABLE = True
+NAME_FIELD = 'name'
+NAME_API = 'name'
+ID_FIELD = 'id'
+ID_API = 'id'
+CREATE_IS_UPSERT = False
 
 
 def _build_url(api_url: str, path_template: str, path_params: Dict[str, Any], query_params: Optional[Dict[str, Any]] = None) -> str:
@@ -373,6 +377,25 @@ def _needs_update(current: Any, desired: Dict[str, Any]) -> bool:
     return False
 
 
+def _extract_items(listing: Any) -> List[Any]:
+    if isinstance(listing, list):
+        return listing
+    if isinstance(listing, dict):
+        for value in listing.values():
+            if isinstance(value, list):
+                return value
+    return []
+
+
+def _find_by_name(listing: Any, name_api: str, desired_name: str) -> Optional[Dict[str, Any]]:
+    if not name_api or desired_name is None:
+        return None
+    for item in _extract_items(listing):
+        if isinstance(item, dict) and item.get(name_api) == desired_name:
+            return item
+    return None
+
+
 def _has_required(module_params: Dict[str, Any], names: List[str]) -> bool:
     return all(module_params.get(name) is not None for name in names)
 
@@ -388,7 +411,6 @@ def run_module() -> None:
         state=dict(type='str', default='present', choices=['present', 'absent']),
         api_url=dict(type='str', required=True),
         api_token=dict(type='str', required=True, no_log=True),
-        id=dict(type='str'),
         name=dict(type='str', required=True),
     )
     module = AnsibleModule(argument_spec=module_args, supports_check_mode=not READ_ONLY)
@@ -421,6 +443,21 @@ def run_module() -> None:
     exists = False
     current: Any = {}
 
+    if NAME_ADDRESSABLE:
+        if not LIST_PATH:
+            module.fail_json(msg='Name-based idempotency requires a list endpoint')
+        _ensure_required(module, params, [NAME_FIELD], 'name-based lookup')
+        _ensure_required(module, params, REQUIRED_LIST_QUERY_PARAMS, 'name-based lookup')
+
+        list_url = _build_url(api_url, LIST_PATH, _collect_params(params, LIST_PATH_PARAMS), _collect_params(params, LIST_QUERY_PARAMS))
+        listing = _request_json(module, LIST_METHOD, list_url, api_token, expected_statuses=[200])[1]
+        matched = _find_by_name(listing, NAME_API, params.get(NAME_FIELD))
+        if matched is not None:
+            exists = True
+            current = matched
+            if ID_FIELD and ID_API and matched.get(ID_API) is not None:
+                params[ID_FIELD] = matched.get(ID_API)
+
     if GET_PATH and _has_required(params, GET_PATH_PARAMS):
         get_url = _build_url(api_url, GET_PATH, _collect_params(params, GET_PATH_PARAMS), _collect_params(params, GET_QUERY_PARAMS))
         status, body = _request_json(module, GET_METHOD, get_url, api_token, expected_statuses=[200], allow_statuses=[404])
@@ -434,11 +471,12 @@ def run_module() -> None:
         if not DELETE_PATH:
             result['msg'] = 'Resource does not support delete operation'
             module.fail_json(**result)
-        _ensure_required(module, params, REQUIRED_DELETE_PATH_PARAMS or DELETE_PATH_PARAMS, 'delete')
 
         if not exists:
             result['msg'] = 'Resource is already absent'
             module.exit_json(**result)
+
+        _ensure_required(module, params, REQUIRED_DELETE_PATH_PARAMS or DELETE_PATH_PARAMS, 'delete')
 
         if module.check_mode:
             result['changed'] = True
@@ -468,6 +506,26 @@ def run_module() -> None:
             _ensure_required(module, params, UPDATE_PATH_PARAMS, 'update')
             update_url = _build_url(api_url, UPDATE_PATH, _collect_params(params, UPDATE_PATH_PARAMS), _collect_params(params, UPDATE_QUERY_PARAMS))
             updated = _request_json(module, UPDATE_METHOD, update_url, api_token, payload=desired, expected_statuses=[200, 201])[1]
+            result['changed'] = True
+            result['resource'] = updated if isinstance(updated, dict) else {'value': updated}
+            result['msg'] = 'Resource updated'
+            module.exit_json(**result)
+
+        if CREATE_IS_UPSERT:
+            if not _needs_update(current, desired):
+                result['resource'] = current if isinstance(current, dict) else {'value': current}
+                result['msg'] = 'Resource already in desired state'
+                module.exit_json(**result)
+
+            if module.check_mode:
+                result['changed'] = True
+                result['resource'] = current if isinstance(current, dict) else {'value': current}
+                result['msg'] = 'Update planned (check_mode)'
+                module.exit_json(**result)
+
+            _ensure_required(module, params, REQUIRED_CREATE_PATH_PARAMS or CREATE_PATH_PARAMS, 'create')
+            create_url = _build_url(api_url, CREATE_PATH, _collect_params(params, CREATE_PATH_PARAMS), _collect_params(params, CREATE_QUERY_PARAMS))
+            updated = _request_json(module, CREATE_METHOD, create_url, api_token, payload=desired, expected_statuses=[200, 201, 202])[1]
             result['changed'] = True
             result['resource'] = updated if isinstance(updated, dict) else {'value': updated}
             result['msg'] = 'Resource updated'

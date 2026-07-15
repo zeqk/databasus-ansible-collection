@@ -75,5 +75,5 @@ Ansible collection generated from `openapi.json` to manage Databasus API resourc
         state: absent
         api_url: "https://api.databasus.example.com"
         api_token: "{{ lookup('env', 'DATABASUS_TOKEN') }}"
-        id: "db-abc123"
+        name: "production-db"
 ```

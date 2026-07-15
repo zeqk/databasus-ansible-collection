@@ -15,8 +15,7 @@ operationId references are included in generated operation constants\.
 | api_url | True, str, default=None. Base API URL\. |
 | api_token | True, str, default=None. Bearer authentication token\. |
 | created_at | optional, str, default=None. Body field createdAt\. |
-| id | optional, str, default=None. Workspace ID |
-| name | optional, str, default=None. Body field name\. |
+| name | True, str, default=None. Body field name\. |
 
 
 ## Examples
@@ -28,6 +27,7 @@ operationId references are included in generated operation constants\.
         state: present
         api_url: https://api.example.com
         api_token: "{{ databasus_token }}"
+        name: example-name
         created_at: null
 
     - name: Delete resource
@@ -35,6 +35,7 @@ operationId references are included in generated operation constants\.
         state: absent
         api_url: https://api.example.com
         api_token: "{{ databasus_token }}"
+        name: example-name
 
 ```
 

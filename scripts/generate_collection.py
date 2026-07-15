@@ -491,10 +491,27 @@ def generate_collection(spec_path: Path, output_dir: Path) -> Tuple[int, List[Tu
 
         body_field_names = sorted(set(body_field_names))
 
-        # If the resource is name-addressable, id should not be a globally required input.
-        # Path-level id checks are still enforced per operation via REQUIRED_*_PATH_PARAMS.
-        if "name" in body_field_names and "id" in params:
-            params["id"]["required"] = False
+        name_addressable = "name" in body_field_names and bool(ops.get("list"))
+        create_spec = (ops.get("create") or {}).get("spec", {})
+        create_text = " ".join(
+            [
+                sanitize_text(create_spec.get("summary") or ""),
+                sanitize_text(create_spec.get("description") or ""),
+            ]
+        )
+        create_is_upsert = bool(re.search(r"\bcreate\s+or\s+update\b", create_text, flags=re.IGNORECASE))
+
+        if name_addressable and "name" in params:
+            params["name"]["required"] = True
+
+        input_excluded: set[str] = set()
+        if name_addressable and "id" in params:
+            input_excluded.add("id")
+
+        name_field = "name" if name_addressable and "name" in params else ""
+        id_field = "id" if name_addressable and "id" in params else ""
+        name_api = body_field_api_map.get(name_field, name_field) if name_field else ""
+        id_api = body_field_api_map.get(id_field, id_field) if id_field else ""
 
         def op_const(name: str) -> Tuple[str, str, str, str]:
             op = ops.get(name)
@@ -520,7 +537,9 @@ def generate_collection(spec_path: Path, output_dir: Path) -> Tuple[int, List[Tu
                 operation_ids.append(f"{key}={op['operation_id']}")
 
         option_blocks = []
-        ordered = ["state", "api_url", "api_token"] + sorted([k for k in params if k not in {"state", "api_url", "api_token"}])
+        ordered = ["state", "api_url", "api_token"] + sorted(
+            [k for k in params if k not in {"state", "api_url", "api_token"} and k not in input_excluded]
+        )
         for k in ordered:
             if k in params:
                 option_blocks.append(option_doc_block(k, params[k]))
@@ -545,8 +564,12 @@ def generate_collection(spec_path: Path, output_dir: Path) -> Tuple[int, List[Tu
                 "    api_url: https://api.example.com",
                 '    api_token: "{{ databasus_token }}"',
             ]
+        if mutable and name_field:
+            examples.append("    name: example-name")
         for name in sorted(params):
             if name in {"state", "api_url", "api_token"}:
+                continue
+            if name in input_excluded or (name_field and name == name_field):
                 continue
             if params[name]["source"] == "body":
                 examples.append(f"    {name}: null")
@@ -560,12 +583,15 @@ def generate_collection(spec_path: Path, output_dir: Path) -> Tuple[int, List[Tu
                 "    api_url: https://api.example.com",
                 '    api_token: "{{ databasus_token }}"',
             ]
+            if name_field:
+                examples.append("    name: example-name")
 
         arg_lines = [f"        {p}={arg_spec_line(params[p])}," for p in ordered if p in params]
 
         required_delete = [p for p in path_params_by_op.get("delete", []) if params.get(p, {}).get("required_in_api")]
         required_get = [p for p in path_params_by_op.get("get", []) if params.get(p, {}).get("required_in_api")]
         required_create = [p for p in path_params_by_op.get("create", []) if params.get(p, {}).get("required_in_api")]
+        required_list_query = [p for p in query_params_by_op.get("list", []) if params.get(p, {}).get("required_in_api")]
 
         api_name_map = {k: v["api_name"] for k, v in params.items() if "api_name" in v}
 
@@ -655,6 +681,13 @@ API_NAME_MAP = {api_name_map_literal}
 REQUIRED_DELETE_PATH_PARAMS = {repr(required_delete)}
 REQUIRED_GET_PATH_PARAMS = {repr(required_get)}
 REQUIRED_CREATE_PATH_PARAMS = {repr(required_create)}
+REQUIRED_LIST_QUERY_PARAMS = {repr(required_list_query)}
+NAME_ADDRESSABLE = {str(name_addressable)}
+NAME_FIELD = {repr(name_field)}
+NAME_API = {repr(name_api)}
+ID_FIELD = {repr(id_field)}
+ID_API = {repr(id_api)}
+CREATE_IS_UPSERT = {str(create_is_upsert)}
 
 
 def _build_url(api_url: str, path_template: str, path_params: Dict[str, Any], query_params: Optional[Dict[str, Any]] = None) -> str:
@@ -795,6 +828,25 @@ def _needs_update(current: Any, desired: Dict[str, Any]) -> bool:
     return False
 
 
+def _extract_items(listing: Any) -> List[Any]:
+    if isinstance(listing, list):
+        return listing
+    if isinstance(listing, dict):
+        for value in listing.values():
+            if isinstance(value, list):
+                return value
+    return []
+
+
+def _find_by_name(listing: Any, name_api: str, desired_name: str) -> Optional[Dict[str, Any]]:
+    if not name_api or desired_name is None:
+        return None
+    for item in _extract_items(listing):
+        if isinstance(item, dict) and item.get(name_api) == desired_name:
+            return item
+    return None
+
+
 def _has_required(module_params: Dict[str, Any], names: List[str]) -> bool:
     return all(module_params.get(name) is not None for name in names)
 
@@ -839,6 +891,21 @@ def run_module() -> None:
     exists = False
     current: Any = {{}}
 
+    if NAME_ADDRESSABLE:
+        if not LIST_PATH:
+            module.fail_json(msg='Name-based idempotency requires a list endpoint')
+        _ensure_required(module, params, [NAME_FIELD], 'name-based lookup')
+        _ensure_required(module, params, REQUIRED_LIST_QUERY_PARAMS, 'name-based lookup')
+
+        list_url = _build_url(api_url, LIST_PATH, _collect_params(params, LIST_PATH_PARAMS), _collect_params(params, LIST_QUERY_PARAMS))
+        listing = _request_json(module, LIST_METHOD, list_url, api_token, expected_statuses=[200])[1]
+        matched = _find_by_name(listing, NAME_API, params.get(NAME_FIELD))
+        if matched is not None:
+            exists = True
+            current = matched
+            if ID_FIELD and ID_API and matched.get(ID_API) is not None:
+                params[ID_FIELD] = matched.get(ID_API)
+
     if GET_PATH and _has_required(params, GET_PATH_PARAMS):
         get_url = _build_url(api_url, GET_PATH, _collect_params(params, GET_PATH_PARAMS), _collect_params(params, GET_QUERY_PARAMS))
         status, body = _request_json(module, GET_METHOD, get_url, api_token, expected_statuses=[200], allow_statuses=[404])
@@ -852,11 +919,12 @@ def run_module() -> None:
         if not DELETE_PATH:
             result['msg'] = 'Resource does not support delete operation'
             module.fail_json(**result)
-        _ensure_required(module, params, REQUIRED_DELETE_PATH_PARAMS or DELETE_PATH_PARAMS, 'delete')
 
         if not exists:
             result['msg'] = 'Resource is already absent'
             module.exit_json(**result)
+
+        _ensure_required(module, params, REQUIRED_DELETE_PATH_PARAMS or DELETE_PATH_PARAMS, 'delete')
 
         if module.check_mode:
             result['changed'] = True
@@ -886,6 +954,26 @@ def run_module() -> None:
             _ensure_required(module, params, UPDATE_PATH_PARAMS, 'update')
             update_url = _build_url(api_url, UPDATE_PATH, _collect_params(params, UPDATE_PATH_PARAMS), _collect_params(params, UPDATE_QUERY_PARAMS))
             updated = _request_json(module, UPDATE_METHOD, update_url, api_token, payload=desired, expected_statuses=[200, 201])[1]
+            result['changed'] = True
+            result['resource'] = updated if isinstance(updated, dict) else {{'value': updated}}
+            result['msg'] = 'Resource updated'
+            module.exit_json(**result)
+
+        if CREATE_IS_UPSERT:
+            if not _needs_update(current, desired):
+                result['resource'] = current if isinstance(current, dict) else {{'value': current}}
+                result['msg'] = 'Resource already in desired state'
+                module.exit_json(**result)
+
+            if module.check_mode:
+                result['changed'] = True
+                result['resource'] = current if isinstance(current, dict) else {{'value': current}}
+                result['msg'] = 'Update planned (check_mode)'
+                module.exit_json(**result)
+
+            _ensure_required(module, params, REQUIRED_CREATE_PATH_PARAMS or CREATE_PATH_PARAMS, 'create')
+            create_url = _build_url(api_url, CREATE_PATH, _collect_params(params, CREATE_PATH_PARAMS), _collect_params(params, CREATE_QUERY_PARAMS))
+            updated = _request_json(module, CREATE_METHOD, create_url, api_token, payload=desired, expected_statuses=[200, 201, 202])[1]
             result['changed'] = True
             result['resource'] = updated if isinstance(updated, dict) else {{'value': updated}}
             result['msg'] = 'Resource updated'
@@ -964,7 +1052,7 @@ if __name__ == '__main__':
         "        state: absent",
         "        api_url: \"https://api.databasus.example.com\"",
         "        api_token: \"{{ lookup('env', 'DATABASUS_TOKEN') }}\"",
-        "        id: \"db-abc123\"",
+        "        name: \"production-db\"",
         "```",
     ]
     (output_dir / "README.md").write_text("\n".join(readme) + "\n")

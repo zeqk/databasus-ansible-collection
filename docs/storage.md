@@ -17,10 +17,9 @@ operationId references are included in generated operation constants\.
 | azure_blob_storage | optional, dict, default=None. Body field azureBlobStorage\. |
 | ftp_storage | optional, dict, default=None. Body field ftpStorage\. |
 | google_drive_storage | optional, dict, default=None. Body field googleDriveStorage\. |
-| id | optional, str, default=None. Body field id\. |
 | last_save_error | optional, str, default=None. Body field lastSaveError\. |
 | local_storage | optional, dict, default=None. Body field localStorage\. |
-| name | optional, str, default=None. Body field name\. |
+| name | True, str, default=None. Body field name\. |
 | nas_storage | optional, dict, default=None. Body field nasStorage\. |
 | rclone_storage | optional, dict, default=None. Body field rcloneStorage\. |
 | s3_storage | optional, dict, default=None. Body field s3Storage\. |
@@ -38,6 +37,7 @@ operationId references are included in generated operation constants\.
         state: present
         api_url: https://api.example.com
         api_token: "{{ databasus_token }}"
+        name: example-name
         azure_blob_storage: null
 
     - name: Delete resource
@@ -45,6 +45,7 @@ operationId references are included in generated operation constants\.
         state: absent
         api_url: https://api.example.com
         api_token: "{{ databasus_token }}"
+        name: example-name
 
 ```
 
