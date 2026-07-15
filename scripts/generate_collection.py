@@ -17,6 +17,8 @@ from collections import defaultdict
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
+from jinja2 import Environment, FileSystemLoader
+
 HTTP_METHODS = {"get", "post", "put", "patch", "delete"}
 
 
@@ -304,6 +306,14 @@ def format_dict_literal(values: Dict[str, str]) -> str:
     return "{\n" + "\n".join(lines) + "\n}"
 
 
+def create_jinja_env(template_dir: Path) -> Environment:
+    return Environment(
+        loader=FileSystemLoader(str(template_dir)),
+        autoescape=False,
+        keep_trailing_newline=True,
+    )
+
+
 def build_resources(spec: Dict[str, Any]) -> Dict[str, Dict[str, Any]]:
     paths = spec.get("paths", {})
     definitions = spec.get("definitions", {})
@@ -428,33 +438,15 @@ def generate_collection(spec_path: Path, output_dir: Path) -> Tuple[int, List[Tu
     spec = json.loads(spec_path.read_text())
     definitions = spec.get("definitions", {})
     resources = build_resources(spec)
+    template_dir = Path(__file__).resolve().parent / "templates"
+    template_env = create_jinja_env(template_dir)
 
     modules_dir = output_dir / "plugins" / "modules"
     roles_dir = output_dir / "roles"
     modules_dir.mkdir(parents=True, exist_ok=True)
     roles_dir.mkdir(parents=True, exist_ok=True)
 
-    (output_dir / "galaxy.yml").write_text(
-        "\n".join(
-            [
-                "namespace: zeqk",
-                "name: databasus",
-                "version: 1.0.0",
-                "readme: README.md",
-                "description: Ansible collection to manage Databasus resources via REST API.",
-                "license:",
-                "  - MIT",
-                "authors:",
-                "  - zeqk",
-                "tags:",
-                "  - database",
-                "  - api",
-                "  - crud",
-                "dependencies: {}",
-                "",
-            ]
-        )
-    )
+    (output_dir / "galaxy.yml").write_text(template_env.get_template("galaxy.yml.j2").render())
 
     (roles_dir / ".gitkeep").write_text("")
 
@@ -605,457 +597,55 @@ def generate_collection(spec_path: Path, output_dir: Path) -> Tuple[int, List[Tu
                 render_return_fields(resource_return_fields, indent=8)
             )
 
-        code = textwrap.dedent(
-            f'''
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
-
-# Copyright: (c) 2026, zeqk (@zeqk)
-# GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
-
-DOCUMENTATION = r"""
----
-module: {resource}
-short_description: Manage {resource} resources in Databasus.
-description:
-{chr(10).join(desc_lines)}
-options:
-{chr(10).join(option_blocks)}
-author:
-    - zeqk (@zeqk)
-"""
-
-EXAMPLES = r"""
-{chr(10).join(examples)}
-"""
-
-RETURN = r"""
-resource:
-    description: Resource object as returned by the API.
-    type: dict
-    returned: always{return_resource_contains_block}
-changed:
-    description: Indicates whether any change was made.
-    type: bool
-    returned: always
-msg:
-    description: Descriptive operation message.
-    type: str
-    returned: always
-"""
-
-
-import json
-import shlex
-from typing import Any, Dict, List, Optional, Tuple
-from urllib import error, parse
-
-from ansible.module_utils.basic import AnsibleModule
-from ansible.module_utils.urls import open_url
-
-
-CREATE_METHOD = {c_method}
-CREATE_PATH = {c_path}
-CREATE_PATH_PARAMS = {c_pp}
-CREATE_QUERY_PARAMS = {c_qp}
-LIST_METHOD = {l_method}
-LIST_PATH = {l_path}
-LIST_PATH_PARAMS = {l_pp}
-LIST_QUERY_PARAMS = {l_qp}
-GET_METHOD = {g_method}
-GET_PATH = {g_path}
-GET_PATH_PARAMS = {g_pp}
-GET_QUERY_PARAMS = {g_qp}
-UPDATE_METHOD = {u_method}
-UPDATE_PATH = {u_path}
-UPDATE_PATH_PARAMS = {u_pp}
-UPDATE_QUERY_PARAMS = {u_qp}
-DELETE_METHOD = {d_method}
-DELETE_PATH = {d_path}
-DELETE_PATH_PARAMS = {d_pp}
-DELETE_QUERY_PARAMS = {d_qp}
-BODY_FIELDS = {body_fields_literal}
-BODY_FIELD_MAP = {body_field_map_literal}
-READ_ONLY = {str(not mutable)}
-API_NAME_MAP = {api_name_map_literal}
-REQUIRED_DELETE_PATH_PARAMS = {repr(required_delete)}
-REQUIRED_GET_PATH_PARAMS = {repr(required_get)}
-REQUIRED_CREATE_PATH_PARAMS = {repr(required_create)}
-REQUIRED_LIST_QUERY_PARAMS = {repr(required_list_query)}
-NAME_ADDRESSABLE = {str(name_addressable)}
-NAME_FIELD = {repr(name_field)}
-NAME_API = {repr(name_api)}
-ID_FIELD = {repr(id_field)}
-ID_API = {repr(id_api)}
-CREATE_IS_UPSERT = {str(create_is_upsert)}
-
-
-def _build_url(api_url: str, path_template: str, path_params: Dict[str, Any], query_params: Optional[Dict[str, Any]] = None) -> str:
-    encoded = {{k: parse.quote(str(v), safe='') for k, v in path_params.items()}}
-    path = path_template.format(**encoded)
-    url = api_url.rstrip('/') + path
-    clean_query = {{k: v for k, v in (query_params or {{}}).items() if v is not None}}
-    if clean_query:
-        url += '?' + parse.urlencode(clean_query, doseq=True)
-    return url
-
-
-def _decode_body(raw: str) -> Any:
-    if not raw:
-        return {{}}
-    try:
-        return json.loads(raw)
-    except json.JSONDecodeError:
-        return {{'raw': raw}}
-
-
-def _build_curl(method: str, url: str, headers: Dict[str, Any], data: Optional[bytes]) -> str:
-    parts = ['curl', '-sS', '-X', method.upper()]
-    for key, value in headers.items():
-        header_value = str(value)
-        if key.lower() == 'authorization':
-            header_value = 'Bearer <REDACTED>'
-        parts += ['-H', shlex.quote(f'{{key}}: {{header_value}}')]
-    if data is not None:
-        parts += ['--data', shlex.quote(data.decode('utf-8', errors='replace'))]
-    parts.append(shlex.quote(url))
-    return ' '.join(parts)
-
-
-def _request_json(
-    module: AnsibleModule,
-    method: str,
-    url: str,
-    token: str,
-    payload: Optional[Dict[str, Any]] = None,
-    expected_statuses: Optional[List[int]] = None,
-    allow_statuses: Optional[List[int]] = None,
-) -> Tuple[int, Any]:
-    headers = {{
-        'Accept': 'application/json',
-        'Authorization': f'Bearer {{token}}',
-    }}
-    data = None
-    response_headers: Dict[str, Any] = {{}}
-    if payload is not None:
-        headers['Content-Type'] = 'application/json'
-        data = json.dumps(payload).encode('utf-8')
-
-    try:
-        with open_url(
-            url,
-            data=data,
-            headers=headers,
-            method=method,
-            timeout=30,
-        ) as response:
-            status = int(response.getcode())
-            response_headers = dict(getattr(response, 'headers', {{}}) or {{}})
-            raw = response.read().decode('utf-8')
-    except error.HTTPError as exc:
-        status = int(exc.code)
-        raw = exc.read().decode('utf-8', errors='replace')
-        decoded = _decode_body(raw)
-        reason = str(getattr(exc, 'reason', '') or '')
-        response_headers = dict(getattr(exc, 'headers', {{}}) or {{}})
-        if allow_statuses and status in allow_statuses:
-            return status, decoded
-        equivalent_curl = _build_curl(method, url, headers, data)
-        module.fail_json(
-            msg=f'HTTP {{status}} on {{method}} {{url}}. Reason: {{reason}}. Response body: {{raw}}. Equivalent curl: {{equivalent_curl}}',
-            http_status=status,
-            method=method,
-            url=url,
-            reason=reason,
-            response_headers=response_headers,
-            response_body=raw,
-            response_json=decoded,
-            equivalent_curl=equivalent_curl,
+        module_template = template_env.get_template("module.py.j2")
+        code = module_template.render(
+            resource=resource,
+            desc_block="\n".join(desc_lines),
+            option_blocks_block="\n".join(option_blocks),
+            examples_block="\n".join(examples),
+            return_resource_contains_block=return_resource_contains_block,
+            c_method=c_method,
+            c_path=c_path,
+            c_pp=c_pp,
+            c_qp=c_qp,
+            l_method=l_method,
+            l_path=l_path,
+            l_pp=l_pp,
+            l_qp=l_qp,
+            g_method=g_method,
+            g_path=g_path,
+            g_pp=g_pp,
+            g_qp=g_qp,
+            u_method=u_method,
+            u_path=u_path,
+            u_pp=u_pp,
+            u_qp=u_qp,
+            d_method=d_method,
+            d_path=d_path,
+            d_pp=d_pp,
+            d_qp=d_qp,
+            body_fields_literal=body_fields_literal,
+            body_field_map_literal=body_field_map_literal,
+            read_only=str(not mutable),
+            api_name_map_literal=api_name_map_literal,
+            required_delete=repr(required_delete),
+            required_get=repr(required_get),
+            required_create=repr(required_create),
+            required_list_query=repr(required_list_query),
+            name_addressable=str(name_addressable),
+            name_field_repr=repr(name_field),
+            name_api_repr=repr(name_api),
+            id_field_repr=repr(id_field),
+            id_api_repr=repr(id_api),
+            create_is_upsert=str(create_is_upsert),
+            arg_lines_block="\n".join(arg_lines),
         )
-    except error.URLError as exc:
-        reason = str(getattr(exc, 'reason', exc))
-        module.fail_json(
-            msg=f'Connection error on {{method}} {{url}}: {{reason}}',
-            method=method,
-            url=url,
-            reason=reason,
-        )
-
-    if expected_statuses and status not in expected_statuses:
-        decoded = _decode_body(raw)
-        equivalent_curl = _build_curl(method, url, headers, data)
-        module.fail_json(
-            msg=f'Unexpected HTTP {{status}} on {{method}} {{url}}. Response body: {{raw}}. Equivalent curl: {{equivalent_curl}}',
-            http_status=status,
-            expected_statuses=expected_statuses,
-            method=method,
-            url=url,
-            response_headers=response_headers,
-            response_body=raw,
-            response_json=decoded,
-            equivalent_curl=equivalent_curl,
-        )
-
-    return status, _decode_body(raw)
-
-
-def _collect_params(module_params: Dict[str, Any], names: List[str]) -> Dict[str, Any]:
-    out: Dict[str, Any] = {{}}
-    for name in names:
-        value = module_params.get(name)
-        if value is not None:
-            out[API_NAME_MAP.get(name, name)] = value
-    return out
-
-
-def _desired_payload(module_params: Dict[str, Any]) -> Dict[str, Any]:
-    payload: Dict[str, Any] = {{}}
-    for name in BODY_FIELDS:
-        value = module_params.get(name)
-        if value is not None:
-            payload[BODY_FIELD_MAP.get(name, API_NAME_MAP.get(name, name))] = value
-    return payload
-
-
-def _needs_update(current: Any, desired: Dict[str, Any]) -> bool:
-    if not desired:
-        return False
-    if not isinstance(current, dict):
-        return True
-    for key, value in desired.items():
-        if current.get(key) != value:
-            return True
-    return False
-
-
-def _extract_items(listing: Any) -> List[Any]:
-    if isinstance(listing, list):
-        return listing
-    if isinstance(listing, dict):
-        for value in listing.values():
-            if isinstance(value, list):
-                return value
-    return []
-
-
-def _find_by_name(listing: Any, name_api: str, desired_name: str) -> Optional[Dict[str, Any]]:
-    if not name_api or desired_name is None:
-        return None
-    for item in _extract_items(listing):
-        if isinstance(item, dict) and item.get(name_api) == desired_name:
-            return item
-    return None
-
-
-def _has_required(module_params: Dict[str, Any], names: List[str]) -> bool:
-    return all(module_params.get(name) is not None for name in names)
-
-
-def _ensure_required(module: AnsibleModule, module_params: Dict[str, Any], names: List[str], context: str) -> None:
-    missing = [name for name in names if module_params.get(name) is None]
-    if missing:
-        module.fail_json(msg=f'Missing required parameters for {{context}}: {{", ".join(missing)}}')
-
-
-def run_module() -> None:
-    module_args = dict(
-{chr(10).join(arg_lines)}
-    )
-    module = AnsibleModule(argument_spec=module_args, supports_check_mode=not READ_ONLY)
-    params = module.params
-
-    api_url = params['api_url']
-    api_token = params['api_token']
-    state = params.get('state', 'present')
-
-    result: Dict[str, Any] = dict(changed=False, resource={{}}, msg='No changes')
-
-    if READ_ONLY:
-        if GET_PATH and _has_required(params, GET_PATH_PARAMS):
-            get_url = _build_url(api_url, GET_PATH, _collect_params(params, GET_PATH_PARAMS), _collect_params(params, GET_QUERY_PARAMS))
-            current = _request_json(module, GET_METHOD, get_url, api_token, expected_statuses=[200])[1]
-            result['resource'] = current if isinstance(current, dict) else {{'value': current}}
-            result['msg'] = 'Single-resource query completed'
-            module.exit_json(**result)
-
-        if LIST_PATH:
-            list_url = _build_url(api_url, LIST_PATH, _collect_params(params, LIST_PATH_PARAMS), _collect_params(params, LIST_QUERY_PARAMS))
-            listing = _request_json(module, LIST_METHOD, list_url, api_token, expected_statuses=[200])[1]
-            result['resource'] = listing if isinstance(listing, dict) else {{'items': listing}}
-            result['msg'] = 'List query completed'
-            module.exit_json(**result)
-
-        result['msg'] = 'No usable GET endpoint for this module'
-        module.fail_json(**result)
-
-    exists = False
-    current: Any = {{}}
-
-    if NAME_ADDRESSABLE:
-        if not LIST_PATH:
-            module.fail_json(msg='Name-based idempotency requires a list endpoint')
-        _ensure_required(module, params, [NAME_FIELD], 'name-based lookup')
-        _ensure_required(module, params, REQUIRED_LIST_QUERY_PARAMS, 'name-based lookup')
-
-        list_url = _build_url(api_url, LIST_PATH, _collect_params(params, LIST_PATH_PARAMS), _collect_params(params, LIST_QUERY_PARAMS))
-        listing = _request_json(module, LIST_METHOD, list_url, api_token, expected_statuses=[200])[1]
-        matched = _find_by_name(listing, NAME_API, params.get(NAME_FIELD))
-        if matched is not None:
-            exists = True
-            current = matched
-            if ID_FIELD and ID_API and matched.get(ID_API) is not None:
-                params[ID_FIELD] = matched.get(ID_API)
-
-    if GET_PATH and _has_required(params, GET_PATH_PARAMS):
-        get_url = _build_url(api_url, GET_PATH, _collect_params(params, GET_PATH_PARAMS), _collect_params(params, GET_QUERY_PARAMS))
-        status, body = _request_json(module, GET_METHOD, get_url, api_token, expected_statuses=[200], allow_statuses=[404])
-        if status == 200:
-            exists = True
-            current = body
-
-    desired = _desired_payload(params)
-
-    if state == 'absent':
-        if not DELETE_PATH:
-            result['msg'] = 'Resource does not support delete operation'
-            module.fail_json(**result)
-
-        if not exists:
-            result['msg'] = 'Resource is already absent'
-            module.exit_json(**result)
-
-        _ensure_required(module, params, REQUIRED_DELETE_PATH_PARAMS or DELETE_PATH_PARAMS, 'delete')
-
-        if module.check_mode:
-            result['changed'] = True
-            result['msg'] = 'Delete planned (check_mode)'
-            module.exit_json(**result)
-
-        delete_url = _build_url(api_url, DELETE_PATH, _collect_params(params, DELETE_PATH_PARAMS), _collect_params(params, DELETE_QUERY_PARAMS))
-        _request_json(module, DELETE_METHOD, delete_url, api_token, expected_statuses=[200, 202, 204])
-        result['changed'] = True
-        result['resource'] = {{}}
-        result['msg'] = 'Resource deleted'
-        module.exit_json(**result)
-
-    if exists:
-        if UPDATE_PATH:
-            if not _needs_update(current, desired):
-                result['resource'] = current if isinstance(current, dict) else {{'value': current}}
-                result['msg'] = 'Resource already in desired state'
-                module.exit_json(**result)
-
-            if module.check_mode:
-                result['changed'] = True
-                result['resource'] = current if isinstance(current, dict) else {{'value': current}}
-                result['msg'] = 'Update planned (check_mode)'
-                module.exit_json(**result)
-
-            _ensure_required(module, params, UPDATE_PATH_PARAMS, 'update')
-            update_url = _build_url(api_url, UPDATE_PATH, _collect_params(params, UPDATE_PATH_PARAMS), _collect_params(params, UPDATE_QUERY_PARAMS))
-            updated = _request_json(module, UPDATE_METHOD, update_url, api_token, payload=desired, expected_statuses=[200, 201])[1]
-            result['changed'] = True
-            result['resource'] = updated if isinstance(updated, dict) else {{'value': updated}}
-            result['msg'] = 'Resource updated'
-            module.exit_json(**result)
-
-        if CREATE_IS_UPSERT:
-            if not _needs_update(current, desired):
-                result['resource'] = current if isinstance(current, dict) else {{'value': current}}
-                result['msg'] = 'Resource already in desired state'
-                module.exit_json(**result)
-
-            if module.check_mode:
-                result['changed'] = True
-                result['resource'] = current if isinstance(current, dict) else {{'value': current}}
-                result['msg'] = 'Update planned (check_mode)'
-                module.exit_json(**result)
-
-            _ensure_required(module, params, REQUIRED_CREATE_PATH_PARAMS or CREATE_PATH_PARAMS, 'create')
-            create_url = _build_url(api_url, CREATE_PATH, _collect_params(params, CREATE_PATH_PARAMS), _collect_params(params, CREATE_QUERY_PARAMS))
-            updated = _request_json(module, CREATE_METHOD, create_url, api_token, payload=desired, expected_statuses=[200, 201, 202])[1]
-            result['changed'] = True
-            result['resource'] = updated if isinstance(updated, dict) else {{'value': updated}}
-            result['msg'] = 'Resource updated'
-            module.exit_json(**result)
-
-        result['resource'] = current if isinstance(current, dict) else {{'value': current}}
-        result['msg'] = 'Resource exists; no update endpoint available'
-        module.exit_json(**result)
-
-    if not CREATE_PATH:
-        result['msg'] = 'Resource does not exist and there is no create endpoint'
-        module.fail_json(**result)
-
-    _ensure_required(module, params, REQUIRED_CREATE_PATH_PARAMS or CREATE_PATH_PARAMS, 'create')
-
-    if module.check_mode:
-        result['changed'] = True
-        result['msg'] = 'Create planned (check_mode)'
-        module.exit_json(**result)
-
-    create_url = _build_url(api_url, CREATE_PATH, _collect_params(params, CREATE_PATH_PARAMS), _collect_params(params, CREATE_QUERY_PARAMS))
-    created = _request_json(module, CREATE_METHOD, create_url, api_token, payload=desired, expected_statuses=[200, 201, 202])[1]
-    result['changed'] = True
-    result['resource'] = created if isinstance(created, dict) else {{'value': created}}
-    result['msg'] = 'Resource created'
-    module.exit_json(**result)
-
-
-def main() -> None:
-    run_module()
-
-
-if __name__ == '__main__':
-    main()
-'''
-        ).lstrip()
 
         (modules_dir / f"{resource}.py").write_text(code)
         module_rows.append((resource, ", ".join(sorted(data["ops_present"]))))
 
-    readme = [
-        "# zeqk.databasus",
-        "",
-        "Ansible collection generated from `openapi.json` to manage Databasus API resources.",
-        "",
-        "## Requirements",
-        "",
-        "- Ansible Core 2.14+",
-        "- Python 3 on the controller node",
-        "",
-        "## Generated modules",
-        "",
-        "| Module | FQCN | Detected operations |",
-        "|---|---|---|",
-    ]
-    for module_name, ops_text in sorted(module_rows):
-        readme.append(f"| `{module_name}` | `zeqk.databasus.{module_name}` | `{ops_text}` |")
-
-    readme += [
-        "",
-        "## Basic usage",
-        "",
-        "```yaml",
-        "- name: Manage database",
-        "  hosts: localhost",
-        "  tasks:",
-        "    - name: Create database",
-        "      zeqk.databasus.database:",
-        "        state: present",
-        "        api_url: \"https://api.databasus.example.com\"",
-        "        api_token: \"{{ lookup('env', 'DATABASUS_TOKEN') }}\"",
-        "        name: \"production-db\"",
-        "",
-        "    - name: Delete database",
-        "      zeqk.databasus.database:",
-        "        state: absent",
-        "        api_url: \"https://api.databasus.example.com\"",
-        "        api_token: \"{{ lookup('env', 'DATABASUS_TOKEN') }}\"",
-        "        name: \"production-db\"",
-        "```",
-    ]
-    (output_dir / "README.md").write_text("\n".join(readme) + "\n")
+    readme = template_env.get_template("README.md.j2").render(module_rows=sorted(module_rows))
+    (output_dir / "README.md").write_text(readme)
 
     return len(module_rows), module_rows
 
