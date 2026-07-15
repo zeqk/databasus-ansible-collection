@@ -38,6 +38,8 @@ Ansible collection generated from `openapi.json` to manage Databasus API resourc
 
 | `database_copy` | `zeqk.databasus.database_copy` | `create` |
 
+| `database_info` | `zeqk.databasus.database_info` | `get_by_name` |
+
 | `database_restore_token` | `zeqk.databasus.database_restore_token` | `create` |
 
 | `database_test_connection` | `zeqk.databasus.database_test_connection` | `create` |
@@ -60,6 +62,8 @@ Ansible collection generated from `openapi.json` to manage Databasus API resourc
 
 | `notifier_databases_count` | `zeqk.databasus.notifier_databases_count` | `list` |
 
+| `notifier_info` | `zeqk.databasus.notifier_info` | `get_by_name` |
+
 | `notifier_is_using` | `zeqk.databasus.notifier_is_using` | `list` |
 
 | `notifier_test` | `zeqk.databasus.notifier_test` | `create` |
@@ -73,6 +77,8 @@ Ansible collection generated from `openapi.json` to manage Databasus API resourc
 | `storage` | `zeqk.databasus.storage` | `create, delete, get, list` |
 
 | `storage_databases_count` | `zeqk.databasus.storage_databases_count` | `list` |
+
+| `storage_info` | `zeqk.databasus.storage_info` | `get_by_name` |
 
 | `storage_is_using` | `zeqk.databasus.storage_is_using` | `list` |
 
@@ -98,9 +104,13 @@ Ansible collection generated from `openapi.json` to manage Databasus API resourc
 
 | `verification_heartbeat` | `zeqk.databasus.verification_heartbeat` | `create` |
 
+| `verification_info` | `zeqk.databasus.verification_info` | `get_by_name` |
+
 | `workspace` | `zeqk.databasus.workspace` | `create, delete, get, list, update` |
 
 | `workspace_audit_log` | `zeqk.databasus.workspace_audit_log` | `list` |
+
+| `workspace_info` | `zeqk.databasus.workspace_info` | `get_by_name` |
 
 
 ## Basic usage

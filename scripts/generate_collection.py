@@ -654,6 +654,39 @@ def generate_collection(spec_path: Path, output_dir: Path) -> Tuple[int, List[Tu
         (modules_dir / f"{resource}.py").write_text(code)
         module_rows.append((resource, ", ".join(sorted(data["ops_present"]))))
 
+        if name_addressable and name_field and ops.get("list"):
+            info_ordered = ["api_url", "api_token", name_field]
+            for field_name, _field_api_name in match_fields:
+                if field_name in params and field_name not in info_ordered:
+                    info_ordered.append(field_name)
+            for field_name in required_list_query:
+                if field_name in params and field_name not in info_ordered:
+                    info_ordered.append(field_name)
+
+            info_option_blocks = [option_doc_block(k, params[k]) for k in info_ordered if k in params]
+            info_arg_lines = [f"        {p}={arg_spec_line(params[p])}," for p in info_ordered if p in params]
+
+            info_template = template_env.get_template("module_info.py.j2")
+            info_code = info_template.render(
+                resource=resource,
+                module_name=f"{resource}_info",
+                option_blocks_block="\n".join(info_option_blocks),
+                return_resource_contains_block=return_resource_contains_block,
+                l_method=l_method,
+                l_path=l_path,
+                l_pp=l_pp,
+                l_qp=l_qp,
+                api_name_map_literal=api_name_map_literal,
+                required_list_query=repr(required_list_query),
+                name_field_repr=repr(name_field),
+                name_api_repr=repr(name_api),
+                match_fields_literal=match_fields_literal,
+                arg_lines_block="\n".join(info_arg_lines),
+            )
+
+            (modules_dir / f"{resource}_info.py").write_text(info_code)
+            module_rows.append((f"{resource}_info", "get_by_name"))
+
     readme = template_env.get_template("README.md.j2").render(module_rows=sorted(module_rows))
     (output_dir / "README.md").write_text(readme)
 
