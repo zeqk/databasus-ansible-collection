@@ -1,7 +1,7 @@
 [project]
 name = "databasus-ansible-collection"
-version = "0.1.0"
-description = "Add your description here"
+version = "1.2.0"
+description = "Ansible collection to manage Databasus resources via REST API"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [

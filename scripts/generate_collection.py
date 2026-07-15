@@ -17,6 +17,11 @@ from collections import defaultdict
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
+try:
+    import tomllib
+except ModuleNotFoundError:  # pragma: no cover - fallback for Python < 3.11
+    import tomli as tomllib
+
 from jinja2 import Environment, FileSystemLoader
 
 HTTP_METHODS = {"get", "post", "put", "patch", "delete"}
@@ -314,6 +319,94 @@ def create_jinja_env(template_dir: Path) -> Environment:
     )
 
 
+def derive_collection_names(output_dir: Path) -> Tuple[str, str]:
+    parts = output_dir.parts
+    if "ansible_collections" in parts:
+        idx = parts.index("ansible_collections")
+        if idx + 2 < len(parts):
+            return parts[idx + 1], parts[idx + 2]
+    return "zeqk", "databasus"
+
+
+def _project_readme(readme_value: Any) -> Optional[str]:
+    if isinstance(readme_value, str) and readme_value.strip():
+        return Path(readme_value.strip()).name
+    if isinstance(readme_value, dict):
+        file_value = readme_value.get("file")
+        if isinstance(file_value, str) and file_value.strip():
+            return Path(file_value.strip()).name
+    return None
+
+
+def _project_license(license_value: Any) -> Optional[str]:
+    if isinstance(license_value, str) and license_value.strip():
+        return license_value.strip()
+    if isinstance(license_value, dict):
+        for key in ("text", "file"):
+            raw_value = license_value.get(key)
+            if isinstance(raw_value, str) and raw_value.strip():
+                return raw_value.strip()
+    return None
+
+
+def load_galaxy_metadata(pyproject_path: Path, output_dir: Path) -> Dict[str, Any]:
+    namespace, name = derive_collection_names(output_dir)
+    metadata: Dict[str, Any] = {
+        "namespace": namespace,
+        "name": name,
+        "version": "1.0.0",
+        "readme": "README.md",
+        "description": "Ansible collection to manage Databasus resources via REST API.",
+        "license": ["MIT"],
+        "authors": ["zeqk"],
+        "tags": ["database", "api", "crud"],
+        "dependencies": {},
+    }
+
+    if not pyproject_path.exists():
+        return metadata
+
+    pyproject = tomllib.loads(pyproject_path.read_text())
+    project = pyproject.get("project", {}) if isinstance(pyproject, dict) else {}
+    if not isinstance(project, dict):
+        return metadata
+
+    version = project.get("version")
+    if isinstance(version, str) and version.strip():
+        metadata["version"] = version.strip()
+
+    description = project.get("description")
+    if isinstance(description, str) and description.strip():
+        metadata["description"] = description.strip().rstrip(".") + "."
+
+    readme = _project_readme(project.get("readme"))
+    if readme:
+        metadata["readme"] = readme
+
+    license_name = _project_license(project.get("license"))
+    if license_name:
+        metadata["license"] = [license_name]
+
+    authors = project.get("authors")
+    if isinstance(authors, list):
+        parsed_authors: List[str] = []
+        for author in authors:
+            if isinstance(author, dict):
+                author_name = author.get("name")
+                if isinstance(author_name, str) and author_name.strip():
+                    parsed_authors.append(author_name.strip())
+        if parsed_authors:
+            metadata["authors"] = parsed_authors
+
+    keywords = project.get("keywords")
+    if isinstance(keywords, list):
+        parsed_keywords = [k.strip() for k in keywords if isinstance(k, str) and k.strip()]
+        if parsed_keywords:
+            metadata["tags"] = parsed_keywords
+
+    return metadata
+
+
 def build_resources(spec: Dict[str, Any]) -> Dict[str, Dict[str, Any]]:
     paths = spec.get("paths", {})
     definitions = spec.get("definitions", {})
@@ -440,13 +533,15 @@ def generate_collection(spec_path: Path, output_dir: Path) -> Tuple[int, List[Tu
     resources = build_resources(spec)
     template_dir = Path(__file__).resolve().parent / "templates"
     template_env = create_jinja_env(template_dir)
+    pyproject_path = Path(__file__).resolve().parent.parent / "pyproject.toml"
+    galaxy_metadata = load_galaxy_metadata(pyproject_path, output_dir)
 
     modules_dir = output_dir / "plugins" / "modules"
     roles_dir = output_dir / "roles"
     modules_dir.mkdir(parents=True, exist_ok=True)
     roles_dir.mkdir(parents=True, exist_ok=True)
 
-    (output_dir / "galaxy.yml").write_text(template_env.get_template("galaxy.yml.j2").render())
+    (output_dir / "galaxy.yml").write_text(template_env.get_template("galaxy.yml.j2").render(**galaxy_metadata))
 
     (roles_dir / ".gitkeep").write_text("")
 
