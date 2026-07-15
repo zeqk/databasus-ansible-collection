@@ -94,6 +94,8 @@ Ansible collection generated from `openapi.json` to manage Databasus API resourc
 
 | `user_deactivate` | `zeqk.databasus.user_deactivate` | `create` |
 
+| `user_signin` | `zeqk.databasus.user_signin` | `signin` |
+
 | `verification` | `zeqk.databasus.verification` | `create, delete, get, list` |
 
 | `verification_cancel` | `zeqk.databasus.verification_cancel` | `create` |

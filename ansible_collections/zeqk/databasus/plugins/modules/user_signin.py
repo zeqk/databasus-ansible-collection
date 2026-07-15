@@ -1,0 +1,241 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
+# Copyright: (c) 2026, zeqk (@zeqk)
+# GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
+
+DOCUMENTATION = r"""
+---
+module: user_signin
+short_description: Authenticate a user and obtain a Databasus token.
+description:
+  - Performs user login against the Databasus API.
+  - Uses a public endpoint and does not require an existing bearer token.
+  - This module is read-only and never changes remote state.
+options:
+  api_url:
+    description:
+      - Base API URL.
+    type: str
+    required: true
+  cloudflare_turnstile_token:
+    description:
+      - Body field cloudflareTurnstileToken.
+    type: str
+  email:
+    description:
+      - Body field email.
+    type: str
+    required: true
+  password:
+    description:
+      - Body field password.
+    type: str
+    required: true
+author:
+    - zeqk (@zeqk)
+"""
+
+EXAMPLES = r"""
+- name: Sign in and retrieve JWT token
+  zeqk.databasus.user_signin:
+    api_url: https://api.example.com
+    email: user@example.com
+    password: "{{ databasus_password }}"
+"""
+
+RETURN = r"""
+resource:
+    description: Response object as returned by the API.
+    type: dict
+    returned: always
+    contains:
+        email:
+            description:
+              - "Field email."
+            type: str
+            returned: success
+        token:
+            description:
+              - "Field token."
+            type: str
+            returned: success
+        user_id:
+            description:
+              - "Field userId."
+            type: str
+            returned: success
+token:
+    description: JWT token returned by the signin endpoint.
+    type: str
+    returned: when available
+changed:
+    description: Indicates whether any change was made.
+    type: bool
+    returned: always
+msg:
+    description: Descriptive operation message.
+    type: str
+    returned: always
+"""
+
+
+import json
+import shlex
+from typing import Any, Dict, List, Optional, Tuple
+from urllib import error
+
+from ansible.module_utils.basic import AnsibleModule
+from ansible.module_utils.urls import open_url
+
+
+SIGNIN_METHOD = 'POST'
+SIGNIN_PATH = '/users/signin'
+
+
+def _build_url(api_url: str, path: str) -> str:
+    return api_url.rstrip('/') + path
+
+
+def _decode_body(raw: str) -> Any:
+    if not raw:
+        return {}
+    try:
+        return json.loads(raw)
+    except json.JSONDecodeError:
+        return {'raw': raw}
+
+
+def _redact_payload(payload: Dict[str, Any]) -> Dict[str, Any]:
+    redacted: Dict[str, Any] = {}
+    for key, value in payload.items():
+        key_lower = key.lower()
+        if any(secret in key_lower for secret in ('token', 'secret', 'password', 'apikey', 'api_key', 'key')):
+            redacted[key] = '<REDACTED>'
+        else:
+            redacted[key] = value
+    return redacted
+
+
+def _build_curl(method: str, url: str, headers: Dict[str, Any], payload: Optional[Dict[str, Any]]) -> str:
+    parts = ['curl', '-sS', '-X', method.upper()]
+    for key, value in headers.items():
+        parts += ['-H', shlex.quote(f'{key}: {value}')]
+    if payload is not None:
+        parts += ['--data', shlex.quote(json.dumps(_redact_payload(payload)))]
+    parts.append(shlex.quote(url))
+    return ' '.join(parts)
+
+
+def _request_json(
+    module: AnsibleModule,
+    method: str,
+    url: str,
+    payload: Dict[str, Any],
+    expected_statuses: Optional[List[int]] = None,
+) -> Tuple[int, Any]:
+    headers = {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+    }
+    data = json.dumps(payload).encode('utf-8')
+    response_headers: Dict[str, Any] = {}
+
+    try:
+        with open_url(
+            url,
+            data=data,
+            headers=headers,
+            method=method,
+            timeout=30,
+        ) as response:
+            status = int(response.getcode())
+            response_headers = dict(getattr(response, 'headers', {}) or {})
+            raw = response.read().decode('utf-8')
+    except error.HTTPError as exc:
+        status = int(exc.code)
+        raw = exc.read().decode('utf-8', errors='replace')
+        decoded = _decode_body(raw)
+        reason = str(getattr(exc, 'reason', '') or '')
+        response_headers = dict(getattr(exc, 'headers', {}) or {})
+        equivalent_curl = _build_curl(method, url, headers, payload)
+        module.fail_json(
+            msg=f'HTTP {status} on {method} {url}. Reason: {reason}. Response body: {raw}. Equivalent curl: {equivalent_curl}',
+            http_status=status,
+            method=method,
+            url=url,
+            reason=reason,
+            response_headers=response_headers,
+            response_body=raw,
+            response_json=decoded,
+            equivalent_curl=equivalent_curl,
+        )
+    except error.URLError as exc:
+        reason = str(getattr(exc, 'reason', exc))
+        module.fail_json(
+            msg=f'Connection error on {method} {url}: {reason}',
+            method=method,
+            url=url,
+            reason=reason,
+        )
+
+    if expected_statuses and status not in expected_statuses:
+        decoded = _decode_body(raw)
+        equivalent_curl = _build_curl(method, url, headers, payload)
+        module.fail_json(
+            msg=f'Unexpected HTTP {status} on {method} {url}. Response body: {raw}. Equivalent curl: {equivalent_curl}',
+            http_status=status,
+            expected_statuses=expected_statuses,
+            method=method,
+            url=url,
+            response_headers=response_headers,
+            response_body=raw,
+            response_json=decoded,
+            equivalent_curl=equivalent_curl,
+        )
+
+    return status, _decode_body(raw)
+
+
+def run_module() -> None:
+    module_args = dict(
+        api_url=dict(type='str', required=True),
+        cloudflare_turnstile_token=dict(type='str', no_log=True),
+        email=dict(type='str', required=True),
+        password=dict(type='str', required=True, no_log=True),
+    )
+    module = AnsibleModule(argument_spec=module_args, supports_check_mode=True)
+    params = module.params
+
+    result: Dict[str, Any] = dict(changed=False, resource={}, msg='No changes')
+
+    if module.check_mode:
+        result['msg'] = 'Signin skipped (check_mode)'
+        module.exit_json(**result)
+
+    payload: Dict[str, Any] = {
+        'email': params['email'],
+        'password': params['password'],
+    }
+    if params.get('cloudflare_turnstile_token') is not None:
+        payload['cloudflareTurnstileToken'] = params['cloudflare_turnstile_token']
+
+    signin_url = _build_url(params['api_url'], SIGNIN_PATH)
+    _status, body = _request_json(module, SIGNIN_METHOD, signin_url, payload, expected_statuses=[200])
+
+    resource = body if isinstance(body, dict) else {'value': body}
+    result['resource'] = resource
+    result['msg'] = 'User authenticated successfully'
+
+    if isinstance(resource, dict) and resource.get('token') is not None:
+        result['token'] = resource.get('token')
+
+    module.exit_json(**result)
+
+
+def main() -> None:
+    run_module()
+
+
+if __name__ == '__main__':
+    main()

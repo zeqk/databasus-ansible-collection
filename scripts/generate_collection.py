@@ -25,6 +25,9 @@ except ModuleNotFoundError:  # pragma: no cover - fallback for Python < 3.11
 from jinja2 import Environment, FileSystemLoader
 
 HTTP_METHODS = {"get", "post", "put", "patch", "delete"}
+PUBLIC_ACTION_MODULES = {
+    ("post", "/users/signin"): "user_signin",
+}
 
 
 def is_param(token: str) -> bool:
@@ -529,6 +532,7 @@ def build_resources(spec: Dict[str, Any]) -> Dict[str, Dict[str, Any]]:
 
 def generate_collection(spec_path: Path, output_dir: Path) -> Tuple[int, List[Tuple[str, str]]]:
     spec = json.loads(spec_path.read_text())
+    paths = spec.get("paths", {})
     definitions = spec.get("definitions", {})
     resources = build_resources(spec)
     template_dir = Path(__file__).resolve().parent / "templates"
@@ -781,6 +785,55 @@ def generate_collection(spec_path: Path, output_dir: Path) -> Tuple[int, List[Tu
 
             (modules_dir / f"{resource}_info.py").write_text(info_code)
             module_rows.append((f"{resource}_info", "get_by_name"))
+
+    for (method, path), module_name in PUBLIC_ACTION_MODULES.items():
+        path_item = paths.get(path) if isinstance(paths, dict) else None
+        op = path_item.get(method) if isinstance(path_item, dict) else None
+        if not isinstance(op, dict):
+            continue
+
+        params: Dict[str, Dict[str, Any]] = {
+            "api_url": {
+                "api_name": "api_url",
+                "description": "Base API URL.",
+                "type": "str",
+                "required": True,
+                "source": "base",
+            }
+        }
+
+        for p in op.get("parameters", []):
+            if p.get("in") != "body":
+                continue
+            params.update(extract_body_fields(p.get("schema", {}), definitions))
+
+        ordered = ["api_url"] + sorted([k for k in params if k != "api_url"])
+        option_blocks = [option_doc_block(k, params[k]) for k in ordered if k in params]
+        arg_lines = [f"        {p}={arg_spec_line(params[p])}," for p in ordered if p in params]
+
+        response_fields: Dict[str, Dict[str, Any]] = {}
+        response_schema = success_response_schema(op)
+        if response_schema:
+            response_fields = schema_fields(response_schema, definitions)
+
+        return_resource_contains_block = ""
+        if response_fields:
+            return_resource_contains_block = "\n    contains:\n" + "\n".join(
+                render_return_fields(response_fields, indent=8)
+            )
+
+        signin_template = template_env.get_template("user_signin.py.j2")
+        signin_code = signin_template.render(
+            module_name=module_name,
+            option_blocks_block="\n".join(option_blocks),
+            arg_lines_block="\n".join(arg_lines),
+            return_resource_contains_block=return_resource_contains_block,
+            signin_method=repr(method.upper()),
+            signin_path=repr(path),
+        )
+
+        (modules_dir / f"{module_name}.py").write_text(signin_code)
+        module_rows.append((module_name, "signin"))
 
     readme = template_env.get_template("README.md.j2").render(module_rows=sorted(module_rows))
     (output_dir / "README.md").write_text(readme)
