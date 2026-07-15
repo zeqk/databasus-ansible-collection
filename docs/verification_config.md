@@ -33,3 +33,13 @@ operationId references are included in generated operation constants\.
         is_scheduled_verification_enabled: null
 
 ```
+
+
+## Return Values
+
+| return value | comments |
+|---|---|
+| resource | always, dict. Resource object as returned by the API\. |
+| changed | always, bool. Indicates whether any change was made\. |
+| msg | always, str. Descriptive operation message\. |
+

@@ -28,3 +28,13 @@ Allows managing membership\_transfer\_ownership resources using the Databasus AP
         new_owner_email: null
 
 ```
+
+
+## Return Values
+
+| return value | comments |
+|---|---|
+| resource | always, dict. Resource object as returned by the API\. |
+| changed | always, bool. Indicates whether any change was made\. |
+| msg | always, str. Descriptive operation message\. |
+
