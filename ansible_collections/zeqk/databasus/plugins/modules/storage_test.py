@@ -62,6 +62,7 @@ msg:
 
 
 import json
+import shlex
 from typing import Any, Dict, List, Optional, Tuple
 from urllib import error, parse
 
@@ -122,6 +123,19 @@ def _decode_body(raw: str) -> Any:
         return {'raw': raw}
 
 
+def _build_curl(method: str, url: str, headers: Dict[str, Any], data: Optional[bytes]) -> str:
+    parts = ['curl', '-sS', '-X', method.upper()]
+    for key, value in headers.items():
+        header_value = str(value)
+        if key.lower() == 'authorization':
+            header_value = 'Bearer <REDACTED>'
+        parts += ['-H', shlex.quote(f'{key}: {header_value}')]
+    if data is not None:
+        parts += ['--data', shlex.quote(data.decode('utf-8', errors='replace'))]
+    parts.append(shlex.quote(url))
+    return ' '.join(parts)
+
+
 def _request_json(
     module: AnsibleModule,
     method: str,
@@ -136,6 +150,7 @@ def _request_json(
         'Authorization': f'Bearer {token}',
     }
     data = None
+    response_headers: Dict[str, Any] = {}
     if payload is not None:
         headers['Content-Type'] = 'application/json'
         data = json.dumps(payload).encode('utf-8')
@@ -149,18 +164,51 @@ def _request_json(
             timeout=30,
         ) as response:
             status = int(response.getcode())
+            response_headers = dict(getattr(response, 'headers', {}) or {})
             raw = response.read().decode('utf-8')
     except error.HTTPError as exc:
         status = int(exc.code)
         raw = exc.read().decode('utf-8', errors='replace')
+        decoded = _decode_body(raw)
+        reason = str(getattr(exc, 'reason', '') or '')
+        response_headers = dict(getattr(exc, 'headers', {}) or {})
         if allow_statuses and status in allow_statuses:
-            return status, _decode_body(raw)
-        module.fail_json(msg=f'HTTP {status} on {method} {url}: {raw}')
+            return status, decoded
+        equivalent_curl = _build_curl(method, url, headers, data)
+        module.fail_json(
+            msg=f'HTTP {status} on {method} {url}. Reason: {reason}. Response body: {raw}. Equivalent curl: {equivalent_curl}',
+            http_status=status,
+            method=method,
+            url=url,
+            reason=reason,
+            response_headers=response_headers,
+            response_body=raw,
+            response_json=decoded,
+            equivalent_curl=equivalent_curl,
+        )
     except error.URLError as exc:
-        module.fail_json(msg=f'Connection error on {method} {url}: {exc}')
+        reason = str(getattr(exc, 'reason', exc))
+        module.fail_json(
+            msg=f'Connection error on {method} {url}: {reason}',
+            method=method,
+            url=url,
+            reason=reason,
+        )
 
     if expected_statuses and status not in expected_statuses:
-        module.fail_json(msg=f'Unexpected HTTP {status} on {method} {url}: {raw}')
+        decoded = _decode_body(raw)
+        equivalent_curl = _build_curl(method, url, headers, data)
+        module.fail_json(
+            msg=f'Unexpected HTTP {status} on {method} {url}. Response body: {raw}. Equivalent curl: {equivalent_curl}',
+            http_status=status,
+            expected_statuses=expected_statuses,
+            method=method,
+            url=url,
+            response_headers=response_headers,
+            response_body=raw,
+            response_json=decoded,
+            equivalent_curl=equivalent_curl,
+        )
 
     return status, _decode_body(raw)
 
