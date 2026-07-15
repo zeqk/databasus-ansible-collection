@@ -35,6 +35,11 @@ Allows managing auth resources using the Databasus API\.
 | return value | comments |
 |---|---|
 | resource | always, dict. Resource object as returned by the API\. |
+| resource.email | success, str. Field email\. |
+| resource.is_new_user | success, bool. Field isNewUser\. |
+| resource.token | success, str. Field token\. |
+| resource.user_id | success, str. Field userId\. |
+
 | changed | always, bool. Indicates whether any change was made\. |
 | msg | always, str. Descriptive operation message\. |
 

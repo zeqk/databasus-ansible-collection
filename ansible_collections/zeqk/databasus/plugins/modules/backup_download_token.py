@@ -50,6 +50,22 @@ resource:
     description: Resource object as returned by the API.
     type: dict
     returned: always
+    contains:
+        backup_id:
+            description:
+              - "Field backupId."
+            type: str
+            returned: success
+        filename:
+            description:
+              - "Field filename."
+            type: str
+            returned: success
+        token:
+            description:
+              - "Field token."
+            type: str
+            returned: success
 changed:
     description: Indicates whether any change was made.
     type: bool

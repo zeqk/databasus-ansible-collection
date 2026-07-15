@@ -55,6 +55,17 @@ resource:
     description: Resource object as returned by the API.
     type: dict
     returned: always
+    contains:
+        token:
+            description:
+              - "Field token."
+            type: str
+            returned: success
+        url:
+            description:
+              - "Field url."
+            type: str
+            returned: success
 changed:
     description: Indicates whether any change was made.
     type: bool

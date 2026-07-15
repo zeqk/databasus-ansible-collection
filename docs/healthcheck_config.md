@@ -41,6 +41,13 @@ operationId references are included in generated operation constants\.
 | return value | comments |
 |---|---|
 | resource | always, dict. Resource object as returned by the API\. |
+| resource.attempts_before_concidered_as_down | success, int. Field attemptsBeforeConcideredAsDown\. |
+| resource.database_id | success, str. Field databaseId\. |
+| resource.interval_minutes | success, int. Field intervalMinutes\. |
+| resource.is_healthcheck_enabled | success, bool. Field isHealthcheckEnabled\. |
+| resource.is_sent_notification_when_unavailable | success, bool. Field isSentNotificationWhenUnavailable\. |
+| resource.store_attempts_days | success, int. Field storeAttemptsDays\. |
+
 | changed | always, bool. Indicates whether any change was made\. |
 | msg | always, str. Descriptive operation message\. |
 

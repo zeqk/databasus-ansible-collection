@@ -40,6 +40,20 @@ This module is read\-only and does not support state\=absent\.
 | return value | comments |
 |---|---|
 | resource | always, dict. Resource object as returned by the API\. |
+| resource.completed_at | success, str. Field completedAt\. |
+| resource.created_at | success, str. Field createdAt\. |
+| resource.fail_message | success, str. FailMessage is the human\-readable failure detail\, ERROR / CHAIN\_BROKEN rows only\. |
+| resource.id | success, str. Field id\. |
+| resource.parent_incremental_backup_id | success, str. Field parentIncrementalBackupId\. |
+| resource.root_full_backup_id | success, str. Chain links\, incremental rows only\. |
+| resource.size_mb | success, float. Field sizeMb\. |
+| resource.start_lsn | success, str. Field startLsn\. |
+| resource.status | success, str. Field status\. |
+| resource.stop_lsn | success, str. Field stopLsn\. |
+| resource.timeline_id | success, int. Field timelineId\. |
+| resource.type | success, str. Field type\. |
+| resource.wal_filename | success, str. WalFilename is the bare PG segment name\, WAL rows only\. |
+
 | changed | always, bool. Indicates whether any change was made\. |
 | msg | always, str. Descriptive operation message\. |
 

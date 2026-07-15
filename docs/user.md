@@ -43,6 +43,13 @@ operationId references are included in generated operation constants\.
 | return value | comments |
 |---|---|
 | resource | always, dict. Resource object as returned by the API\. |
+| resource.created_at | success, str. Field createdAt\. |
+| resource.email | success, str. Field email\. |
+| resource.id | success, str. Field id\. |
+| resource.is_active | success, bool. Field isActive\. |
+| resource.name | success, str. Field name\. |
+| resource.role | success, str. Field role\. |
+
 | changed | always, bool. Indicates whether any change was made\. |
 | msg | always, str. Descriptive operation message\. |
 

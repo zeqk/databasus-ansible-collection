@@ -69,6 +69,69 @@ resource:
     description: Resource object as returned by the API.
     type: dict
     returned: always
+    contains:
+        created_at:
+            description:
+              - "Field createdAt."
+            type: str
+            returned: success
+        database_id:
+            description:
+              - "Field databaseId."
+            type: str
+            returned: success
+        is_scheduled_verification_enabled:
+            description:
+              - "Field isScheduledVerificationEnabled."
+            type: bool
+            returned: success
+        schedule_type:
+            description:
+              - "Field scheduleType."
+            type: str
+            returned: success
+        send_notifications_on:
+            description:
+              - "Field sendNotificationsOn."
+            type: list
+            elements: str
+            returned: success
+        updated_at:
+            description:
+              - "Field updatedAt."
+            type: str
+            returned: success
+        verification_interval:
+            description:
+              - "Field verificationInterval."
+            type: dict
+            returned: success
+            contains:
+                cron_expression:
+                    description:
+                      - "Field cronExpression."
+                    type: str
+                    returned: success
+                day_of_month:
+                    description:
+                      - "Field dayOfMonth."
+                    type: int
+                    returned: success
+                time_of_day:
+                    description:
+                      - "Field timeOfDay."
+                    type: str
+                    returned: success
+                type:
+                    description:
+                      - "Field type."
+                    type: str
+                    returned: success
+                weekday:
+                    description:
+                      - "Field weekday."
+                    type: int
+                    returned: success
 changed:
     description: Indicates whether any change was made.
     type: bool

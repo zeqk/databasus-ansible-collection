@@ -72,6 +72,12 @@ resource:
     description: Resource object as returned by the API.
     type: dict
     returned: always
+    contains:
+        status:
+            description:
+              - "Field status."
+            type: str
+            returned: success
 changed:
     description: Indicates whether any change was made.
     type: bool

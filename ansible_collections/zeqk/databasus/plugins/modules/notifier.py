@@ -98,6 +98,210 @@ resource:
     description: Resource object as returned by the API.
     type: dict
     returned: always
+    contains:
+        discord_notifier:
+            description:
+              - "Field discordNotifier."
+            type: dict
+            returned: success
+            contains:
+                channel_webhook_url:
+                    description:
+                      - "Field channelWebhookUrl."
+                    type: str
+                    returned: success
+                notifier_id:
+                    description:
+                      - "Field notifierId."
+                    type: str
+                    returned: success
+        email_notifier:
+            description:
+              - "Field emailNotifier."
+            type: dict
+            returned: success
+            contains:
+                from:
+                    description:
+                      - "Field from."
+                    type: str
+                    returned: success
+                is_insecure_skip_verify:
+                    description:
+                      - "Field isInsecureSkipVerify."
+                    type: bool
+                    returned: success
+                notifier_id:
+                    description:
+                      - "Field notifierId."
+                    type: str
+                    returned: success
+                smtp_host:
+                    description:
+                      - "Field smtpHost."
+                    type: str
+                    returned: success
+                smtp_password:
+                    description:
+                      - "Field smtpPassword."
+                    type: str
+                    returned: success
+                smtp_port:
+                    description:
+                      - "Field smtpPort."
+                    type: int
+                    returned: success
+                smtp_user:
+                    description:
+                      - "Field smtpUser."
+                    type: str
+                    returned: success
+                target_email:
+                    description:
+                      - "Field targetEmail."
+                    type: str
+                    returned: success
+        id:
+            description:
+              - "Field id."
+            type: str
+            returned: success
+        last_send_error:
+            description:
+              - "Field lastSendError."
+            type: str
+            returned: success
+        name:
+            description:
+              - "Field name."
+            type: str
+            returned: success
+        notifier_type:
+            description:
+              - "Field notifierType."
+            type: str
+            returned: success
+        slack_notifier:
+            description:
+              - "Field slackNotifier."
+            type: dict
+            returned: success
+            contains:
+                bot_token:
+                    description:
+                      - "Field botToken."
+                    type: str
+                    returned: success
+                notifier_id:
+                    description:
+                      - "Field notifierId."
+                    type: str
+                    returned: success
+                target_chat_id:
+                    description:
+                      - "Field targetChatId."
+                    type: str
+                    returned: success
+        teams_notifier:
+            description:
+              - "Field teamsNotifier."
+            type: dict
+            returned: success
+            contains:
+                notifier_id:
+                    description:
+                      - "Field notifierId."
+                    type: str
+                    returned: success
+                power_automate_url:
+                    description:
+                      - "Field powerAutomateUrl."
+                    type: str
+                    returned: success
+        telegram_notifier:
+            description:
+              - "specific notifier"
+            type: dict
+            returned: success
+            contains:
+                bot_token:
+                    description:
+                      - "Field botToken."
+                    type: str
+                    returned: success
+                is_proxy_enabled:
+                    description:
+                      - "Field isProxyEnabled."
+                    type: bool
+                    returned: success
+                notifier_id:
+                    description:
+                      - "Field notifierId."
+                    type: str
+                    returned: success
+                proxy_url:
+                    description:
+                      - "Field proxyUrl."
+                    type: str
+                    returned: success
+                target_chat_id:
+                    description:
+                      - "Field targetChatId."
+                    type: str
+                    returned: success
+                thread_id:
+                    description:
+                      - "Field threadId."
+                    type: int
+                    returned: success
+        webhook_notifier:
+            description:
+              - "Field webhookNotifier."
+            type: dict
+            returned: success
+            contains:
+                body_template:
+                    description:
+                      - "Field bodyTemplate."
+                    type: str
+                    returned: success
+                headers:
+                    description:
+                      - "Field headers."
+                    type: list
+                    elements: dict
+                    returned: success
+                    contains:
+                        key:
+                            description:
+                              - "Field key."
+                            type: str
+                            returned: success
+                        value:
+                            description:
+                              - "Field value."
+                            type: str
+                            returned: success
+                notifier_id:
+                    description:
+                      - "Field notifierId."
+                    type: str
+                    returned: success
+                webhook_method:
+                    description:
+                      - "Field webhookMethod."
+                    type: str
+                    returned: success
+                webhook_url:
+                    description:
+                      - "Field webhookUrl."
+                    type: str
+                    returned: success
+        workspace_id:
+            description:
+              - "Field workspaceId."
+            type: str
+            returned: success
 changed:
     description: Indicates whether any change was made.
     type: bool

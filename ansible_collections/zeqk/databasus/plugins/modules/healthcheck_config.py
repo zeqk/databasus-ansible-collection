@@ -72,6 +72,37 @@ resource:
     description: Resource object as returned by the API.
     type: dict
     returned: always
+    contains:
+        attempts_before_concidered_as_down:
+            description:
+              - "Field attemptsBeforeConcideredAsDown."
+            type: int
+            returned: success
+        database_id:
+            description:
+              - "Field databaseId."
+            type: str
+            returned: success
+        interval_minutes:
+            description:
+              - "Field intervalMinutes."
+            type: int
+            returned: success
+        is_healthcheck_enabled:
+            description:
+              - "Field isHealthcheckEnabled."
+            type: bool
+            returned: success
+        is_sent_notification_when_unavailable:
+            description:
+              - "Field isSentNotificationWhenUnavailable."
+            type: bool
+            returned: success
+        store_attempts_days:
+            description:
+              - "Field storeAttemptsDays."
+            type: int
+            returned: success
 changed:
     description: Indicates whether any change was made.
     type: bool

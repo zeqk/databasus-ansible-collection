@@ -32,6 +32,8 @@ This module is read\-only and does not support state\=absent\.
 | return value | comments |
 |---|---|
 | resource | always, dict. Resource object as returned by the API\. |
+| resource.status | success, str. Field status\. |
+
 | changed | always, bool. Indicates whether any change was made\. |
 | msg | always, str. Descriptive operation message\. |
 

@@ -81,6 +81,37 @@ resource:
     description: Resource object as returned by the API.
     type: dict
     returned: always
+    contains:
+        created_at:
+            description:
+              - "Field createdAt."
+            type: str
+            returned: success
+        email:
+            description:
+              - "Field email."
+            type: str
+            returned: success
+        id:
+            description:
+              - "Field id."
+            type: str
+            returned: success
+        is_active:
+            description:
+              - "Field isActive."
+            type: bool
+            returned: success
+        name:
+            description:
+              - "Field name."
+            type: str
+            returned: success
+        role:
+            description:
+              - "Field role."
+            type: str
+            returned: success
 changed:
     description: Indicates whether any change was made.
     type: bool

@@ -40,6 +40,20 @@ operationId references are included in generated operation constants\.
 | return value | comments |
 |---|---|
 | resource | always, dict. Resource object as returned by the API\. |
+| resource.created_at | success, str. Field createdAt\. |
+| resource.database_id | success, str. Field databaseId\. |
+| resource.is_scheduled_verification_enabled | success, bool. Field isScheduledVerificationEnabled\. |
+| resource.schedule_type | success, str. Field scheduleType\. |
+| resource.send_notifications_on | success, list. Field sendNotificationsOn\. |
+| resource.updated_at | success, str. Field updatedAt\. |
+| resource.verification_interval | success, dict. Field verificationInterval\. |
+| resource.verification_interval.cron_expression | success, str. Field cronExpression\. |
+| resource.verification_interval.day_of_month | success, int. Field dayOfMonth\. |
+| resource.verification_interval.time_of_day | success, str. Field timeOfDay\. |
+| resource.verification_interval.type | success, str. Field type\. |
+| resource.verification_interval.weekday | success, int. Field weekday\. |
+
+
 | changed | always, bool. Indicates whether any change was made\. |
 | msg | always, str. Descriptive operation message\. |
 

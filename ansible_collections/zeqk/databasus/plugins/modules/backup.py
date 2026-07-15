@@ -82,6 +82,80 @@ resource:
     description: Resource object as returned by the API.
     type: dict
     returned: always
+    contains:
+        backup_duration_ms:
+            description:
+              - "Field backupDurationMs."
+            type: int
+            returned: success
+        backup_raw_db_size_mb:
+            description:
+              - "Field backupRawDbSizeMb."
+            type: float
+            returned: success
+        backup_size_mb:
+            description:
+              - "Field backupSizeMb."
+            type: float
+            returned: success
+        created_at:
+            description:
+              - "Field createdAt."
+            type: str
+            returned: success
+        database_id:
+            description:
+              - "Field databaseId."
+            type: str
+            returned: success
+        encryption:
+            description:
+              - "Field encryption."
+            type: str
+            returned: success
+        fail_message:
+            description:
+              - "Field failMessage."
+            type: str
+            returned: success
+        file_name:
+            description:
+              - "Field fileName."
+            type: str
+            returned: success
+        id:
+            description:
+              - "Field id."
+            type: str
+            returned: success
+        is_skip_retry:
+            description:
+              - "Field isSkipRetry."
+            type: bool
+            returned: success
+        restore_verification_status:
+            description:
+              - "Field restoreVerificationStatus."
+            type: str
+            returned: success
+        status:
+            description:
+              - "Field status."
+            type: str
+            returned: success
+        storage_id:
+            description:
+              - "Field storageId."
+            type: str
+            returned: success
+        timescaledb_version:
+            description:
+              - "TimescaledbVersion is the source's timescaledb extension version captured at backup time, or \"\" when"
+              - "the source has no timescaledb. Non-empty marks the backup as needing the TimescaleDB restore"
+              - "procedure, and the verification agent uses the exact version to pull a matching engine image"
+              - "(pg_restore cannot cross extension versions)."
+            type: str
+            returned: success
 changed:
     description: Indicates whether any change was made.
     type: bool

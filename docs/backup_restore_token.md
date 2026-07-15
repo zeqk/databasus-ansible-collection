@@ -33,6 +33,9 @@ Allows managing backup\_restore\_token resources using the Databasus API\.
 | return value | comments |
 |---|---|
 | resource | always, dict. Resource object as returned by the API\. |
+| resource.token | success, str. Field token\. |
+| resource.url | success, str. Field url\. |
+
 | changed | always, bool. Indicates whether any change was made\. |
 | msg | always, str. Descriptive operation message\. |
 

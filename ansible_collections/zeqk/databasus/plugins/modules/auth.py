@@ -57,6 +57,27 @@ resource:
     description: Resource object as returned by the API.
     type: dict
     returned: always
+    contains:
+        email:
+            description:
+              - "Field email."
+            type: str
+            returned: success
+        is_new_user:
+            description:
+              - "Field isNewUser."
+            type: bool
+            returned: success
+        token:
+            description:
+              - "Field token."
+            type: str
+            returned: success
+        user_id:
+            description:
+              - "Field userId."
+            type: str
+            returned: success
 changed:
     description: Indicates whether any change was made.
     type: bool

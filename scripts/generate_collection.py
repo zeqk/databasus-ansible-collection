@@ -147,6 +147,110 @@ def extract_body_fields(schema: Dict[str, Any], definitions: Dict[str, Any]) -> 
     return out
 
 
+def success_response_schema(op_spec: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+    responses = (op_spec or {}).get("responses", {}) or {}
+    for code in ("200", "201"):
+        response = responses.get(code)
+        if isinstance(response, dict) and isinstance(response.get("schema"), dict):
+            return response["schema"]
+    return None
+
+
+def schema_fields(schema: Any, definitions: Dict[str, Any], depth: int = 0) -> Dict[str, Dict[str, Any]]:
+    schema = resolve_schema(schema, definitions)
+    if not isinstance(schema, dict):
+        return {}
+
+    props = schema.get("properties") or {}
+    out: Dict[str, Dict[str, Any]] = {}
+    for api_name, raw_field in props.items():
+        field_schema = resolve_schema(raw_field, definitions)
+        field_name = snake(api_name)
+        field_type = json_type_to_ansible(field_schema.get("type", "string"))
+        field_meta: Dict[str, Any] = {
+            "description": sanitize_text(
+                (raw_field.get("description") if isinstance(raw_field, dict) else None)
+                or field_schema.get("description")
+                or f"Field {api_name}."
+            ),
+            "type": field_type,
+        }
+
+        if field_type == "list":
+            items = resolve_schema(field_schema.get("items", {}), definitions)
+            field_meta["elements"] = json_type_to_ansible(items.get("type", "string"))
+            if depth < 3 and items.get("properties"):
+                nested = schema_fields(items, definitions, depth + 1)
+                if nested:
+                    field_meta["contains"] = nested
+        elif field_type == "dict" and depth < 3 and field_schema.get("properties"):
+            nested = schema_fields(field_schema, definitions, depth + 1)
+            if nested:
+                field_meta["contains"] = nested
+
+        out[field_name] = field_meta
+
+    return out
+
+
+def resource_response_fields(ops: Dict[str, Any], definitions: Dict[str, Any]) -> Dict[str, Dict[str, Any]]:
+    for operation_name in ("get", "create", "update", "list"):
+        op = ops.get(operation_name)
+        if not op:
+            continue
+
+        schema = success_response_schema(op.get("spec", {}))
+        if not schema:
+            continue
+
+        resolved = resolve_schema(schema, definitions)
+
+        if operation_name == "list":
+            list_item_schema = None
+            for list_field in (resolved.get("properties") or {}).values():
+                list_field_schema = resolve_schema(list_field, definitions)
+                if json_type_to_ansible(list_field_schema.get("type", "string")) != "list":
+                    continue
+                candidate_items = resolve_schema(list_field_schema.get("items", {}), definitions)
+                if isinstance(candidate_items, dict) and candidate_items.get("properties"):
+                    list_item_schema = candidate_items
+                    break
+            if list_item_schema is not None:
+                resolved = list_item_schema
+
+        fields = schema_fields(resolved, definitions)
+        if fields:
+            return fields
+
+    return {}
+
+
+def render_return_fields(fields: Dict[str, Dict[str, Any]], indent: int = 4) -> List[str]:
+    padding = " " * indent
+    lines: List[str] = []
+    for name in sorted(fields):
+        field_meta = fields[name]
+        description = sanitize_text(field_meta.get("description") or f"Field {name}.")
+        wrapped_description = textwrap.wrap(description, width=100) or [description]
+
+        lines.append(f"{padding}{name}:")
+        lines.append(f"{padding}    description:")
+        for desc_line in wrapped_description:
+            escaped_line = desc_line.replace("\\", "\\\\").replace('"', '\\"')
+            lines.append(f'{padding}      - "{escaped_line}"')
+        lines.append(f"{padding}    type: {field_meta.get('type', 'raw')}")
+        if field_meta.get("elements"):
+            lines.append(f"{padding}    elements: {field_meta['elements']}")
+        lines.append(f"{padding}    returned: success")
+
+        nested = field_meta.get("contains")
+        if isinstance(nested, dict) and nested:
+            lines.append(f"{padding}    contains:")
+            lines.extend(render_return_fields(nested, indent + 8))
+
+    return lines
+
+
 def pick_best(ops: List[Dict[str, Any]]) -> Optional[Dict[str, Any]]:
     if not ops:
         return None
@@ -468,6 +572,12 @@ def generate_collection(spec_path: Path, output_dir: Path) -> Tuple[int, List[Tu
         body_fields_literal = format_list_literal(body_field_names)
         body_field_map_literal = format_dict_literal(body_field_api_map)
         api_name_map_literal = format_dict_literal(api_name_map)
+        resource_return_fields = resource_response_fields(ops, definitions)
+        return_resource_contains_block = ""
+        if resource_return_fields:
+            return_resource_contains_block = "\n    contains:\n" + "\n".join(
+                render_return_fields(resource_return_fields, indent=8)
+            )
 
         code = textwrap.dedent(
             f'''
@@ -497,7 +607,7 @@ RETURN = r"""
 resource:
     description: Resource object as returned by the API.
     type: dict
-    returned: always
+    returned: always{return_resource_contains_block}
 changed:
     description: Indicates whether any change was made.
     type: bool

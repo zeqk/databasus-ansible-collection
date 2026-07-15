@@ -52,6 +52,53 @@ operationId references are included in generated operation constants\.
 | return value | comments |
 |---|---|
 | resource | always, dict. Resource object as returned by the API\. |
+| resource.discord_notifier | success, dict. Field discordNotifier\. |
+| resource.discord_notifier.channel_webhook_url | success, str. Field channelWebhookUrl\. |
+| resource.discord_notifier.notifier_id | success, str. Field notifierId\. |
+
+| resource.email_notifier | success, dict. Field emailNotifier\. |
+| resource.email_notifier.from | success, str. Field from\. |
+| resource.email_notifier.is_insecure_skip_verify | success, bool. Field isInsecureSkipVerify\. |
+| resource.email_notifier.notifier_id | success, str. Field notifierId\. |
+| resource.email_notifier.smtp_host | success, str. Field smtpHost\. |
+| resource.email_notifier.smtp_password | success, str. Field smtpPassword\. |
+| resource.email_notifier.smtp_port | success, int. Field smtpPort\. |
+| resource.email_notifier.smtp_user | success, str. Field smtpUser\. |
+| resource.email_notifier.target_email | success, str. Field targetEmail\. |
+
+| resource.id | success, str. Field id\. |
+| resource.last_send_error | success, str. Field lastSendError\. |
+| resource.name | success, str. Field name\. |
+| resource.notifier_type | success, str. Field notifierType\. |
+| resource.slack_notifier | success, dict. Field slackNotifier\. |
+| resource.slack_notifier.bot_token | success, str. Field botToken\. |
+| resource.slack_notifier.notifier_id | success, str. Field notifierId\. |
+| resource.slack_notifier.target_chat_id | success, str. Field targetChatId\. |
+
+| resource.teams_notifier | success, dict. Field teamsNotifier\. |
+| resource.teams_notifier.notifier_id | success, str. Field notifierId\. |
+| resource.teams_notifier.power_automate_url | success, str. Field powerAutomateUrl\. |
+
+| resource.telegram_notifier | success, dict. specific notifier |
+| resource.telegram_notifier.bot_token | success, str. Field botToken\. |
+| resource.telegram_notifier.is_proxy_enabled | success, bool. Field isProxyEnabled\. |
+| resource.telegram_notifier.notifier_id | success, str. Field notifierId\. |
+| resource.telegram_notifier.proxy_url | success, str. Field proxyUrl\. |
+| resource.telegram_notifier.target_chat_id | success, str. Field targetChatId\. |
+| resource.telegram_notifier.thread_id | success, int. Field threadId\. |
+
+| resource.webhook_notifier | success, dict. Field webhookNotifier\. |
+| resource.webhook_notifier.body_template | success, str. Field bodyTemplate\. |
+| resource.webhook_notifier.headers | success, list. Field headers\. |
+| resource.webhook_notifier.headers.key | success, str. Field key\. |
+| resource.webhook_notifier.headers.value | success, str. Field value\. |
+
+| resource.webhook_notifier.notifier_id | success, str. Field notifierId\. |
+| resource.webhook_notifier.webhook_method | success, str. Field webhookMethod\. |
+| resource.webhook_notifier.webhook_url | success, str. Field webhookUrl\. |
+
+| resource.workspace_id | success, str. Field workspaceId\. |
+
 | changed | always, bool. Indicates whether any change was made\. |
 | msg | always, str. Descriptive operation message\. |
 

@@ -106,6 +106,335 @@ resource:
     description: Resource object as returned by the API.
     type: dict
     returned: always
+    contains:
+        azure_blob_storage:
+            description:
+              - "Field azureBlobStorage."
+            type: dict
+            returned: success
+            contains:
+                account_key:
+                    description:
+                      - "Field accountKey."
+                    type: str
+                    returned: success
+                account_name:
+                    description:
+                      - "Field accountName."
+                    type: str
+                    returned: success
+                auth_method:
+                    description:
+                      - "Field authMethod."
+                    type: str
+                    returned: success
+                connection_string:
+                    description:
+                      - "Field connectionString."
+                    type: str
+                    returned: success
+                container_name:
+                    description:
+                      - "Field containerName."
+                    type: str
+                    returned: success
+                endpoint:
+                    description:
+                      - "Field endpoint."
+                    type: str
+                    returned: success
+                prefix:
+                    description:
+                      - "Field prefix."
+                    type: str
+                    returned: success
+                storage_id:
+                    description:
+                      - "Field storageId."
+                    type: str
+                    returned: success
+        ftp_storage:
+            description:
+              - "Field ftpStorage."
+            type: dict
+            returned: success
+            contains:
+                host:
+                    description:
+                      - "Field host."
+                    type: str
+                    returned: success
+                password:
+                    description:
+                      - "Field password."
+                    type: str
+                    returned: success
+                path:
+                    description:
+                      - "Field path."
+                    type: str
+                    returned: success
+                port:
+                    description:
+                      - "Field port."
+                    type: int
+                    returned: success
+                skip_tls_verify:
+                    description:
+                      - "Field skipTlsVerify."
+                    type: bool
+                    returned: success
+                storage_id:
+                    description:
+                      - "Field storageId."
+                    type: str
+                    returned: success
+                use_ssl:
+                    description:
+                      - "Field useSsl."
+                    type: bool
+                    returned: success
+                username:
+                    description:
+                      - "Field username."
+                    type: str
+                    returned: success
+        google_drive_storage:
+            description:
+              - "Field googleDriveStorage."
+            type: dict
+            returned: success
+            contains:
+                client_id:
+                    description:
+                      - "Field clientId."
+                    type: str
+                    returned: success
+                client_secret:
+                    description:
+                      - "Field clientSecret."
+                    type: str
+                    returned: success
+                storage_id:
+                    description:
+                      - "Field storageId."
+                    type: str
+                    returned: success
+                token_json:
+                    description:
+                      - "Field tokenJson."
+                    type: str
+                    returned: success
+        id:
+            description:
+              - "Field id."
+            type: str
+            returned: success
+        last_save_error:
+            description:
+              - "Field lastSaveError."
+            type: str
+            returned: success
+        local_storage:
+            description:
+              - "specific storage"
+            type: dict
+            returned: success
+            contains:
+                storage_id:
+                    description:
+                      - "Field storageId."
+                    type: str
+                    returned: success
+        name:
+            description:
+              - "Field name."
+            type: str
+            returned: success
+        nas_storage:
+            description:
+              - "Field nasStorage."
+            type: dict
+            returned: success
+            contains:
+                domain:
+                    description:
+                      - "Field domain."
+                    type: str
+                    returned: success
+                host:
+                    description:
+                      - "Field host."
+                    type: str
+                    returned: success
+                password:
+                    description:
+                      - "Field password."
+                    type: str
+                    returned: success
+                path:
+                    description:
+                      - "Field path."
+                    type: str
+                    returned: success
+                port:
+                    description:
+                      - "Field port."
+                    type: int
+                    returned: success
+                share:
+                    description:
+                      - "Field share."
+                    type: str
+                    returned: success
+                storage_id:
+                    description:
+                      - "Field storageId."
+                    type: str
+                    returned: success
+                use_ssl:
+                    description:
+                      - "Field useSsl."
+                    type: bool
+                    returned: success
+                username:
+                    description:
+                      - "Field username."
+                    type: str
+                    returned: success
+        rclone_storage:
+            description:
+              - "Field rcloneStorage."
+            type: dict
+            returned: success
+            contains:
+                config_content:
+                    description:
+                      - "Field configContent."
+                    type: str
+                    returned: success
+                remote_path:
+                    description:
+                      - "Field remotePath."
+                    type: str
+                    returned: success
+                storage_id:
+                    description:
+                      - "Field storageId."
+                    type: str
+                    returned: success
+        s3_storage:
+            description:
+              - "Field s3Storage."
+            type: dict
+            returned: success
+            contains:
+                s3_access_key:
+                    description:
+                      - "Field s3AccessKey."
+                    type: str
+                    returned: success
+                s3_bucket:
+                    description:
+                      - "Field s3Bucket."
+                    type: str
+                    returned: success
+                s3_endpoint:
+                    description:
+                      - "Field s3Endpoint."
+                    type: str
+                    returned: success
+                s3_prefix:
+                    description:
+                      - "Field s3Prefix."
+                    type: str
+                    returned: success
+                s3_region:
+                    description:
+                      - "Field s3Region."
+                    type: str
+                    returned: success
+                s3_secret_key:
+                    description:
+                      - "Field s3SecretKey."
+                    type: str
+                    returned: success
+                s3_storage_class:
+                    description:
+                      - "Field s3StorageClass."
+                    type: str
+                    returned: success
+                s3_use_virtual_hosted_style:
+                    description:
+                      - "Field s3UseVirtualHostedStyle."
+                    type: bool
+                    returned: success
+                skip_tlsverify:
+                    description:
+                      - "Field skipTLSVerify."
+                    type: bool
+                    returned: success
+                storage_id:
+                    description:
+                      - "Field storageId."
+                    type: str
+                    returned: success
+        sftp_storage:
+            description:
+              - "Field sftpStorage."
+            type: dict
+            returned: success
+            contains:
+                host:
+                    description:
+                      - "Field host."
+                    type: str
+                    returned: success
+                password:
+                    description:
+                      - "Field password."
+                    type: str
+                    returned: success
+                path:
+                    description:
+                      - "Field path."
+                    type: str
+                    returned: success
+                port:
+                    description:
+                      - "Field port."
+                    type: int
+                    returned: success
+                private_key:
+                    description:
+                      - "Field privateKey."
+                    type: str
+                    returned: success
+                skip_host_key_verify:
+                    description:
+                      - "Field skipHostKeyVerify."
+                    type: bool
+                    returned: success
+                storage_id:
+                    description:
+                      - "Field storageId."
+                    type: str
+                    returned: success
+                username:
+                    description:
+                      - "Field username."
+                    type: str
+                    returned: success
+        type:
+            description:
+              - "Field type."
+            type: str
+            returned: success
+        workspace_id:
+            description:
+              - "Field workspaceId."
+            type: str
+            returned: success
 changed:
     description: Indicates whether any change was made.
     type: bool

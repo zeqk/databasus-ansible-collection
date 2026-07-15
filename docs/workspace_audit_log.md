@@ -36,6 +36,15 @@ This module is read\-only and does not support state\=absent\.
 | return value | comments |
 |---|---|
 | resource | always, dict. Resource object as returned by the API\. |
+| resource.created_at | success, str. Field createdAt\. |
+| resource.id | success, str. Field id\. |
+| resource.message | success, str. Field message\. |
+| resource.user_email | success, str. Field userEmail\. |
+| resource.user_id | success, str. Field userId\. |
+| resource.user_name | success, str. Field userName\. |
+| resource.workspace_id | success, str. Field workspaceId\. |
+| resource.workspace_name | success, str. Field workspaceName\. |
+
 | changed | always, bool. Indicates whether any change was made\. |
 | msg | always, str. Descriptive operation message\. |
 

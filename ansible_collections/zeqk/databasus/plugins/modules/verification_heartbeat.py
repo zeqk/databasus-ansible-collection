@@ -72,6 +72,19 @@ resource:
     description: Resource object as returned by the API.
     type: dict
     returned: always
+    contains:
+        abort_verification_ids:
+            description:
+              - "IDs that vanished, were flipped to CANCELED or are no longer owned by this agent. So it needs to"
+              - "drop them."
+            type: list
+            elements: str
+            returned: success
+        last_seen_at:
+            description:
+              - "Field lastSeenAt."
+            type: str
+            returned: success
 changed:
     description: Indicates whether any change was made.
     type: bool

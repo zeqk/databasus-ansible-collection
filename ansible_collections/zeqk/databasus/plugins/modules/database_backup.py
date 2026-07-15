@@ -65,6 +65,72 @@ resource:
     description: Resource object as returned by the API.
     type: dict
     returned: always
+    contains:
+        completed_at:
+            description:
+              - "Field completedAt."
+            type: str
+            returned: success
+        created_at:
+            description:
+              - "Field createdAt."
+            type: str
+            returned: success
+        fail_message:
+            description:
+              - "FailMessage is the human-readable failure detail, ERROR / CHAIN_BROKEN rows only."
+            type: str
+            returned: success
+        id:
+            description:
+              - "Field id."
+            type: str
+            returned: success
+        parent_incremental_backup_id:
+            description:
+              - "Field parentIncrementalBackupId."
+            type: str
+            returned: success
+        root_full_backup_id:
+            description:
+              - "Chain links, incremental rows only."
+            type: str
+            returned: success
+        size_mb:
+            description:
+              - "Field sizeMb."
+            type: float
+            returned: success
+        start_lsn:
+            description:
+              - "Field startLsn."
+            type: str
+            returned: success
+        status:
+            description:
+              - "Field status."
+            type: str
+            returned: success
+        stop_lsn:
+            description:
+              - "Field stopLsn."
+            type: str
+            returned: success
+        timeline_id:
+            description:
+              - "Field timelineId."
+            type: int
+            returned: success
+        type:
+            description:
+              - "Field type."
+            type: str
+            returned: success
+        wal_filename:
+            description:
+              - "WalFilename is the bare PG segment name, WAL rows only."
+            type: str
+            returned: success
 changed:
     description: Indicates whether any change was made.
     type: bool

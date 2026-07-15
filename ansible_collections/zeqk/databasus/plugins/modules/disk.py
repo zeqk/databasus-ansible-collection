@@ -38,6 +38,22 @@ resource:
     description: Resource object as returned by the API.
     type: dict
     returned: always
+    contains:
+        free_space_bytes:
+            description:
+              - "Field freeSpaceBytes."
+            type: int
+            returned: success
+        total_space_bytes:
+            description:
+              - "Field totalSpaceBytes."
+            type: int
+            returned: success
+        used_space_bytes:
+            description:
+              - "Field usedSpaceBytes."
+            type: int
+            returned: success
 changed:
     description: Indicates whether any change was made.
     type: bool

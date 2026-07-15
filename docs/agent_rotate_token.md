@@ -33,6 +33,8 @@ Allows managing agent\_rotate\_token resources using the Databasus API\.
 | return value | comments |
 |---|---|
 | resource | always, dict. Resource object as returned by the API\. |
+| resource.token | success, str. Field token\. |
+
 | changed | always, bool. Indicates whether any change was made\. |
 | msg | always, str. Descriptive operation message\. |
 

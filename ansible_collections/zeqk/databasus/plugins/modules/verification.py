@@ -63,6 +63,119 @@ resource:
     description: Resource object as returned by the API.
     type: dict
     returned: always
+    contains:
+        agent_id:
+            description:
+              - "Field agentId."
+            type: str
+            returned: success
+        attempt_count:
+            description:
+              - "Field attemptCount."
+            type: int
+            returned: success
+        backup_id:
+            description:
+              - "Field backupId."
+            type: str
+            returned: success
+        created_at:
+            description:
+              - "Field createdAt."
+            type: str
+            returned: success
+        database_id:
+            description:
+              - "Field databaseId."
+            type: str
+            returned: success
+        db_size_bytes_after_restore:
+            description:
+              - "Field dbSizeBytesAfterRestore."
+            type: int
+            returned: success
+        fail_message:
+            description:
+              - "Field failMessage."
+            type: str
+            returned: success
+        finished_at:
+            description:
+              - "Field finishedAt."
+            type: str
+            returned: success
+        id:
+            description:
+              - "Field id."
+            type: str
+            returned: success
+        pg_restore_exit_code:
+            description:
+              - "Field pgRestoreExitCode."
+            type: int
+            returned: success
+        restore_duration_ms:
+            description:
+              - "Field restoreDurationMs."
+            type: int
+            returned: success
+        schema_count:
+            description:
+              - "Field schemaCount."
+            type: int
+            returned: success
+        started_at:
+            description:
+              - "Field startedAt."
+            type: str
+            returned: success
+        status:
+            description:
+              - "Field status."
+            type: str
+            returned: success
+        table_count:
+            description:
+              - "Field tableCount."
+            type: int
+            returned: success
+        table_stats:
+            description:
+              - "Field tableStats."
+            type: list
+            elements: dict
+            returned: success
+            contains:
+                id:
+                    description:
+                      - "Field id."
+                    type: str
+                    returned: success
+                name:
+                    description:
+                      - "Field name."
+                    type: str
+                    returned: success
+                row_count:
+                    description:
+                      - "Field rowCount."
+                    type: int
+                    returned: success
+                schema_name:
+                    description:
+                      - "Field schemaName."
+                    type: str
+                    returned: success
+        trigger:
+            description:
+              - "Field trigger."
+            type: str
+            returned: success
+        verify_duration_ms:
+            description:
+              - "Field verifyDurationMs."
+            type: int
+            returned: success
 changed:
     description: Indicates whether any change was made.
     type: bool

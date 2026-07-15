@@ -54,6 +54,69 @@ resource:
     description: Resource object as returned by the API.
     type: dict
     returned: always
+    contains:
+        audit_logs:
+            description:
+              - "Field auditLogs."
+            type: list
+            elements: dict
+            returned: success
+            contains:
+                created_at:
+                    description:
+                      - "Field createdAt."
+                    type: str
+                    returned: success
+                id:
+                    description:
+                      - "Field id."
+                    type: str
+                    returned: success
+                message:
+                    description:
+                      - "Field message."
+                    type: str
+                    returned: success
+                user_email:
+                    description:
+                      - "Field userEmail."
+                    type: str
+                    returned: success
+                user_id:
+                    description:
+                      - "Field userId."
+                    type: str
+                    returned: success
+                user_name:
+                    description:
+                      - "Field userName."
+                    type: str
+                    returned: success
+                workspace_id:
+                    description:
+                      - "Field workspaceId."
+                    type: str
+                    returned: success
+                workspace_name:
+                    description:
+                      - "Field workspaceName."
+                    type: str
+                    returned: success
+        limit:
+            description:
+              - "Field limit."
+            type: int
+            returned: success
+        offset:
+            description:
+              - "Field offset."
+            type: int
+            returned: success
+        total:
+            description:
+              - "Field total."
+            type: int
+            returned: success
 changed:
     description: Indicates whether any change was made.
     type: bool
