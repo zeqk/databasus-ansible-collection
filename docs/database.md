@@ -18,12 +18,138 @@ operationId references are included in generated operation constants\.
 | last_backup_error_message | optional, str, default=None. Body field lastBackupErrorMessage\. |
 | last_backup_time | optional, str, default=None. these fields are not reliable\, but they are used for pretty UI |
 | mariadb | optional, dict, default=None. Body field mariadb\. |
+| mariadb.database | optional, str, default=None. Body field database\. |
+| mariadb.database_id | optional, str, default=None. Body field databaseId\. |
+| mariadb.exclude_tables | optional, list, default=None. Body field excludeTables\. |
+| mariadb.host | optional, str, default=None. Body field host\. |
+| mariadb.id | optional, str, default=None. Body field id\. |
+| mariadb.is_exclude_events | optional, bool, default=None. Body field isExcludeEvents\. |
+| mariadb.is_https | optional, bool, default=None. Body field isHttps\. |
+| mariadb.is_skip_galera_disable | optional, bool, default=None. Body field isSkipGaleraDisable\. |
+| mariadb.is_use_extended_insert | optional, bool, default=None. Body field isUseExtendedInsert\. |
+| mariadb.password | optional, str, default=None. Body field password\. |
+| mariadb.port | optional, int, default=None. Body field port\. |
+| mariadb.privileges | optional, str, default=None. Body field privileges\. |
+| mariadb.username | optional, str, default=None. Body field username\. |
+| mariadb.version | optional, str, default=None. Body field version\. |
+
 | mongodb | optional, dict, default=None. Body field mongodb\. |
+| mongodb.auth_database | optional, str, default=None. Body field authDatabase\. |
+| mongodb.cpu_count | optional, int, default=None. Body field cpuCount\. |
+| mongodb.database | optional, str, default=None. Body field database\. |
+| mongodb.database_id | optional, str, default=None. Body field databaseId\. |
+| mongodb.exclude_collections | optional, list, default=None. Body field excludeCollections\. |
+| mongodb.host | optional, str, default=None. Body field host\. |
+| mongodb.id | optional, str, default=None. Body field id\. |
+| mongodb.is_direct_connection | optional, bool, default=None. Body field isDirectConnection\. |
+| mongodb.is_https | optional, bool, default=None. Body field isHttps\. |
+| mongodb.is_srv | optional, bool, default=None. Body field isSrv\. |
+| mongodb.password | optional, str, default=None. Body field password\. |
+| mongodb.port | optional, int, default=None. Body field port\. |
+| mongodb.username | optional, str, default=None. Body field username\. |
+| mongodb.version | optional, str, default=None. Body field version\. |
+
 | mysql | optional, dict, default=None. Body field mysql\. |
+| mysql.database | optional, str, default=None. Body field database\. |
+| mysql.database_id | optional, str, default=None. Body field databaseId\. |
+| mysql.exclude_tables | optional, list, default=None. Body field excludeTables\. |
+| mysql.host | optional, str, default=None. Body field host\. |
+| mysql.id | optional, str, default=None. Body field id\. |
+| mysql.is_https | optional, bool, default=None. Body field isHttps\. |
+| mysql.is_use_extended_insert | optional, bool, default=None. Body field isUseExtendedInsert\. |
+| mysql.is_zstd_supported | optional, bool, default=None. Body field isZstdSupported\. |
+| mysql.password | optional, str, default=None. Body field password\. |
+| mysql.port | optional, int, default=None. Body field port\. |
+| mysql.privileges | optional, str, default=None. Body field privileges\. |
+| mysql.username | optional, str, default=None. Body field username\. |
+| mysql.version | optional, str, default=None. Body field version\. |
+
 | name | True, str, default=None. Body field name\. |
 | notifiers | optional, list, default=None. Body field notifiers\. |
+| notifiers.discord_notifier | optional, dict, default=None. Body field discordNotifier\. |
+| notifiers.discord_notifier.channel_webhook_url | optional, str, default=None. Body field channelWebhookUrl\. |
+| notifiers.discord_notifier.notifier_id | optional, str, default=None. Body field notifierId\. |
+
+| notifiers.email_notifier | optional, dict, default=None. Body field emailNotifier\. |
+| notifiers.email_notifier.from | optional, str, default=None. Body field from\. |
+| notifiers.email_notifier.is_insecure_skip_verify | optional, bool, default=None. Body field isInsecureSkipVerify\. |
+| notifiers.email_notifier.notifier_id | optional, str, default=None. Body field notifierId\. |
+| notifiers.email_notifier.smtp_host | optional, str, default=None. Body field smtpHost\. |
+| notifiers.email_notifier.smtp_password | optional, str, default=None. Body field smtpPassword\. |
+| notifiers.email_notifier.smtp_port | optional, int, default=None. Body field smtpPort\. |
+| notifiers.email_notifier.smtp_user | optional, str, default=None. Body field smtpUser\. |
+| notifiers.email_notifier.target_email | optional, str, default=None. Body field targetEmail\. |
+
+| notifiers.id | optional, str, default=None. Body field id\. |
+| notifiers.last_send_error | optional, str, default=None. Body field lastSendError\. |
+| notifiers.name | optional, str, default=None. Body field name\. |
+| notifiers.notifier_type | optional, str, default=None. Body field notifierType\. |
+| notifiers.slack_notifier | optional, dict, default=None. Body field slackNotifier\. |
+| notifiers.slack_notifier.bot_token | optional, str, default=None. Body field botToken\. |
+| notifiers.slack_notifier.notifier_id | optional, str, default=None. Body field notifierId\. |
+| notifiers.slack_notifier.target_chat_id | optional, str, default=None. Body field targetChatId\. |
+
+| notifiers.teams_notifier | optional, dict, default=None. Body field teamsNotifier\. |
+| notifiers.teams_notifier.notifier_id | optional, str, default=None. Body field notifierId\. |
+| notifiers.teams_notifier.power_automate_url | optional, str, default=None. Body field powerAutomateUrl\. |
+
+| notifiers.telegram_notifier | optional, dict, default=None. specific notifier |
+| notifiers.telegram_notifier.bot_token | optional, str, default=None. Body field botToken\. |
+| notifiers.telegram_notifier.is_proxy_enabled | optional, bool, default=None. Body field isProxyEnabled\. |
+| notifiers.telegram_notifier.notifier_id | optional, str, default=None. Body field notifierId\. |
+| notifiers.telegram_notifier.proxy_url | optional, str, default=None. Body field proxyUrl\. |
+| notifiers.telegram_notifier.target_chat_id | optional, str, default=None. Body field targetChatId\. |
+| notifiers.telegram_notifier.thread_id | optional, int, default=None. Body field threadId\. |
+
+| notifiers.webhook_notifier | optional, dict, default=None. Body field webhookNotifier\. |
+| notifiers.webhook_notifier.body_template | optional, str, default=None. Body field bodyTemplate\. |
+| notifiers.webhook_notifier.headers | optional, list, default=None. Body field headers\. |
+| notifiers.webhook_notifier.headers.key | optional, str, default=None. Body field key\. |
+| notifiers.webhook_notifier.headers.value | optional, str, default=None. Body field value\. |
+
+| notifiers.webhook_notifier.notifier_id | optional, str, default=None. Body field notifierId\. |
+| notifiers.webhook_notifier.webhook_method | optional, str, default=None. Body field webhookMethod\. |
+| notifiers.webhook_notifier.webhook_url | optional, str, default=None. Body field webhookUrl\. |
+
+| notifiers.workspace_id | optional, str, default=None. Body field workspaceId\. |
+
 | postgresql_logical | optional, dict, default=None. Body field postgresqlLogical\. |
+| postgresql_logical.cpu_count | optional, int, default=None. Body field cpuCount\. |
+| postgresql_logical.database | optional, str, default=None. Body field database\. |
+| postgresql_logical.database_id | optional, str, default=None. Body field databaseId\. |
+| postgresql_logical.exclude_tables | optional, list, default=None. Body field excludeTables\. |
+| postgresql_logical.host | optional, str, default=None. Body field host\. |
+| postgresql_logical.id | optional, str, default=None. Body field id\. |
+| postgresql_logical.include_schemas | optional, list, default=None. backup settings |
+| postgresql_logical.is_exclude_extensions | optional, bool, default=None. restore settings \(not saved to DB\) |
+| postgresql_logical.is_restore_ownership | optional, bool, default=None. Body field isRestoreOwnership\. |
+| postgresql_logical.is_restore_privileges | optional, bool, default=None. Body field isRestorePrivileges\. |
+| postgresql_logical.is_skip_user_mappings | optional, bool, default=None. Body field isSkipUserMappings\. |
+| postgresql_logical.password | optional, str, default=None. Body field password\. |
+| postgresql_logical.port | optional, int, default=None. Body field port\. |
+| postgresql_logical.ssl_client_cert | optional, str, default=None. Body field sslClientCert\. |
+| postgresql_logical.ssl_client_key | optional, str, default=None. Body field sslClientKey\. |
+| postgresql_logical.ssl_mode | optional, str, default=None. SSL / TLS connection settings |
+| postgresql_logical.ssl_root_cert | optional, str, default=None. Body field sslRootCert\. |
+| postgresql_logical.username | optional, str, default=None. Body field username\. |
+| postgresql_logical.version | optional, str, default=None. Body field version\. |
+
 | postgresql_physical | optional, dict, default=None. Body field postgresqlPhysical\. |
+| postgresql_physical.backup_type | optional, str, default=None. Body field backupType\. |
+| postgresql_physical.database_id | optional, str, default=None. Body field databaseId\. |
+| postgresql_physical.host | optional, str, default=None. Body field host\. |
+| postgresql_physical.id | optional, str, default=None. Body field id\. |
+| postgresql_physical.password | optional, str, default=None. Body field password\. |
+| postgresql_physical.port | optional, int, default=None. Body field port\. |
+| postgresql_physical.ssl_client_cert | optional, str, default=None. Body field sslClientCert\. |
+| postgresql_physical.ssl_client_key | optional, str, default=None. Body field sslClientKey\. |
+| postgresql_physical.ssl_mode | optional, str, default=None. SSL / TLS connection settings |
+| postgresql_physical.ssl_root_cert | optional, str, default=None. Body field sslRootCert\. |
+| postgresql_physical.system_identifier | optional, str, default=None. Body field systemIdentifier\. |
+| postgresql_physical.username | optional, str, default=None. Body field username\. |
+| postgresql_physical.version | optional, str, default=None. Body field version\. |
+| postgresql_physical.wal_segment_size_bytes | optional, int, default=None. WalSegmentSizeBytes captures the source cluster\'s wal\_segment\_size at first connect\. |
+
 | type | optional, str, default=None. Body field type\. |
 | workspace_id | optional, str, default=None. Workspace ID |
 
@@ -171,7 +297,7 @@ operationId references are included in generated operation constants\.
 | resource.postgresql_logical.port | success, int. Field port\. |
 | resource.postgresql_logical.ssl_client_cert | success, str. Field sslClientCert\. |
 | resource.postgresql_logical.ssl_client_key | success, str. Field sslClientKey\. |
-| resource.postgresql_logical.ssl_mode | success, dict. SSL / TLS connection settings |
+| resource.postgresql_logical.ssl_mode | success, str. SSL / TLS connection settings |
 | resource.postgresql_logical.ssl_root_cert | success, str. Field sslRootCert\. |
 | resource.postgresql_logical.username | success, str. Field username\. |
 | resource.postgresql_logical.version | success, str. Field version\. |
@@ -185,7 +311,7 @@ operationId references are included in generated operation constants\.
 | resource.postgresql_physical.port | success, int. Field port\. |
 | resource.postgresql_physical.ssl_client_cert | success, str. Field sslClientCert\. |
 | resource.postgresql_physical.ssl_client_key | success, str. Field sslClientKey\. |
-| resource.postgresql_physical.ssl_mode | success, dict. SSL / TLS connection settings |
+| resource.postgresql_physical.ssl_mode | success, str. SSL / TLS connection settings |
 | resource.postgresql_physical.ssl_root_cert | success, str. Field sslRootCert\. |
 | resource.postgresql_physical.system_identifier | success, str. Field systemIdentifier\. |
 | resource.postgresql_physical.username | success, str. Field username\. |

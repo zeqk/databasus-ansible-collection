@@ -34,6 +34,9 @@ options:
     description:
       - Body field healthStatus.
     type: str
+    choices:
+      - AVAILABLE
+      - UNAVAILABLE
   last_backup_error_message:
     description:
       - Body field lastBackupErrorMessage.
@@ -46,14 +49,207 @@ options:
     description:
       - Body field mariadb.
     type: dict
+    suboptions:
+      database:
+        description:
+          - Body field database.
+        type: str
+      database_id:
+        description:
+          - Body field databaseId.
+        type: str
+      exclude_tables:
+        description:
+          - Body field excludeTables.
+        type: list
+        elements: str
+      host:
+        description:
+          - Body field host.
+        type: str
+      id:
+        description:
+          - Body field id.
+        type: str
+      is_exclude_events:
+        description:
+          - Body field isExcludeEvents.
+        type: bool
+      is_https:
+        description:
+          - Body field isHttps.
+        type: bool
+      is_skip_galera_disable:
+        description:
+          - Body field isSkipGaleraDisable.
+        type: bool
+      is_use_extended_insert:
+        description:
+          - Body field isUseExtendedInsert.
+        type: bool
+      password:
+        description:
+          - Body field password.
+        type: str
+      port:
+        description:
+          - Body field port.
+        type: int
+      privileges:
+        description:
+          - Body field privileges.
+        type: str
+      username:
+        description:
+          - Body field username.
+        type: str
+      version:
+        description:
+          - Body field version.
+        type: str
+        choices:
+          - '5.5'
+          - '10.1'
+          - '10.2'
+          - '10.3'
+          - '10.4'
+          - '10.5'
+          - '10.6'
+          - '10.11'
+          - '11.4'
+          - '11.8'
+          - '12.0'
   mongodb:
     description:
       - Body field mongodb.
     type: dict
+    suboptions:
+      auth_database:
+        description:
+          - Body field authDatabase.
+        type: str
+      cpu_count:
+        description:
+          - Body field cpuCount.
+        type: int
+      database:
+        description:
+          - Body field database.
+        type: str
+      database_id:
+        description:
+          - Body field databaseId.
+        type: str
+      exclude_collections:
+        description:
+          - Body field excludeCollections.
+        type: list
+        elements: str
+      host:
+        description:
+          - Body field host.
+        type: str
+      id:
+        description:
+          - Body field id.
+        type: str
+      is_direct_connection:
+        description:
+          - Body field isDirectConnection.
+        type: bool
+      is_https:
+        description:
+          - Body field isHttps.
+        type: bool
+      is_srv:
+        description:
+          - Body field isSrv.
+        type: bool
+      password:
+        description:
+          - Body field password.
+        type: str
+      port:
+        description:
+          - Body field port.
+        type: int
+      username:
+        description:
+          - Body field username.
+        type: str
+      version:
+        description:
+          - Body field version.
+        type: str
+        choices:
+          - '4'
+          - '5'
+          - '6'
+          - '7'
+          - '8'
   mysql:
     description:
       - Body field mysql.
     type: dict
+    suboptions:
+      database:
+        description:
+          - Body field database.
+        type: str
+      database_id:
+        description:
+          - Body field databaseId.
+        type: str
+      exclude_tables:
+        description:
+          - Body field excludeTables.
+        type: list
+        elements: str
+      host:
+        description:
+          - Body field host.
+        type: str
+      id:
+        description:
+          - Body field id.
+        type: str
+      is_https:
+        description:
+          - Body field isHttps.
+        type: bool
+      is_use_extended_insert:
+        description:
+          - Body field isUseExtendedInsert.
+        type: bool
+      is_zstd_supported:
+        description:
+          - Body field isZstdSupported.
+        type: bool
+      password:
+        description:
+          - Body field password.
+        type: str
+      port:
+        description:
+          - Body field port.
+        type: int
+      privileges:
+        description:
+          - Body field privileges.
+        type: str
+      username:
+        description:
+          - Body field username.
+        type: str
+      version:
+        description:
+          - Body field version.
+        type: str
+        choices:
+          - '5.7'
+          - '8.0'
+          - '8.4'
+          - '9'
   name:
     description:
       - Body field name.
@@ -64,18 +260,365 @@ options:
       - Body field notifiers.
     type: list
     elements: dict
+    suboptions:
+      discord_notifier:
+        description:
+          - Body field discordNotifier.
+        type: dict
+        suboptions:
+          channel_webhook_url:
+            description:
+              - Body field channelWebhookUrl.
+            type: str
+          notifier_id:
+            description:
+              - Body field notifierId.
+            type: str
+      email_notifier:
+        description:
+          - Body field emailNotifier.
+        type: dict
+        suboptions:
+          from:
+            description:
+              - Body field from.
+            type: str
+          is_insecure_skip_verify:
+            description:
+              - Body field isInsecureSkipVerify.
+            type: bool
+          notifier_id:
+            description:
+              - Body field notifierId.
+            type: str
+          smtp_host:
+            description:
+              - Body field smtpHost.
+            type: str
+          smtp_password:
+            description:
+              - Body field smtpPassword.
+            type: str
+          smtp_port:
+            description:
+              - Body field smtpPort.
+            type: int
+          smtp_user:
+            description:
+              - Body field smtpUser.
+            type: str
+          target_email:
+            description:
+              - Body field targetEmail.
+            type: str
+      id:
+        description:
+          - Body field id.
+        type: str
+      last_send_error:
+        description:
+          - Body field lastSendError.
+        type: str
+      name:
+        description:
+          - Body field name.
+        type: str
+      notifier_type:
+        description:
+          - Body field notifierType.
+        type: str
+        choices:
+          - EMAIL
+          - TELEGRAM
+          - WEBHOOK
+          - SLACK
+          - DISCORD
+          - TEAMS
+      slack_notifier:
+        description:
+          - Body field slackNotifier.
+        type: dict
+        suboptions:
+          bot_token:
+            description:
+              - Body field botToken.
+            type: str
+          notifier_id:
+            description:
+              - Body field notifierId.
+            type: str
+          target_chat_id:
+            description:
+              - Body field targetChatId.
+            type: str
+      teams_notifier:
+        description:
+          - Body field teamsNotifier.
+        type: dict
+        suboptions:
+          notifier_id:
+            description:
+              - Body field notifierId.
+            type: str
+          power_automate_url:
+            description:
+              - Body field powerAutomateUrl.
+            type: str
+      telegram_notifier:
+        description:
+          - specific notifier
+        type: dict
+        suboptions:
+          bot_token:
+            description:
+              - Body field botToken.
+            type: str
+          is_proxy_enabled:
+            description:
+              - Body field isProxyEnabled.
+            type: bool
+          notifier_id:
+            description:
+              - Body field notifierId.
+            type: str
+          proxy_url:
+            description:
+              - Body field proxyUrl.
+            type: str
+          target_chat_id:
+            description:
+              - Body field targetChatId.
+            type: str
+          thread_id:
+            description:
+              - Body field threadId.
+            type: int
+      webhook_notifier:
+        description:
+          - Body field webhookNotifier.
+        type: dict
+        suboptions:
+          body_template:
+            description:
+              - Body field bodyTemplate.
+            type: str
+          headers:
+            description:
+              - Body field headers.
+            type: list
+            elements: dict
+            suboptions:
+              key:
+                description:
+                  - Body field key.
+                type: str
+              value:
+                description:
+                  - Body field value.
+                type: str
+          notifier_id:
+            description:
+              - Body field notifierId.
+            type: str
+          webhook_method:
+            description:
+              - Body field webhookMethod.
+            type: str
+            choices:
+              - POST
+              - GET
+          webhook_url:
+            description:
+              - Body field webhookUrl.
+            type: str
+      workspace_id:
+        description:
+          - Body field workspaceId.
+        type: str
   postgresql_logical:
     description:
       - Body field postgresqlLogical.
     type: dict
+    suboptions:
+      cpu_count:
+        description:
+          - Body field cpuCount.
+        type: int
+      database:
+        description:
+          - Body field database.
+        type: str
+      database_id:
+        description:
+          - Body field databaseId.
+        type: str
+      exclude_tables:
+        description:
+          - Body field excludeTables.
+        type: list
+        elements: str
+      host:
+        description:
+          - Body field host.
+        type: str
+      id:
+        description:
+          - Body field id.
+        type: str
+      include_schemas:
+        description:
+          - backup settings
+        type: list
+        elements: str
+      is_exclude_extensions:
+        description:
+          - restore settings (not saved to DB)
+        type: bool
+      is_restore_ownership:
+        description:
+          - Body field isRestoreOwnership.
+        type: bool
+      is_restore_privileges:
+        description:
+          - Body field isRestorePrivileges.
+        type: bool
+      is_skip_user_mappings:
+        description:
+          - Body field isSkipUserMappings.
+        type: bool
+      password:
+        description:
+          - Body field password.
+        type: str
+      port:
+        description:
+          - Body field port.
+        type: int
+      ssl_client_cert:
+        description:
+          - Body field sslClientCert.
+        type: str
+      ssl_client_key:
+        description:
+          - Body field sslClientKey.
+        type: str
+      ssl_mode:
+        description:
+          - SSL / TLS connection settings
+        type: str
+        choices:
+          - disable
+          - require
+          - verify-ca
+          - verify-full
+      ssl_root_cert:
+        description:
+          - Body field sslRootCert.
+        type: str
+      username:
+        description:
+          - Body field username.
+        type: str
+      version:
+        description:
+          - Body field version.
+        type: str
+        choices:
+          - '12'
+          - '13'
+          - '14'
+          - '15'
+          - '16'
+          - '17'
+          - '18'
   postgresql_physical:
     description:
       - Body field postgresqlPhysical.
     type: dict
+    suboptions:
+      backup_type:
+        description:
+          - Body field backupType.
+        type: str
+        choices:
+          - FULL
+          - FULL_INCREMENTAL
+          - FULL_INCREMENTAL_WAL_STREAM
+      database_id:
+        description:
+          - Body field databaseId.
+        type: str
+      host:
+        description:
+          - Body field host.
+        type: str
+      id:
+        description:
+          - Body field id.
+        type: str
+      password:
+        description:
+          - Body field password.
+        type: str
+      port:
+        description:
+          - Body field port.
+        type: int
+      ssl_client_cert:
+        description:
+          - Body field sslClientCert.
+        type: str
+      ssl_client_key:
+        description:
+          - Body field sslClientKey.
+        type: str
+      ssl_mode:
+        description:
+          - SSL / TLS connection settings
+        type: str
+        choices:
+          - disable
+          - require
+          - verify-ca
+          - verify-full
+      ssl_root_cert:
+        description:
+          - Body field sslRootCert.
+        type: str
+      system_identifier:
+        description:
+          - Body field systemIdentifier.
+        type: str
+      username:
+        description:
+          - Body field username.
+        type: str
+      version:
+        description:
+          - Body field version.
+        type: str
+        choices:
+          - '12'
+          - '13'
+          - '14'
+          - '15'
+          - '16'
+          - '17'
+          - '18'
+      wal_segment_size_bytes:
+        description:
+          - WalSegmentSizeBytes captures the source cluster's wal_segment_size at first connect.
+        type: int
   type:
     description:
       - Body field type.
     type: str
+    choices:
+      - POSTGRES_LOGICAL
+      - POSTGRES_PHYSICAL
+      - MYSQL
+      - MARIADB
+      - MONGODB
   workspace_id:
     description:
       - Workspace ID
@@ -654,7 +1197,7 @@ resource:
                 ssl_mode:
                     description:
                       - "SSL / TLS connection settings"
-                    type: dict
+                    type: str
                     returned: success
                 ssl_root_cert:
                     description:
@@ -720,7 +1263,7 @@ resource:
                 ssl_mode:
                     description:
                       - "SSL / TLS connection settings"
-                    type: dict
+                    type: str
                     returned: success
                 ssl_root_cert:
                     description:
@@ -798,35 +1341,198 @@ DELETE_METHOD = 'DELETE'
 DELETE_PATH = '/databases/{id}'
 DELETE_PATH_PARAMS = ['id']
 DELETE_QUERY_PARAMS = []
-BODY_FIELDS = [
-    'health_status',
-    'id',
-    'last_backup_error_message',
-    'last_backup_time',
-    'mariadb',
-    'mongodb',
-    'mysql',
-    'name',
-    'notifiers',
-    'postgresql_logical',
-    'postgresql_physical',
-    'type',
-    'workspace_id',
-]
-BODY_FIELD_MAP = {
-    'health_status': 'healthStatus',
-    'id': 'id',
-    'last_backup_error_message': 'lastBackupErrorMessage',
-    'last_backup_time': 'lastBackupTime',
-    'mariadb': 'mariadb',
-    'mongodb': 'mongodb',
-    'mysql': 'mysql',
-    'name': 'name',
-    'notifiers': 'notifiers',
-    'postgresql_logical': 'postgresqlLogical',
-    'postgresql_physical': 'postgresqlPhysical',
-    'type': 'type',
-    'workspace_id': 'workspaceId',
+BODY_SCHEMA = {
+    'health_status': {'api': 'healthStatus', 'type': 'str'},
+    'id': {'api': 'id', 'type': 'str'},
+    'last_backup_error_message': {'api': 'lastBackupErrorMessage', 'type': 'str'},
+    'last_backup_time': {'api': 'lastBackupTime', 'type': 'str'},
+    'mariadb': {
+        'api': 'mariadb',
+        'type': 'dict',
+        'nested': {
+            'database': {'api': 'database', 'type': 'str'},
+            'database_id': {'api': 'databaseId', 'type': 'str'},
+            'exclude_tables': {'api': 'excludeTables', 'type': 'list'},
+            'host': {'api': 'host', 'type': 'str'},
+            'id': {'api': 'id', 'type': 'str'},
+            'is_exclude_events': {'api': 'isExcludeEvents', 'type': 'bool'},
+            'is_https': {'api': 'isHttps', 'type': 'bool'},
+            'is_skip_galera_disable': {'api': 'isSkipGaleraDisable', 'type': 'bool'},
+            'is_use_extended_insert': {'api': 'isUseExtendedInsert', 'type': 'bool'},
+            'password': {'api': 'password', 'type': 'str'},
+            'port': {'api': 'port', 'type': 'int'},
+            'privileges': {'api': 'privileges', 'type': 'str'},
+            'username': {'api': 'username', 'type': 'str'},
+            'version': {'api': 'version', 'type': 'str'},
+        },
+    },
+    'mongodb': {
+        'api': 'mongodb',
+        'type': 'dict',
+        'nested': {
+            'auth_database': {'api': 'authDatabase', 'type': 'str'},
+            'cpu_count': {'api': 'cpuCount', 'type': 'int'},
+            'database': {'api': 'database', 'type': 'str'},
+            'database_id': {'api': 'databaseId', 'type': 'str'},
+            'exclude_collections': {'api': 'excludeCollections', 'type': 'list'},
+            'host': {'api': 'host', 'type': 'str'},
+            'id': {'api': 'id', 'type': 'str'},
+            'is_direct_connection': {'api': 'isDirectConnection', 'type': 'bool'},
+            'is_https': {'api': 'isHttps', 'type': 'bool'},
+            'is_srv': {'api': 'isSrv', 'type': 'bool'},
+            'password': {'api': 'password', 'type': 'str'},
+            'port': {'api': 'port', 'type': 'int'},
+            'username': {'api': 'username', 'type': 'str'},
+            'version': {'api': 'version', 'type': 'str'},
+        },
+    },
+    'mysql': {
+        'api': 'mysql',
+        'type': 'dict',
+        'nested': {
+            'database': {'api': 'database', 'type': 'str'},
+            'database_id': {'api': 'databaseId', 'type': 'str'},
+            'exclude_tables': {'api': 'excludeTables', 'type': 'list'},
+            'host': {'api': 'host', 'type': 'str'},
+            'id': {'api': 'id', 'type': 'str'},
+            'is_https': {'api': 'isHttps', 'type': 'bool'},
+            'is_use_extended_insert': {'api': 'isUseExtendedInsert', 'type': 'bool'},
+            'is_zstd_supported': {'api': 'isZstdSupported', 'type': 'bool'},
+            'password': {'api': 'password', 'type': 'str'},
+            'port': {'api': 'port', 'type': 'int'},
+            'privileges': {'api': 'privileges', 'type': 'str'},
+            'username': {'api': 'username', 'type': 'str'},
+            'version': {'api': 'version', 'type': 'str'},
+        },
+    },
+    'name': {'api': 'name', 'type': 'str'},
+    'notifiers': {
+        'api': 'notifiers',
+        'type': 'list',
+        'nested': {
+            'discord_notifier': {
+                'api': 'discordNotifier',
+                'type': 'dict',
+                'nested': {
+                    'channel_webhook_url': {'api': 'channelWebhookUrl', 'type': 'str'},
+                    'notifier_id': {'api': 'notifierId', 'type': 'str'},
+                },
+            },
+            'email_notifier': {
+                'api': 'emailNotifier',
+                'type': 'dict',
+                'nested': {
+                    'from': {'api': 'from', 'type': 'str'},
+                    'is_insecure_skip_verify': {'api': 'isInsecureSkipVerify', 'type': 'bool'},
+                    'notifier_id': {'api': 'notifierId', 'type': 'str'},
+                    'smtp_host': {'api': 'smtpHost', 'type': 'str'},
+                    'smtp_password': {'api': 'smtpPassword', 'type': 'str'},
+                    'smtp_port': {'api': 'smtpPort', 'type': 'int'},
+                    'smtp_user': {'api': 'smtpUser', 'type': 'str'},
+                    'target_email': {'api': 'targetEmail', 'type': 'str'},
+                },
+            },
+            'id': {'api': 'id', 'type': 'str'},
+            'last_send_error': {'api': 'lastSendError', 'type': 'str'},
+            'name': {'api': 'name', 'type': 'str'},
+            'notifier_type': {'api': 'notifierType', 'type': 'str'},
+            'slack_notifier': {
+                'api': 'slackNotifier',
+                'type': 'dict',
+                'nested': {
+                    'bot_token': {'api': 'botToken', 'type': 'str'},
+                    'notifier_id': {'api': 'notifierId', 'type': 'str'},
+                    'target_chat_id': {'api': 'targetChatId', 'type': 'str'},
+                },
+            },
+            'teams_notifier': {
+                'api': 'teamsNotifier',
+                'type': 'dict',
+                'nested': {
+                    'notifier_id': {'api': 'notifierId', 'type': 'str'},
+                    'power_automate_url': {'api': 'powerAutomateUrl', 'type': 'str'},
+                },
+            },
+            'telegram_notifier': {
+                'api': 'telegramNotifier',
+                'type': 'dict',
+                'nested': {
+                    'bot_token': {'api': 'botToken', 'type': 'str'},
+                    'is_proxy_enabled': {'api': 'isProxyEnabled', 'type': 'bool'},
+                    'notifier_id': {'api': 'notifierId', 'type': 'str'},
+                    'proxy_url': {'api': 'proxyUrl', 'type': 'str'},
+                    'target_chat_id': {'api': 'targetChatId', 'type': 'str'},
+                    'thread_id': {'api': 'threadId', 'type': 'int'},
+                },
+            },
+            'webhook_notifier': {
+                'api': 'webhookNotifier',
+                'type': 'dict',
+                'nested': {
+                    'body_template': {'api': 'bodyTemplate', 'type': 'str'},
+                    'headers': {
+                        'api': 'headers',
+                        'type': 'list',
+                        'nested': {
+                            'key': {'api': 'key', 'type': 'str'},
+                            'value': {'api': 'value', 'type': 'str'},
+                        },
+                    },
+                    'notifier_id': {'api': 'notifierId', 'type': 'str'},
+                    'webhook_method': {'api': 'webhookMethod', 'type': 'str'},
+                    'webhook_url': {'api': 'webhookUrl', 'type': 'str'},
+                },
+            },
+            'workspace_id': {'api': 'workspaceId', 'type': 'str'},
+        },
+    },
+    'postgresql_logical': {
+        'api': 'postgresqlLogical',
+        'type': 'dict',
+        'nested': {
+            'cpu_count': {'api': 'cpuCount', 'type': 'int'},
+            'database': {'api': 'database', 'type': 'str'},
+            'database_id': {'api': 'databaseId', 'type': 'str'},
+            'exclude_tables': {'api': 'excludeTables', 'type': 'list'},
+            'host': {'api': 'host', 'type': 'str'},
+            'id': {'api': 'id', 'type': 'str'},
+            'include_schemas': {'api': 'includeSchemas', 'type': 'list'},
+            'is_exclude_extensions': {'api': 'isExcludeExtensions', 'type': 'bool'},
+            'is_restore_ownership': {'api': 'isRestoreOwnership', 'type': 'bool'},
+            'is_restore_privileges': {'api': 'isRestorePrivileges', 'type': 'bool'},
+            'is_skip_user_mappings': {'api': 'isSkipUserMappings', 'type': 'bool'},
+            'password': {'api': 'password', 'type': 'str'},
+            'port': {'api': 'port', 'type': 'int'},
+            'ssl_client_cert': {'api': 'sslClientCert', 'type': 'str'},
+            'ssl_client_key': {'api': 'sslClientKey', 'type': 'str'},
+            'ssl_mode': {'api': 'sslMode', 'type': 'str'},
+            'ssl_root_cert': {'api': 'sslRootCert', 'type': 'str'},
+            'username': {'api': 'username', 'type': 'str'},
+            'version': {'api': 'version', 'type': 'str'},
+        },
+    },
+    'postgresql_physical': {
+        'api': 'postgresqlPhysical',
+        'type': 'dict',
+        'nested': {
+            'backup_type': {'api': 'backupType', 'type': 'str'},
+            'database_id': {'api': 'databaseId', 'type': 'str'},
+            'host': {'api': 'host', 'type': 'str'},
+            'id': {'api': 'id', 'type': 'str'},
+            'password': {'api': 'password', 'type': 'str'},
+            'port': {'api': 'port', 'type': 'int'},
+            'ssl_client_cert': {'api': 'sslClientCert', 'type': 'str'},
+            'ssl_client_key': {'api': 'sslClientKey', 'type': 'str'},
+            'ssl_mode': {'api': 'sslMode', 'type': 'str'},
+            'ssl_root_cert': {'api': 'sslRootCert', 'type': 'str'},
+            'system_identifier': {'api': 'systemIdentifier', 'type': 'str'},
+            'username': {'api': 'username', 'type': 'str'},
+            'version': {'api': 'version', 'type': 'str'},
+            'wal_segment_size_bytes': {'api': 'walSegmentSizeBytes', 'type': 'int'},
+        },
+    },
+    'type': {'api': 'type', 'type': 'str'},
+    'workspace_id': {'api': 'workspace_id', 'type': 'str'},
 }
 READ_ONLY = False
 API_NAME_MAP = {
@@ -978,13 +1684,30 @@ def _collect_params(module_params: Dict[str, Any], names: List[str]) -> Dict[str
     return out
 
 
-def _desired_payload(module_params: Dict[str, Any]) -> Dict[str, Any]:
+def _build_payload(values: Dict[str, Any], schema: Dict[str, Any]) -> Dict[str, Any]:
     payload: Dict[str, Any] = {}
-    for name in BODY_FIELDS:
-        value = module_params.get(name)
-        if value is not None:
-            payload[BODY_FIELD_MAP.get(name, API_NAME_MAP.get(name, name))] = value
+    for field_name, field_info in schema.items():
+        val = values.get(field_name)
+        if val is None:
+            continue
+        api_name = field_info['api']
+        nested = field_info.get('nested')
+        ftype = field_info.get('type', 'str')
+        if nested and ftype == 'dict' and isinstance(val, dict):
+            inner = _build_payload(val, nested)
+            if inner:
+                payload[api_name] = inner
+        elif nested and ftype == 'list' and isinstance(val, list):
+            payload[api_name] = [
+                _build_payload(item, nested) for item in val if isinstance(item, dict)
+            ]
+        else:
+            payload[api_name] = val
     return payload
+
+
+def _desired_payload(module_params: Dict[str, Any]) -> Dict[str, Any]:
+    return _build_payload(module_params, BODY_SCHEMA)
 
 
 def _needs_update(current: Any, desired: Dict[str, Any]) -> bool:
@@ -1046,17 +1769,187 @@ def run_module() -> None:
         state=dict(type='str', default='present', choices=['present', 'absent']),
         api_url=dict(type='str', required=True),
         api_token=dict(type='str', required=True, no_log=True),
-        health_status=dict(type='str'),
+        health_status=dict(type='str', choices=['AVAILABLE', 'UNAVAILABLE']),
         last_backup_error_message=dict(type='str'),
         last_backup_time=dict(type='str'),
-        mariadb=dict(type='dict'),
-        mongodb=dict(type='dict'),
-        mysql=dict(type='dict'),
+        mariadb=dict(
+            type='dict',
+            options={
+                'database': dict(type='str'),
+                'database_id': dict(type='str'),
+                'exclude_tables': dict(type='list', elements='str'),
+                'host': dict(type='str'),
+                'id': dict(type='str'),
+                'is_exclude_events': dict(type='bool'),
+                'is_https': dict(type='bool'),
+                'is_skip_galera_disable': dict(type='bool'),
+                'is_use_extended_insert': dict(type='bool'),
+                'password': dict(type='str', no_log=True),
+                'port': dict(type='int'),
+                'privileges': dict(type='str'),
+                'username': dict(type='str'),
+                'version': dict(
+                    type='str',
+                    choices=['5.5', '10.1', '10.2', '10.3', '10.4', '10.5', '10.6', '10.11', '11.4', '11.8', '12.0'],
+                ),
+            },
+        ),
+        mongodb=dict(
+            type='dict',
+            options={
+                'auth_database': dict(type='str'),
+                'cpu_count': dict(type='int'),
+                'database': dict(type='str'),
+                'database_id': dict(type='str'),
+                'exclude_collections': dict(type='list', elements='str'),
+                'host': dict(type='str'),
+                'id': dict(type='str'),
+                'is_direct_connection': dict(type='bool'),
+                'is_https': dict(type='bool'),
+                'is_srv': dict(type='bool'),
+                'password': dict(type='str', no_log=True),
+                'port': dict(type='int'),
+                'username': dict(type='str'),
+                'version': dict(type='str', choices=['4', '5', '6', '7', '8']),
+            },
+        ),
+        mysql=dict(
+            type='dict',
+            options={
+                'database': dict(type='str'),
+                'database_id': dict(type='str'),
+                'exclude_tables': dict(type='list', elements='str'),
+                'host': dict(type='str'),
+                'id': dict(type='str'),
+                'is_https': dict(type='bool'),
+                'is_use_extended_insert': dict(type='bool'),
+                'is_zstd_supported': dict(type='bool'),
+                'password': dict(type='str', no_log=True),
+                'port': dict(type='int'),
+                'privileges': dict(type='str'),
+                'username': dict(type='str'),
+                'version': dict(type='str', choices=['5.7', '8.0', '8.4', '9']),
+            },
+        ),
         name=dict(type='str', required=True),
-        notifiers=dict(type='list', elements='dict'),
-        postgresql_logical=dict(type='dict'),
-        postgresql_physical=dict(type='dict'),
-        type=dict(type='str'),
+        notifiers=dict(
+            type='list',
+            elements='dict',
+            options={
+                'discord_notifier': dict(
+                    type='dict',
+                    options={
+                        'channel_webhook_url': dict(type='str'),
+                        'notifier_id': dict(type='str'),
+                    },
+                ),
+                'email_notifier': dict(
+                    type='dict',
+                    options={
+                        'from': dict(type='str'),
+                        'is_insecure_skip_verify': dict(type='bool'),
+                        'notifier_id': dict(type='str'),
+                        'smtp_host': dict(type='str'),
+                        'smtp_password': dict(type='str', no_log=True),
+                        'smtp_port': dict(type='int'),
+                        'smtp_user': dict(type='str'),
+                        'target_email': dict(type='str'),
+                    },
+                ),
+                'id': dict(type='str'),
+                'last_send_error': dict(type='str'),
+                'name': dict(type='str'),
+                'notifier_type': dict(type='str', choices=['EMAIL', 'TELEGRAM', 'WEBHOOK', 'SLACK', 'DISCORD', 'TEAMS']),
+                'slack_notifier': dict(
+                    type='dict',
+                    options={
+                        'bot_token': dict(type='str', no_log=True),
+                        'notifier_id': dict(type='str'),
+                        'target_chat_id': dict(type='str'),
+                    },
+                ),
+                'teams_notifier': dict(
+                    type='dict',
+                    options={
+                        'notifier_id': dict(type='str'),
+                        'power_automate_url': dict(type='str'),
+                    },
+                ),
+                'telegram_notifier': dict(
+                    type='dict',
+                    options={
+                        'bot_token': dict(type='str', no_log=True),
+                        'is_proxy_enabled': dict(type='bool'),
+                        'notifier_id': dict(type='str'),
+                        'proxy_url': dict(type='str'),
+                        'target_chat_id': dict(type='str'),
+                        'thread_id': dict(type='int'),
+                    },
+                ),
+                'webhook_notifier': dict(
+                    type='dict',
+                    options={
+                        'body_template': dict(type='str'),
+                        'headers': dict(
+                            type='list',
+                            elements='dict',
+                            options={
+                                'key': dict(type='str', no_log=True),
+                                'value': dict(type='str'),
+                            },
+                        ),
+                        'notifier_id': dict(type='str'),
+                        'webhook_method': dict(type='str', choices=['POST', 'GET']),
+                        'webhook_url': dict(type='str'),
+                    },
+                ),
+                'workspace_id': dict(type='str'),
+            },
+        ),
+        postgresql_logical=dict(
+            type='dict',
+            options={
+                'cpu_count': dict(type='int'),
+                'database': dict(type='str'),
+                'database_id': dict(type='str'),
+                'exclude_tables': dict(type='list', elements='str'),
+                'host': dict(type='str'),
+                'id': dict(type='str'),
+                'include_schemas': dict(type='list', elements='str'),
+                'is_exclude_extensions': dict(type='bool'),
+                'is_restore_ownership': dict(type='bool'),
+                'is_restore_privileges': dict(type='bool'),
+                'is_skip_user_mappings': dict(type='bool'),
+                'password': dict(type='str', no_log=True),
+                'port': dict(type='int'),
+                'ssl_client_cert': dict(type='str'),
+                'ssl_client_key': dict(type='str', no_log=True),
+                'ssl_mode': dict(type='str', choices=['disable', 'require', 'verify-ca', 'verify-full']),
+                'ssl_root_cert': dict(type='str'),
+                'username': dict(type='str'),
+                'version': dict(type='str', choices=['12', '13', '14', '15', '16', '17', '18']),
+            },
+        ),
+        postgresql_physical=dict(
+            type='dict',
+            options={
+                'backup_type': dict(type='str', choices=['FULL', 'FULL_INCREMENTAL', 'FULL_INCREMENTAL_WAL_STREAM']),
+                'database_id': dict(type='str'),
+                'host': dict(type='str'),
+                'id': dict(type='str'),
+                'password': dict(type='str', no_log=True),
+                'port': dict(type='int'),
+                'ssl_client_cert': dict(type='str'),
+                'ssl_client_key': dict(type='str', no_log=True),
+                'ssl_mode': dict(type='str', choices=['disable', 'require', 'verify-ca', 'verify-full']),
+                'ssl_root_cert': dict(type='str'),
+                'system_identifier': dict(type='str'),
+                'username': dict(type='str'),
+                'version': dict(type='str', choices=['12', '13', '14', '15', '16', '17', '18']),
+                'wal_segment_size_bytes': dict(type='int'),
+            },
+        ),
+        type=dict(type='str', choices=['POSTGRES_LOGICAL', 'POSTGRES_PHYSICAL', 'MYSQL', 'MARIADB', 'MONGODB']),
         workspace_id=dict(type='str'),
     )
     module = AnsibleModule(argument_spec=module_args, supports_check_mode=not READ_ONLY)

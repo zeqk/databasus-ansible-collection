@@ -96,11 +96,8 @@ DELETE_METHOD = None
 DELETE_PATH = None
 DELETE_PATH_PARAMS = []
 DELETE_QUERY_PARAMS = []
-BODY_FIELDS = [
-    'new_owner_email',
-]
-BODY_FIELD_MAP = {
-    'new_owner_email': 'newOwnerEmail',
+BODY_SCHEMA = {
+    'new_owner_email': {'api': 'newOwnerEmail', 'type': 'str'},
 }
 READ_ONLY = False
 API_NAME_MAP = {
@@ -241,13 +238,30 @@ def _collect_params(module_params: Dict[str, Any], names: List[str]) -> Dict[str
     return out
 
 
-def _desired_payload(module_params: Dict[str, Any]) -> Dict[str, Any]:
+def _build_payload(values: Dict[str, Any], schema: Dict[str, Any]) -> Dict[str, Any]:
     payload: Dict[str, Any] = {}
-    for name in BODY_FIELDS:
-        value = module_params.get(name)
-        if value is not None:
-            payload[BODY_FIELD_MAP.get(name, API_NAME_MAP.get(name, name))] = value
+    for field_name, field_info in schema.items():
+        val = values.get(field_name)
+        if val is None:
+            continue
+        api_name = field_info['api']
+        nested = field_info.get('nested')
+        ftype = field_info.get('type', 'str')
+        if nested and ftype == 'dict' and isinstance(val, dict):
+            inner = _build_payload(val, nested)
+            if inner:
+                payload[api_name] = inner
+        elif nested and ftype == 'list' and isinstance(val, list):
+            payload[api_name] = [
+                _build_payload(item, nested) for item in val if isinstance(item, dict)
+            ]
+        else:
+            payload[api_name] = val
     return payload
+
+
+def _desired_payload(module_params: Dict[str, Any]) -> Dict[str, Any]:
+    return _build_payload(module_params, BODY_SCHEMA)
 
 
 def _needs_update(current: Any, desired: Dict[str, Any]) -> bool:

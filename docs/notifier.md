@@ -15,14 +15,49 @@ operationId references are included in generated operation constants\.
 | api_url | True, str, default=None. Base API URL\. |
 | api_token | True, str, default=None. Bearer authentication token\. |
 | discord_notifier | optional, dict, default=None. Body field discordNotifier\. |
+| discord_notifier.channel_webhook_url | optional, str, default=None. Body field channelWebhookUrl\. |
+| discord_notifier.notifier_id | optional, str, default=None. Body field notifierId\. |
+
 | email_notifier | optional, dict, default=None. Body field emailNotifier\. |
+| email_notifier.from | optional, str, default=None. Body field from\. |
+| email_notifier.is_insecure_skip_verify | optional, bool, default=None. Body field isInsecureSkipVerify\. |
+| email_notifier.notifier_id | optional, str, default=None. Body field notifierId\. |
+| email_notifier.smtp_host | optional, str, default=None. Body field smtpHost\. |
+| email_notifier.smtp_password | optional, str, default=None. Body field smtpPassword\. |
+| email_notifier.smtp_port | optional, int, default=None. Body field smtpPort\. |
+| email_notifier.smtp_user | optional, str, default=None. Body field smtpUser\. |
+| email_notifier.target_email | optional, str, default=None. Body field targetEmail\. |
+
 | last_send_error | optional, str, default=None. Body field lastSendError\. |
 | name | True, str, default=None. Body field name\. |
 | notifier_type | optional, str, default=None. Body field notifierType\. |
 | slack_notifier | optional, dict, default=None. Body field slackNotifier\. |
+| slack_notifier.bot_token | optional, str, default=None. Body field botToken\. |
+| slack_notifier.notifier_id | optional, str, default=None. Body field notifierId\. |
+| slack_notifier.target_chat_id | optional, str, default=None. Body field targetChatId\. |
+
 | teams_notifier | optional, dict, default=None. Body field teamsNotifier\. |
-| telegram_notifier | optional, dict, default=None. Body field telegramNotifier\. |
+| teams_notifier.notifier_id | optional, str, default=None. Body field notifierId\. |
+| teams_notifier.power_automate_url | optional, str, default=None. Body field powerAutomateUrl\. |
+
+| telegram_notifier | optional, dict, default=None. specific notifier |
+| telegram_notifier.bot_token | optional, str, default=None. Body field botToken\. |
+| telegram_notifier.is_proxy_enabled | optional, bool, default=None. Body field isProxyEnabled\. |
+| telegram_notifier.notifier_id | optional, str, default=None. Body field notifierId\. |
+| telegram_notifier.proxy_url | optional, str, default=None. Body field proxyUrl\. |
+| telegram_notifier.target_chat_id | optional, str, default=None. Body field targetChatId\. |
+| telegram_notifier.thread_id | optional, int, default=None. Body field threadId\. |
+
 | webhook_notifier | optional, dict, default=None. Body field webhookNotifier\. |
+| webhook_notifier.body_template | optional, str, default=None. Body field bodyTemplate\. |
+| webhook_notifier.headers | optional, list, default=None. Body field headers\. |
+| webhook_notifier.headers.key | optional, str, default=None. Body field key\. |
+| webhook_notifier.headers.value | optional, str, default=None. Body field value\. |
+
+| webhook_notifier.notifier_id | optional, str, default=None. Body field notifierId\. |
+| webhook_notifier.webhook_method | optional, str, default=None. Body field webhookMethod\. |
+| webhook_notifier.webhook_url | optional, str, default=None. Body field webhookUrl\. |
+
 | workspace_id | optional, str, default=None. Workspace ID |
 
 

@@ -51,6 +51,11 @@ options:
     description:
       - Body field intendedWorkspaceRole.
     type: str
+    choices:
+      - WORKSPACE_OWNER
+      - WORKSPACE_ADMIN
+      - WORKSPACE_MEMBER
+      - WORKSPACE_VIEWER
   limit:
     description:
       - Number of items per page
@@ -152,15 +157,10 @@ DELETE_METHOD = None
 DELETE_PATH = None
 DELETE_PATH_PARAMS = []
 DELETE_QUERY_PARAMS = []
-BODY_FIELDS = [
-    'email',
-    'intended_workspace_id',
-    'intended_workspace_role',
-]
-BODY_FIELD_MAP = {
-    'email': 'email',
-    'intended_workspace_id': 'intendedWorkspaceId',
-    'intended_workspace_role': 'intendedWorkspaceRole',
+BODY_SCHEMA = {
+    'email': {'api': 'email', 'type': 'str'},
+    'intended_workspace_id': {'api': 'intendedWorkspaceId', 'type': 'str'},
+    'intended_workspace_role': {'api': 'intendedWorkspaceRole', 'type': 'str'},
 }
 READ_ONLY = False
 API_NAME_MAP = {
@@ -307,13 +307,30 @@ def _collect_params(module_params: Dict[str, Any], names: List[str]) -> Dict[str
     return out
 
 
-def _desired_payload(module_params: Dict[str, Any]) -> Dict[str, Any]:
+def _build_payload(values: Dict[str, Any], schema: Dict[str, Any]) -> Dict[str, Any]:
     payload: Dict[str, Any] = {}
-    for name in BODY_FIELDS:
-        value = module_params.get(name)
-        if value is not None:
-            payload[BODY_FIELD_MAP.get(name, API_NAME_MAP.get(name, name))] = value
+    for field_name, field_info in schema.items():
+        val = values.get(field_name)
+        if val is None:
+            continue
+        api_name = field_info['api']
+        nested = field_info.get('nested')
+        ftype = field_info.get('type', 'str')
+        if nested and ftype == 'dict' and isinstance(val, dict):
+            inner = _build_payload(val, nested)
+            if inner:
+                payload[api_name] = inner
+        elif nested and ftype == 'list' and isinstance(val, list):
+            payload[api_name] = [
+                _build_payload(item, nested) for item in val if isinstance(item, dict)
+            ]
+        else:
+            payload[api_name] = val
     return payload
+
+
+def _desired_payload(module_params: Dict[str, Any]) -> Dict[str, Any]:
+    return _build_payload(module_params, BODY_SCHEMA)
 
 
 def _needs_update(current: Any, desired: Dict[str, Any]) -> bool:
@@ -379,7 +396,7 @@ def run_module() -> None:
         email=dict(type='str', required=True),
         id=dict(type='str'),
         intended_workspace_id=dict(type='str'),
-        intended_workspace_role=dict(type='str'),
+        intended_workspace_role=dict(type='str', choices=['WORKSPACE_OWNER', 'WORKSPACE_ADMIN', 'WORKSPACE_MEMBER', 'WORKSPACE_VIEWER']),
         limit=dict(type='int'),
         offset=dict(type='int'),
         query=dict(type='str'),

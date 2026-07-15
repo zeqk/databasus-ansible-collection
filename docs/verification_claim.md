@@ -14,6 +14,11 @@ Allows managing verification\_claim resources using the Databasus API\.
 | api_token | True, str, default=None. Bearer authentication token\. |
 | agent_id | optional, str, default=None. Agent UUID |
 | capacity | optional, dict, default=None. Body field capacity\. |
+| capacity.max_concurrent_jobs | optional, int, default=None. Body field maxConcurrentJobs\. |
+| capacity.max_cpu | optional, int, default=None. Body field maxCpu\. |
+| capacity.max_disk_gb | optional, int, default=None. Body field maxDiskGb\. |
+| capacity.max_ram_mb | optional, int, default=None. Body field maxRamMb\. |
+
 
 
 ## Examples
@@ -151,7 +156,7 @@ Allows managing verification\_claim resources using the Databasus API\.
 | resource.database.postgresql_logical.port | success, int. Field port\. |
 | resource.database.postgresql_logical.ssl_client_cert | success, str. Field sslClientCert\. |
 | resource.database.postgresql_logical.ssl_client_key | success, str. Field sslClientKey\. |
-| resource.database.postgresql_logical.ssl_mode | success, dict. SSL / TLS connection settings |
+| resource.database.postgresql_logical.ssl_mode | success, str. SSL / TLS connection settings |
 | resource.database.postgresql_logical.ssl_root_cert | success, str. Field sslRootCert\. |
 | resource.database.postgresql_logical.username | success, str. Field username\. |
 | resource.database.postgresql_logical.version | success, str. Field version\. |
@@ -165,7 +170,7 @@ Allows managing verification\_claim resources using the Databasus API\.
 | resource.database.postgresql_physical.port | success, int. Field port\. |
 | resource.database.postgresql_physical.ssl_client_cert | success, str. Field sslClientCert\. |
 | resource.database.postgresql_physical.ssl_client_key | success, str. Field sslClientKey\. |
-| resource.database.postgresql_physical.ssl_mode | success, dict. SSL / TLS connection settings |
+| resource.database.postgresql_physical.ssl_mode | success, str. SSL / TLS connection settings |
 | resource.database.postgresql_physical.ssl_root_cert | success, str. Field sslRootCert\. |
 | resource.database.postgresql_physical.system_identifier | success, str. Field systemIdentifier\. |
 | resource.database.postgresql_physical.username | success, str. Field username\. |

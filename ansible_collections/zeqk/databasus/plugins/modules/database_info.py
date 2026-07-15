@@ -596,7 +596,7 @@ resource:
                 ssl_mode:
                     description:
                       - "SSL / TLS connection settings"
-                    type: dict
+                    type: str
                     returned: success
                 ssl_root_cert:
                     description:
@@ -662,7 +662,7 @@ resource:
                 ssl_mode:
                     description:
                       - "SSL / TLS connection settings"
-                    type: dict
+                    type: str
                     returned: success
                 ssl_root_cert:
                     description:

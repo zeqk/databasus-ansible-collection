@@ -19,6 +19,12 @@ operationId references are included in generated operation constants\.
 | schedule_type | optional, str, default=None. Body field scheduleType\. |
 | send_notifications_on | optional, list, default=None. Body field sendNotificationsOn\. |
 | verification_interval | optional, dict, default=None. Body field verificationInterval\. |
+| verification_interval.cron_expression | optional, str, default=None. Body field cronExpression\. |
+| verification_interval.day_of_month | optional, int, default=None. Body field dayOfMonth\. |
+| verification_interval.time_of_day | optional, str, default=None. Body field timeOfDay\. |
+| verification_interval.type | optional, str, default=None. Body field type\. |
+| verification_interval.weekday | optional, int, default=None. Body field weekday\. |
+
 
 
 ## Examples

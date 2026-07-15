@@ -13,6 +13,12 @@ Allows managing backup\_config resources using the Databasus API\.
 | api_url | True, str, default=None. Base API URL\. |
 | api_token | True, str, default=None. Bearer authentication token\. |
 | backup_interval | optional, dict, default=None. Body field backupInterval\. |
+| backup_interval.cron_expression | optional, str, default=None. Body field cronExpression\. |
+| backup_interval.day_of_month | optional, int, default=None. Body field dayOfMonth\. |
+| backup_interval.time_of_day | optional, str, default=None. Body field timeOfDay\. |
+| backup_interval.type | optional, str, default=None. Body field type\. |
+| backup_interval.weekday | optional, int, default=None. Body field weekday\. |
+
 | database_id | optional, str, default=None. Body field databaseId\. |
 | encryption | optional, str, default=None. Body field encryption\. |
 | id | optional, str, default=None. Database ID |
@@ -29,6 +35,79 @@ Allows managing backup\_config resources using the Databasus API\.
 | retention_time_period | optional, str, default=None. Body field retentionTimePeriod\. |
 | send_notifications_on | optional, list, default=None. Body field sendNotificationsOn\. |
 | storage | optional, dict, default=None. Body field storage\. |
+| storage.azure_blob_storage | optional, dict, default=None. Body field azureBlobStorage\. |
+| storage.azure_blob_storage.account_key | optional, str, default=None. Body field accountKey\. |
+| storage.azure_blob_storage.account_name | optional, str, default=None. Body field accountName\. |
+| storage.azure_blob_storage.auth_method | optional, str, default=None. Body field authMethod\. |
+| storage.azure_blob_storage.connection_string | optional, str, default=None. Body field connectionString\. |
+| storage.azure_blob_storage.container_name | optional, str, default=None. Body field containerName\. |
+| storage.azure_blob_storage.endpoint | optional, str, default=None. Body field endpoint\. |
+| storage.azure_blob_storage.prefix | optional, str, default=None. Body field prefix\. |
+| storage.azure_blob_storage.storage_id | optional, str, default=None. Body field storageId\. |
+
+| storage.ftp_storage | optional, dict, default=None. Body field ftpStorage\. |
+| storage.ftp_storage.host | optional, str, default=None. Body field host\. |
+| storage.ftp_storage.password | optional, str, default=None. Body field password\. |
+| storage.ftp_storage.path | optional, str, default=None. Body field path\. |
+| storage.ftp_storage.port | optional, int, default=None. Body field port\. |
+| storage.ftp_storage.skip_tls_verify | optional, bool, default=None. Body field skipTlsVerify\. |
+| storage.ftp_storage.storage_id | optional, str, default=None. Body field storageId\. |
+| storage.ftp_storage.use_ssl | optional, bool, default=None. Body field useSsl\. |
+| storage.ftp_storage.username | optional, str, default=None. Body field username\. |
+
+| storage.google_drive_storage | optional, dict, default=None. Body field googleDriveStorage\. |
+| storage.google_drive_storage.client_id | optional, str, default=None. Body field clientId\. |
+| storage.google_drive_storage.client_secret | optional, str, default=None. Body field clientSecret\. |
+| storage.google_drive_storage.storage_id | optional, str, default=None. Body field storageId\. |
+| storage.google_drive_storage.token_json | optional, str, default=None. Body field tokenJson\. |
+
+| storage.id | optional, str, default=None. Body field id\. |
+| storage.last_save_error | optional, str, default=None. Body field lastSaveError\. |
+| storage.local_storage | optional, dict, default=None. specific storage |
+| storage.local_storage.storage_id | optional, str, default=None. Body field storageId\. |
+
+| storage.name | optional, str, default=None. Body field name\. |
+| storage.nas_storage | optional, dict, default=None. Body field nasStorage\. |
+| storage.nas_storage.domain | optional, str, default=None. Body field domain\. |
+| storage.nas_storage.host | optional, str, default=None. Body field host\. |
+| storage.nas_storage.password | optional, str, default=None. Body field password\. |
+| storage.nas_storage.path | optional, str, default=None. Body field path\. |
+| storage.nas_storage.port | optional, int, default=None. Body field port\. |
+| storage.nas_storage.share | optional, str, default=None. Body field share\. |
+| storage.nas_storage.storage_id | optional, str, default=None. Body field storageId\. |
+| storage.nas_storage.use_ssl | optional, bool, default=None. Body field useSsl\. |
+| storage.nas_storage.username | optional, str, default=None. Body field username\. |
+
+| storage.rclone_storage | optional, dict, default=None. Body field rcloneStorage\. |
+| storage.rclone_storage.config_content | optional, str, default=None. Body field configContent\. |
+| storage.rclone_storage.remote_path | optional, str, default=None. Body field remotePath\. |
+| storage.rclone_storage.storage_id | optional, str, default=None. Body field storageId\. |
+
+| storage.s3_storage | optional, dict, default=None. Body field s3Storage\. |
+| storage.s3_storage.s3_access_key | optional, str, default=None. Body field s3AccessKey\. |
+| storage.s3_storage.s3_bucket | optional, str, default=None. Body field s3Bucket\. |
+| storage.s3_storage.s3_endpoint | optional, str, default=None. Body field s3Endpoint\. |
+| storage.s3_storage.s3_prefix | optional, str, default=None. Body field s3Prefix\. |
+| storage.s3_storage.s3_region | optional, str, default=None. Body field s3Region\. |
+| storage.s3_storage.s3_secret_key | optional, str, default=None. Body field s3SecretKey\. |
+| storage.s3_storage.s3_storage_class | optional, str, default=None. Body field s3StorageClass\. |
+| storage.s3_storage.s3_use_virtual_hosted_style | optional, bool, default=None. Body field s3UseVirtualHostedStyle\. |
+| storage.s3_storage.skip_tlsverify | optional, bool, default=None. Body field skipTLSVerify\. |
+| storage.s3_storage.storage_id | optional, str, default=None. Body field storageId\. |
+
+| storage.sftp_storage | optional, dict, default=None. Body field sftpStorage\. |
+| storage.sftp_storage.host | optional, str, default=None. Body field host\. |
+| storage.sftp_storage.password | optional, str, default=None. Body field password\. |
+| storage.sftp_storage.path | optional, str, default=None. Body field path\. |
+| storage.sftp_storage.port | optional, int, default=None. Body field port\. |
+| storage.sftp_storage.private_key | optional, str, default=None. Body field privateKey\. |
+| storage.sftp_storage.skip_host_key_verify | optional, bool, default=None. Body field skipHostKeyVerify\. |
+| storage.sftp_storage.storage_id | optional, str, default=None. Body field storageId\. |
+| storage.sftp_storage.username | optional, str, default=None. Body field username\. |
+
+| storage.type | optional, str, default=None. Body field type\. |
+| storage.workspace_id | optional, str, default=None. Body field workspaceId\. |
+
 | storage_id | optional, str, default=None. Body field storageId\. |
 
 

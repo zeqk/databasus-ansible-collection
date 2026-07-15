@@ -149,7 +149,7 @@ Allows managing database\_copy resources using the Databasus API\.
 | resource.postgresql_logical.port | success, int. Field port\. |
 | resource.postgresql_logical.ssl_client_cert | success, str. Field sslClientCert\. |
 | resource.postgresql_logical.ssl_client_key | success, str. Field sslClientKey\. |
-| resource.postgresql_logical.ssl_mode | success, dict. SSL / TLS connection settings |
+| resource.postgresql_logical.ssl_mode | success, str. SSL / TLS connection settings |
 | resource.postgresql_logical.ssl_root_cert | success, str. Field sslRootCert\. |
 | resource.postgresql_logical.username | success, str. Field username\. |
 | resource.postgresql_logical.version | success, str. Field version\. |
@@ -163,7 +163,7 @@ Allows managing database\_copy resources using the Databasus API\.
 | resource.postgresql_physical.port | success, int. Field port\. |
 | resource.postgresql_physical.ssl_client_cert | success, str. Field sslClientCert\. |
 | resource.postgresql_physical.ssl_client_key | success, str. Field sslClientKey\. |
-| resource.postgresql_physical.ssl_mode | success, dict. SSL / TLS connection settings |
+| resource.postgresql_physical.ssl_mode | success, str. SSL / TLS connection settings |
 | resource.postgresql_physical.ssl_root_cert | success, str. Field sslRootCert\. |
 | resource.postgresql_physical.system_identifier | success, str. Field systemIdentifier\. |
 | resource.postgresql_physical.username | success, str. Field username\. |

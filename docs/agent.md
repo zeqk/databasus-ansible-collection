@@ -20,9 +20,13 @@ Allows managing agent resources using the Databasus API\.
 | pg_restore_exit_code | optional, int, default=None. Body field pgRestoreExitCode\. |
 | restore_duration_ms | optional, int, default=None. Body field restoreDurationMs\. |
 | schema_count | optional, int, default=None. Body field schemaCount\. |
-| status | True, dict, default=None. Body field status\. |
+| status | True, str, default=None. Body field status\. |
 | table_count | optional, int, default=None. Body field tableCount\. |
 | table_stats | optional, list, default=None. Body field tableStats\. |
+| table_stats.name | True, str, default=None. Body field name\. |
+| table_stats.row_count | optional, int, default=None. Body field rowCount\. |
+| table_stats.schema_name | True, str, default=None. Body field schemaName\. |
+
 | verify_duration_ms | optional, int, default=None. Body field verifyDurationMs\. |
 
 

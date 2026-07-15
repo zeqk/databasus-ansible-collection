@@ -42,15 +42,48 @@ options:
     description:
       - Body field scheduleType.
     type: str
+    choices:
+      - INTERVAL
+      - AFTER_BACKUP
   send_notifications_on:
     description:
       - Body field sendNotificationsOn.
     type: list
     elements: str
+    choices:
+      - VERIFICATION_SUCCESS
+      - VERIFICATION_FAILED
   verification_interval:
     description:
       - Body field verificationInterval.
     type: dict
+    suboptions:
+      cron_expression:
+        description:
+          - Body field cronExpression.
+        type: str
+      day_of_month:
+        description:
+          - Body field dayOfMonth.
+        type: int
+      time_of_day:
+        description:
+          - Body field timeOfDay.
+        type: str
+      type:
+        description:
+          - Body field type.
+        type: str
+        choices:
+          - HOURLY
+          - DAILY
+          - WEEKLY
+          - MONTHLY
+          - CRON
+      weekday:
+        description:
+          - Body field weekday.
+        type: int
 author:
     - zeqk (@zeqk)
 """
@@ -172,17 +205,21 @@ DELETE_METHOD = None
 DELETE_PATH = None
 DELETE_PATH_PARAMS = []
 DELETE_QUERY_PARAMS = []
-BODY_FIELDS = [
-    'is_scheduled_verification_enabled',
-    'schedule_type',
-    'send_notifications_on',
-    'verification_interval',
-]
-BODY_FIELD_MAP = {
-    'is_scheduled_verification_enabled': 'isScheduledVerificationEnabled',
-    'schedule_type': 'scheduleType',
-    'send_notifications_on': 'sendNotificationsOn',
-    'verification_interval': 'verificationInterval',
+BODY_SCHEMA = {
+    'is_scheduled_verification_enabled': {'api': 'isScheduledVerificationEnabled', 'type': 'bool'},
+    'schedule_type': {'api': 'scheduleType', 'type': 'str'},
+    'send_notifications_on': {'api': 'sendNotificationsOn', 'type': 'list'},
+    'verification_interval': {
+        'api': 'verificationInterval',
+        'type': 'dict',
+        'nested': {
+            'cron_expression': {'api': 'cronExpression', 'type': 'str'},
+            'day_of_month': {'api': 'dayOfMonth', 'type': 'int'},
+            'time_of_day': {'api': 'timeOfDay', 'type': 'str'},
+            'type': {'api': 'type', 'type': 'str'},
+            'weekday': {'api': 'weekday', 'type': 'int'},
+        },
+    },
 }
 READ_ONLY = False
 API_NAME_MAP = {
@@ -326,13 +363,30 @@ def _collect_params(module_params: Dict[str, Any], names: List[str]) -> Dict[str
     return out
 
 
-def _desired_payload(module_params: Dict[str, Any]) -> Dict[str, Any]:
+def _build_payload(values: Dict[str, Any], schema: Dict[str, Any]) -> Dict[str, Any]:
     payload: Dict[str, Any] = {}
-    for name in BODY_FIELDS:
-        value = module_params.get(name)
-        if value is not None:
-            payload[BODY_FIELD_MAP.get(name, API_NAME_MAP.get(name, name))] = value
+    for field_name, field_info in schema.items():
+        val = values.get(field_name)
+        if val is None:
+            continue
+        api_name = field_info['api']
+        nested = field_info.get('nested')
+        ftype = field_info.get('type', 'str')
+        if nested and ftype == 'dict' and isinstance(val, dict):
+            inner = _build_payload(val, nested)
+            if inner:
+                payload[api_name] = inner
+        elif nested and ftype == 'list' and isinstance(val, list):
+            payload[api_name] = [
+                _build_payload(item, nested) for item in val if isinstance(item, dict)
+            ]
+        else:
+            payload[api_name] = val
     return payload
+
+
+def _desired_payload(module_params: Dict[str, Any]) -> Dict[str, Any]:
+    return _build_payload(module_params, BODY_SCHEMA)
 
 
 def _needs_update(current: Any, desired: Dict[str, Any]) -> bool:
@@ -396,9 +450,18 @@ def run_module() -> None:
         api_token=dict(type='str', required=True, no_log=True),
         database_id=dict(type='str'),
         is_scheduled_verification_enabled=dict(type='bool'),
-        schedule_type=dict(type='str'),
-        send_notifications_on=dict(type='list', elements='str'),
-        verification_interval=dict(type='dict'),
+        schedule_type=dict(type='str', choices=['INTERVAL', 'AFTER_BACKUP']),
+        send_notifications_on=dict(type='list', elements='str', choices=['VERIFICATION_SUCCESS', 'VERIFICATION_FAILED']),
+        verification_interval=dict(
+            type='dict',
+            options={
+                'cron_expression': dict(type='str'),
+                'day_of_month': dict(type='int'),
+                'time_of_day': dict(type='str'),
+                'type': dict(type='str', choices=['HOURLY', 'DAILY', 'WEEKLY', 'MONTHLY', 'CRON']),
+                'weekday': dict(type='int'),
+            },
+        ),
     )
     module = AnsibleModule(argument_spec=module_args, supports_check_mode=not READ_ONLY)
     params = module.params

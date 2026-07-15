@@ -33,6 +33,33 @@ options:
     description:
       - Body field backupInterval.
     type: dict
+    suboptions:
+      cron_expression:
+        description:
+          - Body field cronExpression.
+        type: str
+      day_of_month:
+        description:
+          - Body field dayOfMonth.
+        type: int
+      time_of_day:
+        description:
+          - Body field timeOfDay.
+        type: str
+      type:
+        description:
+          - Body field type.
+        type: str
+        choices:
+          - HOURLY
+          - DAILY
+          - WEEKLY
+          - MONTHLY
+          - CRON
+      weekday:
+        description:
+          - Body field weekday.
+        type: int
   database_id:
     description:
       - Body field databaseId.
@@ -41,6 +68,9 @@ options:
     description:
       - Body field encryption.
     type: str
+    choices:
+      - NONE
+      - ENCRYPTED
   id:
     description:
       - Database ID
@@ -85,19 +115,323 @@ options:
     description:
       - Body field retentionPolicyType.
     type: str
+    choices:
+      - TIME_PERIOD
+      - COUNT
+      - GFS
   retention_time_period:
     description:
       - Body field retentionTimePeriod.
     type: str
+    choices:
+      - DAY
+      - WEEK
+      - MONTH
+      - 3_MONTH
+      - 6_MONTH
+      - YEAR
+      - 2_YEARS
+      - 3_YEARS
+      - 4_YEARS
+      - 5_YEARS
+      - FOREVER
   send_notifications_on:
     description:
       - Body field sendNotificationsOn.
     type: list
     elements: str
+    choices:
+      - BACKUP_FAILED
+      - BACKUP_SUCCESS
   storage:
     description:
       - Body field storage.
     type: dict
+    suboptions:
+      azure_blob_storage:
+        description:
+          - Body field azureBlobStorage.
+        type: dict
+        suboptions:
+          account_key:
+            description:
+              - Body field accountKey.
+            type: str
+          account_name:
+            description:
+              - Body field accountName.
+            type: str
+          auth_method:
+            description:
+              - Body field authMethod.
+            type: str
+            choices:
+              - CONNECTION_STRING
+              - ACCOUNT_KEY
+          connection_string:
+            description:
+              - Body field connectionString.
+            type: str
+          container_name:
+            description:
+              - Body field containerName.
+            type: str
+          endpoint:
+            description:
+              - Body field endpoint.
+            type: str
+          prefix:
+            description:
+              - Body field prefix.
+            type: str
+          storage_id:
+            description:
+              - Body field storageId.
+            type: str
+      ftp_storage:
+        description:
+          - Body field ftpStorage.
+        type: dict
+        suboptions:
+          host:
+            description:
+              - Body field host.
+            type: str
+          password:
+            description:
+              - Body field password.
+            type: str
+          path:
+            description:
+              - Body field path.
+            type: str
+          port:
+            description:
+              - Body field port.
+            type: int
+          skip_tls_verify:
+            description:
+              - Body field skipTlsVerify.
+            type: bool
+          storage_id:
+            description:
+              - Body field storageId.
+            type: str
+          use_ssl:
+            description:
+              - Body field useSsl.
+            type: bool
+          username:
+            description:
+              - Body field username.
+            type: str
+      google_drive_storage:
+        description:
+          - Body field googleDriveStorage.
+        type: dict
+        suboptions:
+          client_id:
+            description:
+              - Body field clientId.
+            type: str
+          client_secret:
+            description:
+              - Body field clientSecret.
+            type: str
+          storage_id:
+            description:
+              - Body field storageId.
+            type: str
+          token_json:
+            description:
+              - Body field tokenJson.
+            type: str
+      id:
+        description:
+          - Body field id.
+        type: str
+      last_save_error:
+        description:
+          - Body field lastSaveError.
+        type: str
+      local_storage:
+        description:
+          - specific storage
+        type: dict
+        suboptions:
+          storage_id:
+            description:
+              - Body field storageId.
+            type: str
+      name:
+        description:
+          - Body field name.
+        type: str
+      nas_storage:
+        description:
+          - Body field nasStorage.
+        type: dict
+        suboptions:
+          domain:
+            description:
+              - Body field domain.
+            type: str
+          host:
+            description:
+              - Body field host.
+            type: str
+          password:
+            description:
+              - Body field password.
+            type: str
+          path:
+            description:
+              - Body field path.
+            type: str
+          port:
+            description:
+              - Body field port.
+            type: int
+          share:
+            description:
+              - Body field share.
+            type: str
+          storage_id:
+            description:
+              - Body field storageId.
+            type: str
+          use_ssl:
+            description:
+              - Body field useSsl.
+            type: bool
+          username:
+            description:
+              - Body field username.
+            type: str
+      rclone_storage:
+        description:
+          - Body field rcloneStorage.
+        type: dict
+        suboptions:
+          config_content:
+            description:
+              - Body field configContent.
+            type: str
+          remote_path:
+            description:
+              - Body field remotePath.
+            type: str
+          storage_id:
+            description:
+              - Body field storageId.
+            type: str
+      s3_storage:
+        description:
+          - Body field s3Storage.
+        type: dict
+        suboptions:
+          s3_access_key:
+            description:
+              - Body field s3AccessKey.
+            type: str
+          s3_bucket:
+            description:
+              - Body field s3Bucket.
+            type: str
+          s3_endpoint:
+            description:
+              - Body field s3Endpoint.
+            type: str
+          s3_prefix:
+            description:
+              - Body field s3Prefix.
+            type: str
+          s3_region:
+            description:
+              - Body field s3Region.
+            type: str
+          s3_secret_key:
+            description:
+              - Body field s3SecretKey.
+            type: str
+          s3_storage_class:
+            description:
+              - Body field s3StorageClass.
+            type: str
+            choices:
+              - ''
+              - STANDARD
+              - STANDARD_IA
+              - ONEZONE_IA
+              - INTELLIGENT_TIERING
+              - REDUCED_REDUNDANCY
+              - GLACIER_IR
+          s3_use_virtual_hosted_style:
+            description:
+              - Body field s3UseVirtualHostedStyle.
+            type: bool
+          skip_tlsverify:
+            description:
+              - Body field skipTLSVerify.
+            type: bool
+          storage_id:
+            description:
+              - Body field storageId.
+            type: str
+      sftp_storage:
+        description:
+          - Body field sftpStorage.
+        type: dict
+        suboptions:
+          host:
+            description:
+              - Body field host.
+            type: str
+          password:
+            description:
+              - Body field password.
+            type: str
+          path:
+            description:
+              - Body field path.
+            type: str
+          port:
+            description:
+              - Body field port.
+            type: int
+          private_key:
+            description:
+              - Body field privateKey.
+            type: str
+          skip_host_key_verify:
+            description:
+              - Body field skipHostKeyVerify.
+            type: bool
+          storage_id:
+            description:
+              - Body field storageId.
+            type: str
+          username:
+            description:
+              - Body field username.
+            type: str
+      type:
+        description:
+          - Body field type.
+        type: str
+        choices:
+          - LOCAL
+          - S3
+          - GOOGLE_DRIVE
+          - NAS
+          - AZURE_BLOB
+          - FTP
+          - SFTP
+          - RCLONE
+      workspace_id:
+        description:
+          - Body field workspaceId.
+        type: str
   storage_id:
     description:
       - Body field storageId.
@@ -602,43 +936,143 @@ DELETE_METHOD = None
 DELETE_PATH = None
 DELETE_PATH_PARAMS = []
 DELETE_QUERY_PARAMS = []
-BODY_FIELDS = [
-    'backup_interval',
-    'database_id',
-    'encryption',
-    'is_backups_enabled',
-    'is_retry_if_failed',
-    'max_failed_tries_count',
-    'retention_count',
-    'retention_gfs_days',
-    'retention_gfs_hours',
-    'retention_gfs_months',
-    'retention_gfs_weeks',
-    'retention_gfs_years',
-    'retention_policy_type',
-    'retention_time_period',
-    'send_notifications_on',
-    'storage',
-    'storage_id',
-]
-BODY_FIELD_MAP = {
-    'backup_interval': 'backupInterval',
-    'database_id': 'databaseId',
-    'encryption': 'encryption',
-    'is_backups_enabled': 'isBackupsEnabled',
-    'is_retry_if_failed': 'isRetryIfFailed',
-    'max_failed_tries_count': 'maxFailedTriesCount',
-    'retention_count': 'retentionCount',
-    'retention_gfs_days': 'retentionGfsDays',
-    'retention_gfs_hours': 'retentionGfsHours',
-    'retention_gfs_months': 'retentionGfsMonths',
-    'retention_gfs_weeks': 'retentionGfsWeeks',
-    'retention_gfs_years': 'retentionGfsYears',
-    'retention_policy_type': 'retentionPolicyType',
-    'retention_time_period': 'retentionTimePeriod',
-    'send_notifications_on': 'sendNotificationsOn',
-    'storage': 'storage',
-    'storage_id': 'storageId',
+BODY_SCHEMA = {
+    'backup_interval': {
+        'api': 'backupInterval',
+        'type': 'dict',
+        'nested': {
+            'cron_expression': {'api': 'cronExpression', 'type': 'str'},
+            'day_of_month': {'api': 'dayOfMonth', 'type': 'int'},
+            'time_of_day': {'api': 'timeOfDay', 'type': 'str'},
+            'type': {'api': 'type', 'type': 'str'},
+            'weekday': {'api': 'weekday', 'type': 'int'},
+        },
+    },
+    'database_id': {'api': 'databaseId', 'type': 'str'},
+    'encryption': {'api': 'encryption', 'type': 'str'},
+    'is_backups_enabled': {'api': 'isBackupsEnabled', 'type': 'bool'},
+    'is_retry_if_failed': {'api': 'isRetryIfFailed', 'type': 'bool'},
+    'max_failed_tries_count': {'api': 'maxFailedTriesCount', 'type': 'int'},
+    'retention_count': {'api': 'retentionCount', 'type': 'int'},
+    'retention_gfs_days': {'api': 'retentionGfsDays', 'type': 'int'},
+    'retention_gfs_hours': {'api': 'retentionGfsHours', 'type': 'int'},
+    'retention_gfs_months': {'api': 'retentionGfsMonths', 'type': 'int'},
+    'retention_gfs_weeks': {'api': 'retentionGfsWeeks', 'type': 'int'},
+    'retention_gfs_years': {'api': 'retentionGfsYears', 'type': 'int'},
+    'retention_policy_type': {'api': 'retentionPolicyType', 'type': 'str'},
+    'retention_time_period': {'api': 'retentionTimePeriod', 'type': 'str'},
+    'send_notifications_on': {'api': 'sendNotificationsOn', 'type': 'list'},
+    'storage': {
+        'api': 'storage',
+        'type': 'dict',
+        'nested': {
+            'azure_blob_storage': {
+                'api': 'azureBlobStorage',
+                'type': 'dict',
+                'nested': {
+                    'account_key': {'api': 'accountKey', 'type': 'str'},
+                    'account_name': {'api': 'accountName', 'type': 'str'},
+                    'auth_method': {'api': 'authMethod', 'type': 'str'},
+                    'connection_string': {'api': 'connectionString', 'type': 'str'},
+                    'container_name': {'api': 'containerName', 'type': 'str'},
+                    'endpoint': {'api': 'endpoint', 'type': 'str'},
+                    'prefix': {'api': 'prefix', 'type': 'str'},
+                    'storage_id': {'api': 'storageId', 'type': 'str'},
+                },
+            },
+            'ftp_storage': {
+                'api': 'ftpStorage',
+                'type': 'dict',
+                'nested': {
+                    'host': {'api': 'host', 'type': 'str'},
+                    'password': {'api': 'password', 'type': 'str'},
+                    'path': {'api': 'path', 'type': 'str'},
+                    'port': {'api': 'port', 'type': 'int'},
+                    'skip_tls_verify': {'api': 'skipTlsVerify', 'type': 'bool'},
+                    'storage_id': {'api': 'storageId', 'type': 'str'},
+                    'use_ssl': {'api': 'useSsl', 'type': 'bool'},
+                    'username': {'api': 'username', 'type': 'str'},
+                },
+            },
+            'google_drive_storage': {
+                'api': 'googleDriveStorage',
+                'type': 'dict',
+                'nested': {
+                    'client_id': {'api': 'clientId', 'type': 'str'},
+                    'client_secret': {'api': 'clientSecret', 'type': 'str'},
+                    'storage_id': {'api': 'storageId', 'type': 'str'},
+                    'token_json': {'api': 'tokenJson', 'type': 'str'},
+                },
+            },
+            'id': {'api': 'id', 'type': 'str'},
+            'last_save_error': {'api': 'lastSaveError', 'type': 'str'},
+            'local_storage': {
+                'api': 'localStorage',
+                'type': 'dict',
+                'nested': {
+                    'storage_id': {'api': 'storageId', 'type': 'str'},
+                },
+            },
+            'name': {'api': 'name', 'type': 'str'},
+            'nas_storage': {
+                'api': 'nasStorage',
+                'type': 'dict',
+                'nested': {
+                    'domain': {'api': 'domain', 'type': 'str'},
+                    'host': {'api': 'host', 'type': 'str'},
+                    'password': {'api': 'password', 'type': 'str'},
+                    'path': {'api': 'path', 'type': 'str'},
+                    'port': {'api': 'port', 'type': 'int'},
+                    'share': {'api': 'share', 'type': 'str'},
+                    'storage_id': {'api': 'storageId', 'type': 'str'},
+                    'use_ssl': {'api': 'useSsl', 'type': 'bool'},
+                    'username': {'api': 'username', 'type': 'str'},
+                },
+            },
+            'rclone_storage': {
+                'api': 'rcloneStorage',
+                'type': 'dict',
+                'nested': {
+                    'config_content': {'api': 'configContent', 'type': 'str'},
+                    'remote_path': {'api': 'remotePath', 'type': 'str'},
+                    'storage_id': {'api': 'storageId', 'type': 'str'},
+                },
+            },
+            's3_storage': {
+                'api': 's3Storage',
+                'type': 'dict',
+                'nested': {
+                    's3_access_key': {'api': 's3AccessKey', 'type': 'str'},
+                    's3_bucket': {'api': 's3Bucket', 'type': 'str'},
+                    's3_endpoint': {'api': 's3Endpoint', 'type': 'str'},
+                    's3_prefix': {'api': 's3Prefix', 'type': 'str'},
+                    's3_region': {'api': 's3Region', 'type': 'str'},
+                    's3_secret_key': {'api': 's3SecretKey', 'type': 'str'},
+                    's3_storage_class': {'api': 's3StorageClass', 'type': 'str'},
+                    's3_use_virtual_hosted_style': {'api': 's3UseVirtualHostedStyle', 'type': 'bool'},
+                    'skip_tlsverify': {'api': 'skipTLSVerify', 'type': 'bool'},
+                    'storage_id': {'api': 'storageId', 'type': 'str'},
+                },
+            },
+            'sftp_storage': {
+                'api': 'sftpStorage',
+                'type': 'dict',
+                'nested': {
+                    'host': {'api': 'host', 'type': 'str'},
+                    'password': {'api': 'password', 'type': 'str'},
+                    'path': {'api': 'path', 'type': 'str'},
+                    'port': {'api': 'port', 'type': 'int'},
+                    'private_key': {'api': 'privateKey', 'type': 'str'},
+                    'skip_host_key_verify': {'api': 'skipHostKeyVerify', 'type': 'bool'},
+                    'storage_id': {'api': 'storageId', 'type': 'str'},
+                    'username': {'api': 'username', 'type': 'str'},
+                },
+            },
+            'type': {'api': 'type', 'type': 'str'},
+            'workspace_id': {'api': 'workspaceId', 'type': 'str'},
+        },
+    },
+    'storage_id': {'api': 'storageId', 'type': 'str'},
 }
 READ_ONLY = False
 API_NAME_MAP = {
@@ -795,13 +1229,30 @@ def _collect_params(module_params: Dict[str, Any], names: List[str]) -> Dict[str
     return out
 
 
-def _desired_payload(module_params: Dict[str, Any]) -> Dict[str, Any]:
+def _build_payload(values: Dict[str, Any], schema: Dict[str, Any]) -> Dict[str, Any]:
     payload: Dict[str, Any] = {}
-    for name in BODY_FIELDS:
-        value = module_params.get(name)
-        if value is not None:
-            payload[BODY_FIELD_MAP.get(name, API_NAME_MAP.get(name, name))] = value
+    for field_name, field_info in schema.items():
+        val = values.get(field_name)
+        if val is None:
+            continue
+        api_name = field_info['api']
+        nested = field_info.get('nested')
+        ftype = field_info.get('type', 'str')
+        if nested and ftype == 'dict' and isinstance(val, dict):
+            inner = _build_payload(val, nested)
+            if inner:
+                payload[api_name] = inner
+        elif nested and ftype == 'list' and isinstance(val, list):
+            payload[api_name] = [
+                _build_payload(item, nested) for item in val if isinstance(item, dict)
+            ]
+        else:
+            payload[api_name] = val
     return payload
+
+
+def _desired_payload(module_params: Dict[str, Any]) -> Dict[str, Any]:
+    return _build_payload(module_params, BODY_SCHEMA)
 
 
 def _needs_update(current: Any, desired: Dict[str, Any]) -> bool:
@@ -863,9 +1314,18 @@ def run_module() -> None:
         state=dict(type='str', default='present', choices=['present', 'absent']),
         api_url=dict(type='str', required=True),
         api_token=dict(type='str', required=True, no_log=True),
-        backup_interval=dict(type='dict'),
+        backup_interval=dict(
+            type='dict',
+            options={
+                'cron_expression': dict(type='str'),
+                'day_of_month': dict(type='int'),
+                'time_of_day': dict(type='str'),
+                'type': dict(type='str', choices=['HOURLY', 'DAILY', 'WEEKLY', 'MONTHLY', 'CRON']),
+                'weekday': dict(type='int'),
+            },
+        ),
         database_id=dict(type='str'),
-        encryption=dict(type='str'),
+        encryption=dict(type='str', choices=['NONE', 'ENCRYPTED']),
         id=dict(type='str'),
         is_backups_enabled=dict(type='bool'),
         is_retry_if_failed=dict(type='bool'),
@@ -876,10 +1336,116 @@ def run_module() -> None:
         retention_gfs_months=dict(type='int'),
         retention_gfs_weeks=dict(type='int'),
         retention_gfs_years=dict(type='int'),
-        retention_policy_type=dict(type='str'),
-        retention_time_period=dict(type='str'),
-        send_notifications_on=dict(type='list', elements='str'),
-        storage=dict(type='dict'),
+        retention_policy_type=dict(type='str', choices=['TIME_PERIOD', 'COUNT', 'GFS']),
+        retention_time_period=dict(
+            type='str',
+            choices=['DAY', 'WEEK', 'MONTH', '3_MONTH', '6_MONTH', 'YEAR', '2_YEARS', '3_YEARS', '4_YEARS', '5_YEARS', 'FOREVER'],
+        ),
+        send_notifications_on=dict(type='list', elements='str', choices=['BACKUP_FAILED', 'BACKUP_SUCCESS']),
+        storage=dict(
+            type='dict',
+            options={
+                'azure_blob_storage': dict(
+                    type='dict',
+                    options={
+                        'account_key': dict(type='str', no_log=True),
+                        'account_name': dict(type='str'),
+                        'auth_method': dict(type='str', choices=['CONNECTION_STRING', 'ACCOUNT_KEY']),
+                        'connection_string': dict(type='str'),
+                        'container_name': dict(type='str'),
+                        'endpoint': dict(type='str'),
+                        'prefix': dict(type='str'),
+                        'storage_id': dict(type='str'),
+                    },
+                ),
+                'ftp_storage': dict(
+                    type='dict',
+                    options={
+                        'host': dict(type='str'),
+                        'password': dict(type='str', no_log=True),
+                        'path': dict(type='str'),
+                        'port': dict(type='int'),
+                        'skip_tls_verify': dict(type='bool'),
+                        'storage_id': dict(type='str'),
+                        'use_ssl': dict(type='bool'),
+                        'username': dict(type='str'),
+                    },
+                ),
+                'google_drive_storage': dict(
+                    type='dict',
+                    options={
+                        'client_id': dict(type='str'),
+                        'client_secret': dict(type='str', no_log=True),
+                        'storage_id': dict(type='str'),
+                        'token_json': dict(type='str', no_log=True),
+                    },
+                ),
+                'id': dict(type='str'),
+                'last_save_error': dict(type='str'),
+                'local_storage': dict(
+                    type='dict',
+                    options={
+                        'storage_id': dict(type='str'),
+                    },
+                ),
+                'name': dict(type='str'),
+                'nas_storage': dict(
+                    type='dict',
+                    options={
+                        'domain': dict(type='str'),
+                        'host': dict(type='str'),
+                        'password': dict(type='str', no_log=True),
+                        'path': dict(type='str'),
+                        'port': dict(type='int'),
+                        'share': dict(type='str'),
+                        'storage_id': dict(type='str'),
+                        'use_ssl': dict(type='bool'),
+                        'username': dict(type='str'),
+                    },
+                ),
+                'rclone_storage': dict(
+                    type='dict',
+                    options={
+                        'config_content': dict(type='str'),
+                        'remote_path': dict(type='str'),
+                        'storage_id': dict(type='str'),
+                    },
+                ),
+                's3_storage': dict(
+                    type='dict',
+                    options={
+                        's3_access_key': dict(type='str', no_log=True),
+                        's3_bucket': dict(type='str'),
+                        's3_endpoint': dict(type='str'),
+                        's3_prefix': dict(type='str'),
+                        's3_region': dict(type='str'),
+                        's3_secret_key': dict(type='str', no_log=True),
+                        's3_storage_class': dict(
+                            type='str',
+                            choices=['', 'STANDARD', 'STANDARD_IA', 'ONEZONE_IA', 'INTELLIGENT_TIERING', 'REDUCED_REDUNDANCY', 'GLACIER_IR'],
+                        ),
+                        's3_use_virtual_hosted_style': dict(type='bool'),
+                        'skip_tlsverify': dict(type='bool'),
+                        'storage_id': dict(type='str'),
+                    },
+                ),
+                'sftp_storage': dict(
+                    type='dict',
+                    options={
+                        'host': dict(type='str'),
+                        'password': dict(type='str', no_log=True),
+                        'path': dict(type='str'),
+                        'port': dict(type='int'),
+                        'private_key': dict(type='str', no_log=True),
+                        'skip_host_key_verify': dict(type='bool', no_log=True),
+                        'storage_id': dict(type='str'),
+                        'username': dict(type='str'),
+                    },
+                ),
+                'type': dict(type='str', choices=['LOCAL', 'S3', 'GOOGLE_DRIVE', 'NAS', 'AZURE_BLOB', 'FTP', 'SFTP', 'RCLONE']),
+                'workspace_id': dict(type='str'),
+            },
+        ),
         storage_id=dict(type='str'),
     )
     module = AnsibleModule(argument_spec=module_args, supports_check_mode=not READ_ONLY)

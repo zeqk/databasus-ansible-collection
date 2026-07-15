@@ -34,10 +34,52 @@ options:
     description:
       - Body field discordNotifier.
     type: dict
+    suboptions:
+      channel_webhook_url:
+        description:
+          - Body field channelWebhookUrl.
+        type: str
+      notifier_id:
+        description:
+          - Body field notifierId.
+        type: str
   email_notifier:
     description:
       - Body field emailNotifier.
     type: dict
+    suboptions:
+      from:
+        description:
+          - Body field from.
+        type: str
+      is_insecure_skip_verify:
+        description:
+          - Body field isInsecureSkipVerify.
+        type: bool
+      notifier_id:
+        description:
+          - Body field notifierId.
+        type: str
+      smtp_host:
+        description:
+          - Body field smtpHost.
+        type: str
+      smtp_password:
+        description:
+          - Body field smtpPassword.
+        type: str
+      smtp_port:
+        description:
+          - Body field smtpPort.
+        type: int
+      smtp_user:
+        description:
+          - Body field smtpUser.
+        type: str
+      target_email:
+        description:
+          - Body field targetEmail.
+        type: str
   last_send_error:
     description:
       - Body field lastSendError.
@@ -51,22 +93,110 @@ options:
     description:
       - Body field notifierType.
     type: str
+    choices:
+      - EMAIL
+      - TELEGRAM
+      - WEBHOOK
+      - SLACK
+      - DISCORD
+      - TEAMS
   slack_notifier:
     description:
       - Body field slackNotifier.
     type: dict
+    suboptions:
+      bot_token:
+        description:
+          - Body field botToken.
+        type: str
+      notifier_id:
+        description:
+          - Body field notifierId.
+        type: str
+      target_chat_id:
+        description:
+          - Body field targetChatId.
+        type: str
   teams_notifier:
     description:
       - Body field teamsNotifier.
     type: dict
+    suboptions:
+      notifier_id:
+        description:
+          - Body field notifierId.
+        type: str
+      power_automate_url:
+        description:
+          - Body field powerAutomateUrl.
+        type: str
   telegram_notifier:
     description:
-      - Body field telegramNotifier.
+      - specific notifier
     type: dict
+    suboptions:
+      bot_token:
+        description:
+          - Body field botToken.
+        type: str
+      is_proxy_enabled:
+        description:
+          - Body field isProxyEnabled.
+        type: bool
+      notifier_id:
+        description:
+          - Body field notifierId.
+        type: str
+      proxy_url:
+        description:
+          - Body field proxyUrl.
+        type: str
+      target_chat_id:
+        description:
+          - Body field targetChatId.
+        type: str
+      thread_id:
+        description:
+          - Body field threadId.
+        type: int
   webhook_notifier:
     description:
       - Body field webhookNotifier.
     type: dict
+    suboptions:
+      body_template:
+        description:
+          - Body field bodyTemplate.
+        type: str
+      headers:
+        description:
+          - Body field headers.
+        type: list
+        elements: dict
+        suboptions:
+          key:
+            description:
+              - Body field key.
+            type: str
+          value:
+            description:
+              - Body field value.
+            type: str
+      notifier_id:
+        description:
+          - Body field notifierId.
+        type: str
+      webhook_method:
+        description:
+          - Body field webhookMethod.
+        type: str
+        choices:
+          - POST
+          - GET
+      webhook_url:
+        description:
+          - Body field webhookUrl.
+        type: str
   workspace_id:
     description:
       - Workspace ID
@@ -341,31 +471,81 @@ DELETE_METHOD = 'DELETE'
 DELETE_PATH = '/notifiers/{id}'
 DELETE_PATH_PARAMS = ['id']
 DELETE_QUERY_PARAMS = []
-BODY_FIELDS = [
-    'discord_notifier',
-    'email_notifier',
-    'id',
-    'last_send_error',
-    'name',
-    'notifier_type',
-    'slack_notifier',
-    'teams_notifier',
-    'telegram_notifier',
-    'webhook_notifier',
-    'workspace_id',
-]
-BODY_FIELD_MAP = {
-    'discord_notifier': 'discordNotifier',
-    'email_notifier': 'emailNotifier',
-    'id': 'id',
-    'last_send_error': 'lastSendError',
-    'name': 'name',
-    'notifier_type': 'notifierType',
-    'slack_notifier': 'slackNotifier',
-    'teams_notifier': 'teamsNotifier',
-    'telegram_notifier': 'telegramNotifier',
-    'webhook_notifier': 'webhookNotifier',
-    'workspace_id': 'workspaceId',
+BODY_SCHEMA = {
+    'discord_notifier': {
+        'api': 'discordNotifier',
+        'type': 'dict',
+        'nested': {
+            'channel_webhook_url': {'api': 'channelWebhookUrl', 'type': 'str'},
+            'notifier_id': {'api': 'notifierId', 'type': 'str'},
+        },
+    },
+    'email_notifier': {
+        'api': 'emailNotifier',
+        'type': 'dict',
+        'nested': {
+            'from': {'api': 'from', 'type': 'str'},
+            'is_insecure_skip_verify': {'api': 'isInsecureSkipVerify', 'type': 'bool'},
+            'notifier_id': {'api': 'notifierId', 'type': 'str'},
+            'smtp_host': {'api': 'smtpHost', 'type': 'str'},
+            'smtp_password': {'api': 'smtpPassword', 'type': 'str'},
+            'smtp_port': {'api': 'smtpPort', 'type': 'int'},
+            'smtp_user': {'api': 'smtpUser', 'type': 'str'},
+            'target_email': {'api': 'targetEmail', 'type': 'str'},
+        },
+    },
+    'id': {'api': 'id', 'type': 'str'},
+    'last_send_error': {'api': 'lastSendError', 'type': 'str'},
+    'name': {'api': 'name', 'type': 'str'},
+    'notifier_type': {'api': 'notifierType', 'type': 'str'},
+    'slack_notifier': {
+        'api': 'slackNotifier',
+        'type': 'dict',
+        'nested': {
+            'bot_token': {'api': 'botToken', 'type': 'str'},
+            'notifier_id': {'api': 'notifierId', 'type': 'str'},
+            'target_chat_id': {'api': 'targetChatId', 'type': 'str'},
+        },
+    },
+    'teams_notifier': {
+        'api': 'teamsNotifier',
+        'type': 'dict',
+        'nested': {
+            'notifier_id': {'api': 'notifierId', 'type': 'str'},
+            'power_automate_url': {'api': 'powerAutomateUrl', 'type': 'str'},
+        },
+    },
+    'telegram_notifier': {
+        'api': 'telegramNotifier',
+        'type': 'dict',
+        'nested': {
+            'bot_token': {'api': 'botToken', 'type': 'str'},
+            'is_proxy_enabled': {'api': 'isProxyEnabled', 'type': 'bool'},
+            'notifier_id': {'api': 'notifierId', 'type': 'str'},
+            'proxy_url': {'api': 'proxyUrl', 'type': 'str'},
+            'target_chat_id': {'api': 'targetChatId', 'type': 'str'},
+            'thread_id': {'api': 'threadId', 'type': 'int'},
+        },
+    },
+    'webhook_notifier': {
+        'api': 'webhookNotifier',
+        'type': 'dict',
+        'nested': {
+            'body_template': {'api': 'bodyTemplate', 'type': 'str'},
+            'headers': {
+                'api': 'headers',
+                'type': 'list',
+                'nested': {
+                    'key': {'api': 'key', 'type': 'str'},
+                    'value': {'api': 'value', 'type': 'str'},
+                },
+            },
+            'notifier_id': {'api': 'notifierId', 'type': 'str'},
+            'webhook_method': {'api': 'webhookMethod', 'type': 'str'},
+            'webhook_url': {'api': 'webhookUrl', 'type': 'str'},
+        },
+    },
+    'workspace_id': {'api': 'workspace_id', 'type': 'str'},
 }
 READ_ONLY = False
 API_NAME_MAP = {
@@ -515,13 +695,30 @@ def _collect_params(module_params: Dict[str, Any], names: List[str]) -> Dict[str
     return out
 
 
-def _desired_payload(module_params: Dict[str, Any]) -> Dict[str, Any]:
+def _build_payload(values: Dict[str, Any], schema: Dict[str, Any]) -> Dict[str, Any]:
     payload: Dict[str, Any] = {}
-    for name in BODY_FIELDS:
-        value = module_params.get(name)
-        if value is not None:
-            payload[BODY_FIELD_MAP.get(name, API_NAME_MAP.get(name, name))] = value
+    for field_name, field_info in schema.items():
+        val = values.get(field_name)
+        if val is None:
+            continue
+        api_name = field_info['api']
+        nested = field_info.get('nested')
+        ftype = field_info.get('type', 'str')
+        if nested and ftype == 'dict' and isinstance(val, dict):
+            inner = _build_payload(val, nested)
+            if inner:
+                payload[api_name] = inner
+        elif nested and ftype == 'list' and isinstance(val, list):
+            payload[api_name] = [
+                _build_payload(item, nested) for item in val if isinstance(item, dict)
+            ]
+        else:
+            payload[api_name] = val
     return payload
+
+
+def _desired_payload(module_params: Dict[str, Any]) -> Dict[str, Any]:
+    return _build_payload(module_params, BODY_SCHEMA)
 
 
 def _needs_update(current: Any, desired: Dict[str, Any]) -> bool:
@@ -583,15 +780,72 @@ def run_module() -> None:
         state=dict(type='str', default='present', choices=['present', 'absent']),
         api_url=dict(type='str', required=True),
         api_token=dict(type='str', required=True, no_log=True),
-        discord_notifier=dict(type='dict'),
-        email_notifier=dict(type='dict'),
+        discord_notifier=dict(
+            type='dict',
+            options={
+                'channel_webhook_url': dict(type='str'),
+                'notifier_id': dict(type='str'),
+            },
+        ),
+        email_notifier=dict(
+            type='dict',
+            options={
+                'from': dict(type='str'),
+                'is_insecure_skip_verify': dict(type='bool'),
+                'notifier_id': dict(type='str'),
+                'smtp_host': dict(type='str'),
+                'smtp_password': dict(type='str', no_log=True),
+                'smtp_port': dict(type='int'),
+                'smtp_user': dict(type='str'),
+                'target_email': dict(type='str'),
+            },
+        ),
         last_send_error=dict(type='str'),
         name=dict(type='str', required=True),
-        notifier_type=dict(type='str'),
-        slack_notifier=dict(type='dict'),
-        teams_notifier=dict(type='dict'),
-        telegram_notifier=dict(type='dict'),
-        webhook_notifier=dict(type='dict'),
+        notifier_type=dict(type='str', choices=['EMAIL', 'TELEGRAM', 'WEBHOOK', 'SLACK', 'DISCORD', 'TEAMS']),
+        slack_notifier=dict(
+            type='dict',
+            options={
+                'bot_token': dict(type='str', no_log=True),
+                'notifier_id': dict(type='str'),
+                'target_chat_id': dict(type='str'),
+            },
+        ),
+        teams_notifier=dict(
+            type='dict',
+            options={
+                'notifier_id': dict(type='str'),
+                'power_automate_url': dict(type='str'),
+            },
+        ),
+        telegram_notifier=dict(
+            type='dict',
+            options={
+                'bot_token': dict(type='str', no_log=True),
+                'is_proxy_enabled': dict(type='bool'),
+                'notifier_id': dict(type='str'),
+                'proxy_url': dict(type='str'),
+                'target_chat_id': dict(type='str'),
+                'thread_id': dict(type='int'),
+            },
+        ),
+        webhook_notifier=dict(
+            type='dict',
+            options={
+                'body_template': dict(type='str'),
+                'headers': dict(
+                    type='list',
+                    elements='dict',
+                    options={
+                        'key': dict(type='str', no_log=True),
+                        'value': dict(type='str'),
+                    },
+                ),
+                'notifier_id': dict(type='str'),
+                'webhook_method': dict(type='str', choices=['POST', 'GET']),
+                'webhook_url': dict(type='str'),
+            },
+        ),
         workspace_id=dict(type='str'),
     )
     module = AnsibleModule(argument_spec=module_args, supports_check_mode=not READ_ONLY)

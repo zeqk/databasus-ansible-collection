@@ -15,7 +15,7 @@ operationId references are included in generated operation constants\.
 | api_url | True, str, default=None. Base API URL\. |
 | api_token | True, str, default=None. Bearer authentication token\. |
 | id | optional, str, default=None. Database ID |
-| type | True, dict, default=None. Body field type\. |
+| type | True, str, default=None. Body field type\. |
 
 
 ## Examples

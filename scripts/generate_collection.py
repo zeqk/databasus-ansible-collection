@@ -115,45 +115,155 @@ def resolve_schema(schema: Any, definitions: Dict[str, Any], depth: int = 0) -> 
         return {}
 
     if "allOf" in schema:
-        merged = {"type": "object", "properties": {}, "required": []}
+        merged_props: Dict[str, Any] = {}
+        merged_required: List[str] = []
+        enum_part: Optional[Dict[str, Any]] = None
         for sub in schema["allOf"]:
             part = resolve_schema(sub, definitions, depth + 1)
-            merged["properties"].update(part.get("properties", {}))
-            merged["required"].extend(part.get("required", []))
-        merged["required"] = sorted(set(merged["required"]))
-        return merged
+            if "enum" in part and not part.get("properties"):
+                enum_part = part  # scalar/enum sub-schema (e.g. allOf:[{$ref: SomeStringEnum}])
+            merged_props.update(part.get("properties", {}))
+            merged_required.extend(part.get("required", []))
+        if enum_part is not None and not merged_props:
+            # allOf resolves to a scalar enum; return it directly
+            return enum_part
+        return {"type": "object", "properties": merged_props, "required": sorted(set(merged_required))}
 
     return schema
+
+
+def _needs_yaml_quoting(value: str) -> bool:
+    """Return True when the string value needs YAML quoting to remain a string type."""
+    if not value:
+        return True
+    if value.lower() in ("true", "false", "null", "yes", "no", "on", "off"):
+        return True
+    try:
+        float(value)
+        return True
+    except ValueError:
+        return False
+
+
+_SECRET_SUBSTRINGS = ("token", "secret", "password", "apikey", "api_key", "key")
+
+
+def _get_enum_choices(raw_pdef: Dict[str, Any], definitions: Dict[str, Any]) -> Optional[List[str]]:
+    """Return enum values as strings if the schema describes an enum type, else None."""
+    if not isinstance(raw_pdef, dict):
+        return None
+    # 1. Inline enum on the raw property (e.g. TriggerBackupRequest.type has both enum and allOf)
+    if "enum" in raw_pdef:
+        return [str(v) for v in raw_pdef["enum"]]
+    # 2. After full resolution ($ref → enum, allOf → scalar enum)
+    resolved = resolve_schema(raw_pdef, definitions)
+    if "enum" in resolved:
+        return [str(v) for v in resolved["enum"]]
+    return None
+
+
+def _build_field_meta(
+    api_name: str,
+    raw_pdef: Dict[str, Any],
+    definitions: Dict[str, Any],
+    required: bool,
+    source: str,
+    depth: int = 0,
+) -> Dict[str, Any]:
+    """Build complete field metadata for one OpenAPI property, including nested suboptions."""
+    _MAX_DEPTH = 3
+    resolved = resolve_schema(raw_pdef, definitions)
+    ptype = json_type_to_ansible(resolved.get("type", "string"))
+    description = sanitize_text(
+        (raw_pdef.get("description") if isinstance(raw_pdef, dict) else None)
+        or resolved.get("description")
+        or f"Body field {api_name}."
+    )
+    meta: Dict[str, Any] = {
+        "api_name": api_name,
+        "description": description,
+        "type": ptype,
+        "required": required,
+        "source": source,
+    }
+    lname = api_name.lower()
+    if any(s in lname for s in _SECRET_SUBSTRINGS):
+        meta["no_log"] = True
+
+    # Detect enum choices (handles direct enum, $ref→enum, allOf→scalar enum)
+    choices = _get_enum_choices(raw_pdef, definitions)
+    if choices:
+        meta["choices"] = choices
+        return meta
+
+    if ptype == "list":
+        raw_items: Dict[str, Any] = (raw_pdef.get("items") or {}) if isinstance(raw_pdef, dict) else {}
+        if not raw_items:
+            raw_items = resolved.get("items") or {}
+        items_resolved = resolve_schema(raw_items, definitions)
+        items_type = json_type_to_ansible(items_resolved.get("type", "string"))
+
+        # Array of enum scalars (e.g. sendNotificationsOn: [BackupNotificationType, ...])
+        item_choices = _get_enum_choices(raw_items, definitions)
+        if item_choices:
+            meta["elements"] = "str"
+            meta["choices"] = item_choices
+            return meta
+
+        # Array of objects
+        if items_type == "dict" and depth < _MAX_DEPTH and items_resolved.get("properties"):
+            items_props = items_resolved.get("properties", {})
+            items_req = set(items_resolved.get("required") or [])
+            sub_opts: Dict[str, Any] = {}
+            for child_api_name, child_raw in items_props.items():
+                child_meta = _build_field_meta(
+                    child_api_name, child_raw, definitions,
+                    required=(child_api_name in items_req),
+                    source=source,
+                    depth=depth + 1,
+                )
+                sub_opts[snake(child_api_name)] = child_meta
+            meta["elements"] = "dict"
+            if sub_opts:
+                meta["options"] = sub_opts
+        else:
+            meta["elements"] = items_type if items_type != "dict" else "str"
+        return meta
+
+    # Nested object
+    if ptype == "dict" and depth < _MAX_DEPTH and resolved.get("properties"):
+        props = resolved.get("properties", {})
+        req_set = set(resolved.get("required") or [])
+        sub_opts = {}
+        for child_api_name, child_raw in props.items():
+            child_meta = _build_field_meta(
+                child_api_name, child_raw, definitions,
+                required=(child_api_name in req_set),
+                source=source,
+                depth=depth + 1,
+            )
+            sub_opts[snake(child_api_name)] = child_meta
+        if sub_opts:
+            meta["options"] = sub_opts
+
+    return meta
 
 
 def extract_body_fields(schema: Dict[str, Any], definitions: Dict[str, Any]) -> Dict[str, Dict[str, Any]]:
     schema = resolve_schema(schema, definitions)
     if not isinstance(schema, dict):
         return {}
-
     props = schema.get("properties") or {}
     required = set(schema.get("required") or [])
     out: Dict[str, Dict[str, Any]] = {}
     for api_name, pdef in props.items():
-        pdef = resolve_schema(pdef, definitions)
         name = snake(api_name)
-        ptype = json_type_to_ansible(pdef.get("type", "string"))
-        elements = None
-        if ptype == "list":
-            items = resolve_schema(pdef.get("items", {}), definitions)
-            elements = json_type_to_ansible(items.get("type", "string"))
-        out[name] = {
-            "api_name": api_name,
-            "description": sanitize_text(pdef.get("description") or f"Body field {api_name}."),
-            "type": ptype,
-            "required": api_name in required,
-            "source": "body",
-        }
-        if elements:
-            out[name]["elements"] = elements
-        lname = api_name.lower()
-        if any(secret in lname for secret in ("token", "secret", "password", "apikey", "api_key", "key")):
-            out[name]["no_log"] = True
+        out[name] = _build_field_meta(
+            api_name, pdef, definitions,
+            required=(api_name in required),
+            source="body",
+            depth=0,
+        )
     return out
 
 
@@ -267,25 +377,37 @@ def pick_best(ops: List[Dict[str, Any]]) -> Optional[Dict[str, Any]]:
     return sorted(ops, key=lambda x: (len(x["path"]), x["path"]))[0]
 
 
-def option_doc_block(name: str, meta: Dict[str, Any]) -> str:
-    lines = [f"  {name}:"]
-    lines.append("    description:")
-    lines.append(f"      - {sanitize_text(meta.get('description', 'No description.')).replace(':', ';')}")
-    lines.append(f"    type: {meta.get('type', 'str')}")
+def option_doc_block(name: str, meta: Dict[str, Any], indent: int = 0) -> str:
+    i = indent
+    lines = [f"{' ' * (i + 2)}{name}:"]
+    lines.append(f"{' ' * (i + 4)}description:")
+    desc = sanitize_text(meta.get("description", "No description.")).replace(":", ";")
+    lines.append(f"{' ' * (i + 6)}- {desc}")
+    lines.append(f"{' ' * (i + 4)}type: {meta.get('type', 'str')}")
     if meta.get("type") == "list":
-        lines.append(f"    elements: {meta.get('elements', 'str')}")
+        lines.append(f"{' ' * (i + 4)}elements: {meta.get('elements', 'str')}")
     if meta.get("required"):
-        lines.append("    required: true")
+        lines.append(f"{' ' * (i + 4)}required: true")
     if "choices" in meta:
-        lines.append("    choices:")
+        lines.append(f"{' ' * (i + 4)}choices:")
         for choice in meta["choices"]:
-            lines.append(f"      - {choice}")
+            choice_str = str(choice)
+            if _needs_yaml_quoting(choice_str):
+                lines.append(f"{' ' * (i + 6)}- '{choice_str}'")
+            else:
+                lines.append(f"{' ' * (i + 6)}- {choice_str}")
     if "default" in meta:
-        lines.append(f"    default: {meta['default']}")
+        lines.append(f"{' ' * (i + 4)}default: {meta['default']}")
+    sub_opts = meta.get("options")
+    if sub_opts:
+        lines.append(f"{' ' * (i + 4)}suboptions:")
+        for sub_name in sorted(sub_opts):
+            lines.append(option_doc_block(sub_name, sub_opts[sub_name], indent=i + 4))
     return "\n".join(lines)
 
 
 def arg_spec_line(meta: Dict[str, Any]) -> str:
+    """Return the dict(...) fragment for a simple (non-nested) arg_spec entry."""
     chunks = [f"type='{meta.get('type', 'str')}'"]
     if meta.get("type") == "list":
         chunks.append(f"elements='{meta.get('elements', 'str')}'")
@@ -312,6 +434,91 @@ def format_dict_literal(values: Dict[str, str]) -> str:
         return "{}"
     lines = [f"    {repr(key)}: {repr(val)}," for key, val in values.items()]
     return "{\n" + "\n".join(lines) + "\n}"
+
+
+def _meta_to_schema_info(meta: Dict[str, Any]) -> Dict[str, Any]:
+    """Convert internal field meta to the compact form stored in BODY_SCHEMA."""
+    info: Dict[str, Any] = {"api": meta.get("api_name", ""), "type": meta.get("type", "str")}
+    sub_opts = meta.get("options")
+    if sub_opts:
+        info["nested"] = {k: _meta_to_schema_info(v) for k, v in sub_opts.items()}
+    return info
+
+
+def _format_schema_literal(schema: Dict[str, Any], indent: int = 0) -> str:
+    """Render a BODY_SCHEMA dict as valid Python source code."""
+    if not schema:
+        return "{}"
+    prefix = " " * indent
+    inner = " " * (indent + 4)
+    lines = ["{"]
+    for name, info in schema.items():
+        nested = info.get("nested")
+        ftype = info.get("type", "str")
+        api = info.get("api", "")
+        if nested:
+            nested_str = _format_schema_literal(nested, indent + 8)
+            lines.append(f"{inner}{repr(name)}: {{")
+            lines.append(f"{inner}    'api': {repr(api)},")
+            lines.append(f"{inner}    'type': {repr(ftype)},")
+            lines.append(f"{inner}    'nested': {nested_str},")
+            lines.append(f"{inner}}},")
+        else:
+            lines.append(f"{inner}{repr(name)}: {{'api': {repr(api)}, 'type': {repr(ftype)}}},")
+    lines.append(f"{prefix}}}")
+    return "\n".join(lines)
+
+
+def _format_nested_arg_spec(meta: Dict[str, Any], indent: int) -> str:
+    """Return the dict(...) fragment for one arg_spec entry, with recursive suboptions."""
+    ptype = meta.get("type", "str")
+    chunks: List[str] = [f"type='{ptype}'"]
+    if ptype == "list":
+        chunks.append(f"elements='{meta.get('elements', 'str')}'")
+    if meta.get("required"):
+        chunks.append("required=True")
+    if "default" in meta:
+        chunks.append(f"default='{meta['default']}'")
+    if "choices" in meta:
+        choices_str = ", ".join(f"'{c}'" for c in meta["choices"])
+        chunks.append(f"choices=[{choices_str}]")
+    if meta.get("no_log"):
+        chunks.append("no_log=True")
+
+    sub_opts = meta.get("options")
+    if not sub_opts:
+        simple = f"dict({', '.join(chunks)})"
+        # Break onto multiple lines when too long to avoid pep8 E501
+        if len(simple) > 110:
+            inner_indent = indent + 4
+            chunks_joined = f",\n{' ' * inner_indent}".join(chunks)
+            return f"dict(\n{' ' * inner_indent}{chunks_joined},\n{' ' * indent})"
+        return simple
+
+    # Has nested options → emit multiline.
+    # Use dict-literal syntax {key: val} (not dict(key=val) kwargs) so that
+    # API field names that are Python keywords (e.g. 'from') remain valid.
+    inner_indent = indent + 4
+    chunks_joined = f",\n{' ' * inner_indent}".join(chunks)
+    sub_lines = []
+    for sub_name in sorted(sub_opts):
+        sub_spec = _format_nested_arg_spec(sub_opts[sub_name], inner_indent + 4)
+        sub_lines.append(f"{' ' * (inner_indent + 4)}{repr(sub_name)}: {sub_spec},")
+    sub_block = "\n".join(sub_lines)
+    return (
+        f"dict(\n"
+        f"{' ' * inner_indent}{chunks_joined},\n"
+        f"{' ' * inner_indent}options={{\n"
+        f"{sub_block}\n"
+        f"{' ' * inner_indent}}},\n"
+        f"{' ' * indent})"
+    )
+
+
+def format_arg_spec_entry(name: str, meta: Dict[str, Any], indent: int = 8) -> str:
+    """Return the complete arg_spec line(s) for one module parameter."""
+    spec = _format_nested_arg_spec(meta, indent)
+    return f"{' ' * indent}{name}={spec},"
 
 
 def create_jinja_env(template_dir: Path) -> Environment:
@@ -515,6 +722,15 @@ def build_resources(spec: Dict[str, Any]) -> Dict[str, Dict[str, Any]]:
                 }
                 if elements:
                     params[pname]["elements"] = elements
+                # Capture enum choices for query/path params
+                p_enum = p.get("enum")
+                if p_enum:
+                    params[pname]["choices"] = [str(v) for v in p_enum]
+                elif ptype == "list":
+                    items_spec = p.get("items") or {}
+                    item_enum = items_spec.get("enum") if isinstance(items_spec, dict) else None
+                    if item_enum:
+                        params[pname]["choices"] = [str(v) for v in item_enum]
                 lname = str(p.get("name", pname)).lower()
                 if any(secret in lname for secret in ("token", "secret", "password", "apikey", "api_key", "key")):
                     params[pname]["no_log"] = True
@@ -581,6 +797,13 @@ def generate_collection(spec_path: Path, output_dir: Path) -> Tuple[int, List[Tu
             query_params_by_op[opname] = sorted(set(qnames))
 
         body_field_names = sorted(set(body_field_names))
+
+        body_schema = {
+            field_name: _meta_to_schema_info(params[field_name])
+            for field_name in body_field_names
+            if field_name in params
+        }
+        body_schema_literal = _format_schema_literal(body_schema)
 
         name_addressable = "name" in body_field_names and bool(ops.get("list"))
         create_spec = (ops.get("create") or {}).get("spec", {})
@@ -685,7 +908,7 @@ def generate_collection(spec_path: Path, output_dir: Path) -> Tuple[int, List[Tu
             if name_field:
                 examples.append("    name: example-name")
 
-        arg_lines = [f"        {p}={arg_spec_line(params[p])}," for p in ordered if p in params]
+        arg_lines = [format_arg_spec_entry(p, params[p]) for p in ordered if p in params]
 
         required_delete = [p for p in path_params_by_op.get("delete", []) if params.get(p, {}).get("required_in_api")]
         required_get = [p for p in path_params_by_op.get("get", []) if params.get(p, {}).get("required_in_api")]
@@ -694,8 +917,6 @@ def generate_collection(spec_path: Path, output_dir: Path) -> Tuple[int, List[Tu
 
         api_name_map = {k: v["api_name"] for k, v in params.items() if "api_name" in v}
 
-        body_fields_literal = format_list_literal(body_field_names)
-        body_field_map_literal = format_dict_literal(body_field_api_map)
         match_fields_literal = repr(match_fields)
         api_name_map_literal = format_dict_literal(api_name_map)
         resource_return_fields = resource_response_fields(ops, definitions)
@@ -732,8 +953,7 @@ def generate_collection(spec_path: Path, output_dir: Path) -> Tuple[int, List[Tu
             d_path=d_path,
             d_pp=d_pp,
             d_qp=d_qp,
-            body_fields_literal=body_fields_literal,
-            body_field_map_literal=body_field_map_literal,
+            body_schema_literal=body_schema_literal,
             read_only=str(not mutable),
             api_name_map_literal=api_name_map_literal,
             required_delete=repr(required_delete),
