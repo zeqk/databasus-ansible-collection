@@ -10,10 +10,12 @@ module: backup_config
 short_description: Manage backup_config resources in Databasus.
 description:
   - Allows managing backup_config resources using the Databasus API.
+  - Uses ``GET /backup-configs/database/{id}``.
+  - Uses ``POST /backup-configs/save``.
 options:
   state:
     description:
-      - Desired state of the resource.
+      - Desired state of the resource. Possible values; present, absent.
     type: str
     choices:
       - present
@@ -33,14 +35,44 @@ options:
     description:
       - Body field backupInterval.
     type: dict
+    suboptions:
+      cron_expression:
+        description:
+          - Body field cronExpression.
+        type: str
+      day_of_month:
+        description:
+          - Body field dayOfMonth.
+        type: int
+      time_of_day:
+        description:
+          - Body field timeOfDay.
+        type: str
+      type:
+        description:
+          - Body field type. Possible values; HOURLY, DAILY, WEEKLY, MONTHLY, CRON.
+        type: str
+        choices:
+          - HOURLY
+          - DAILY
+          - WEEKLY
+          - MONTHLY
+          - CRON
+      weekday:
+        description:
+          - Body field weekday.
+        type: int
   database_id:
     description:
       - Body field databaseId.
     type: str
   encryption:
     description:
-      - Body field encryption.
+      - Body field encryption. Possible values; NONE, ENCRYPTED.
     type: str
+    choices:
+      - NONE
+      - ENCRYPTED
   id:
     description:
       - Database ID
@@ -83,21 +115,36 @@ options:
     type: int
   retention_policy_type:
     description:
-      - Body field retentionPolicyType.
+      - Body field retentionPolicyType. Possible values; TIME_PERIOD, COUNT, GFS.
     type: str
+    choices:
+      - TIME_PERIOD
+      - COUNT
+      - GFS
   retention_time_period:
     description:
-      - Body field retentionTimePeriod.
+      - Body field retentionTimePeriod. Possible values; DAY, WEEK, MONTH, 3_MONTH, 6_MONTH, YEAR, 2_YEARS, 3_YEARS, 4_YEARS, 5_YEARS, FOREVER.
     type: str
+    choices:
+      - DAY
+      - WEEK
+      - MONTH
+      - 3_MONTH
+      - 6_MONTH
+      - YEAR
+      - 2_YEARS
+      - 3_YEARS
+      - 4_YEARS
+      - 5_YEARS
+      - FOREVER
   send_notifications_on:
     description:
-      - Body field sendNotificationsOn.
+      - Body field sendNotificationsOn. Possible values; BACKUP_FAILED, BACKUP_SUCCESS.
     type: list
     elements: str
-  storage:
-    description:
-      - Body field storage.
-    type: dict
+    choices:
+      - BACKUP_FAILED
+      - BACKUP_SUCCESS
   storage_id:
     description:
       - Body field storageId.
@@ -120,6 +167,448 @@ resource:
     description: Resource object as returned by the API.
     type: dict
     returned: always
+    contains:
+        backup_interval:
+            description:
+              - "Field backupInterval."
+            type: dict
+            returned: success
+            contains:
+                cron_expression:
+                    description:
+                      - "Field cronExpression."
+                    type: str
+                    returned: success
+                day_of_month:
+                    description:
+                      - "Field dayOfMonth."
+                    type: int
+                    returned: success
+                time_of_day:
+                    description:
+                      - "Field timeOfDay."
+                    type: str
+                    returned: success
+                type:
+                    description:
+                      - "Field type."
+                    type: str
+                    returned: success
+                weekday:
+                    description:
+                      - "Field weekday."
+                    type: int
+                    returned: success
+        database_id:
+            description:
+              - "Field databaseId."
+            type: str
+            returned: success
+        encryption:
+            description:
+              - "Field encryption."
+            type: str
+            returned: success
+        is_backups_enabled:
+            description:
+              - "Field isBackupsEnabled."
+            type: bool
+            returned: success
+        is_retry_if_failed:
+            description:
+              - "Field isRetryIfFailed."
+            type: bool
+            returned: success
+        max_failed_tries_count:
+            description:
+              - "Field maxFailedTriesCount."
+            type: int
+            returned: success
+        retention_count:
+            description:
+              - "Field retentionCount."
+            type: int
+            returned: success
+        retention_gfs_days:
+            description:
+              - "Field retentionGfsDays."
+            type: int
+            returned: success
+        retention_gfs_hours:
+            description:
+              - "Field retentionGfsHours."
+            type: int
+            returned: success
+        retention_gfs_months:
+            description:
+              - "Field retentionGfsMonths."
+            type: int
+            returned: success
+        retention_gfs_weeks:
+            description:
+              - "Field retentionGfsWeeks."
+            type: int
+            returned: success
+        retention_gfs_years:
+            description:
+              - "Field retentionGfsYears."
+            type: int
+            returned: success
+        retention_policy_type:
+            description:
+              - "Field retentionPolicyType."
+            type: str
+            returned: success
+        retention_time_period:
+            description:
+              - "Field retentionTimePeriod."
+            type: str
+            returned: success
+        send_notifications_on:
+            description:
+              - "Field sendNotificationsOn."
+            type: list
+            elements: str
+            returned: success
+        storage:
+            description:
+              - "Field storage."
+            type: dict
+            returned: success
+            contains:
+                azure_blob_storage:
+                    description:
+                      - "Field azureBlobStorage."
+                    type: dict
+                    returned: success
+                    contains:
+                        account_key:
+                            description:
+                              - "Field accountKey."
+                            type: str
+                            returned: success
+                        account_name:
+                            description:
+                              - "Field accountName."
+                            type: str
+                            returned: success
+                        auth_method:
+                            description:
+                              - "Field authMethod."
+                            type: str
+                            returned: success
+                        connection_string:
+                            description:
+                              - "Field connectionString."
+                            type: str
+                            returned: success
+                        container_name:
+                            description:
+                              - "Field containerName."
+                            type: str
+                            returned: success
+                        endpoint:
+                            description:
+                              - "Field endpoint."
+                            type: str
+                            returned: success
+                        prefix:
+                            description:
+                              - "Field prefix."
+                            type: str
+                            returned: success
+                        storage_id:
+                            description:
+                              - "Field storageId."
+                            type: str
+                            returned: success
+                ftp_storage:
+                    description:
+                      - "Field ftpStorage."
+                    type: dict
+                    returned: success
+                    contains:
+                        host:
+                            description:
+                              - "Field host."
+                            type: str
+                            returned: success
+                        password:
+                            description:
+                              - "Field password."
+                            type: str
+                            returned: success
+                        path:
+                            description:
+                              - "Field path."
+                            type: str
+                            returned: success
+                        port:
+                            description:
+                              - "Field port."
+                            type: int
+                            returned: success
+                        skip_tls_verify:
+                            description:
+                              - "Field skipTlsVerify."
+                            type: bool
+                            returned: success
+                        storage_id:
+                            description:
+                              - "Field storageId."
+                            type: str
+                            returned: success
+                        use_ssl:
+                            description:
+                              - "Field useSsl."
+                            type: bool
+                            returned: success
+                        username:
+                            description:
+                              - "Field username."
+                            type: str
+                            returned: success
+                google_drive_storage:
+                    description:
+                      - "Field googleDriveStorage."
+                    type: dict
+                    returned: success
+                    contains:
+                        client_id:
+                            description:
+                              - "Field clientId."
+                            type: str
+                            returned: success
+                        client_secret:
+                            description:
+                              - "Field clientSecret."
+                            type: str
+                            returned: success
+                        storage_id:
+                            description:
+                              - "Field storageId."
+                            type: str
+                            returned: success
+                        token_json:
+                            description:
+                              - "Field tokenJson."
+                            type: str
+                            returned: success
+                id:
+                    description:
+                      - "Field id."
+                    type: str
+                    returned: success
+                last_save_error:
+                    description:
+                      - "Field lastSaveError."
+                    type: str
+                    returned: success
+                local_storage:
+                    description:
+                      - "specific storage"
+                    type: dict
+                    returned: success
+                    contains:
+                        storage_id:
+                            description:
+                              - "Field storageId."
+                            type: str
+                            returned: success
+                name:
+                    description:
+                      - "Field name."
+                    type: str
+                    returned: success
+                nas_storage:
+                    description:
+                      - "Field nasStorage."
+                    type: dict
+                    returned: success
+                    contains:
+                        domain:
+                            description:
+                              - "Field domain."
+                            type: str
+                            returned: success
+                        host:
+                            description:
+                              - "Field host."
+                            type: str
+                            returned: success
+                        password:
+                            description:
+                              - "Field password."
+                            type: str
+                            returned: success
+                        path:
+                            description:
+                              - "Field path."
+                            type: str
+                            returned: success
+                        port:
+                            description:
+                              - "Field port."
+                            type: int
+                            returned: success
+                        share:
+                            description:
+                              - "Field share."
+                            type: str
+                            returned: success
+                        storage_id:
+                            description:
+                              - "Field storageId."
+                            type: str
+                            returned: success
+                        use_ssl:
+                            description:
+                              - "Field useSsl."
+                            type: bool
+                            returned: success
+                        username:
+                            description:
+                              - "Field username."
+                            type: str
+                            returned: success
+                rclone_storage:
+                    description:
+                      - "Field rcloneStorage."
+                    type: dict
+                    returned: success
+                    contains:
+                        config_content:
+                            description:
+                              - "Field configContent."
+                            type: str
+                            returned: success
+                        remote_path:
+                            description:
+                              - "Field remotePath."
+                            type: str
+                            returned: success
+                        storage_id:
+                            description:
+                              - "Field storageId."
+                            type: str
+                            returned: success
+                s3_storage:
+                    description:
+                      - "Field s3Storage."
+                    type: dict
+                    returned: success
+                    contains:
+                        s3_access_key:
+                            description:
+                              - "Field s3AccessKey."
+                            type: str
+                            returned: success
+                        s3_bucket:
+                            description:
+                              - "Field s3Bucket."
+                            type: str
+                            returned: success
+                        s3_endpoint:
+                            description:
+                              - "Field s3Endpoint."
+                            type: str
+                            returned: success
+                        s3_prefix:
+                            description:
+                              - "Field s3Prefix."
+                            type: str
+                            returned: success
+                        s3_region:
+                            description:
+                              - "Field s3Region."
+                            type: str
+                            returned: success
+                        s3_secret_key:
+                            description:
+                              - "Field s3SecretKey."
+                            type: str
+                            returned: success
+                        s3_storage_class:
+                            description:
+                              - "Field s3StorageClass."
+                            type: str
+                            returned: success
+                        s3_use_virtual_hosted_style:
+                            description:
+                              - "Field s3UseVirtualHostedStyle."
+                            type: bool
+                            returned: success
+                        skip_tlsverify:
+                            description:
+                              - "Field skipTLSVerify."
+                            type: bool
+                            returned: success
+                        storage_id:
+                            description:
+                              - "Field storageId."
+                            type: str
+                            returned: success
+                sftp_storage:
+                    description:
+                      - "Field sftpStorage."
+                    type: dict
+                    returned: success
+                    contains:
+                        host:
+                            description:
+                              - "Field host."
+                            type: str
+                            returned: success
+                        password:
+                            description:
+                              - "Field password."
+                            type: str
+                            returned: success
+                        path:
+                            description:
+                              - "Field path."
+                            type: str
+                            returned: success
+                        port:
+                            description:
+                              - "Field port."
+                            type: int
+                            returned: success
+                        private_key:
+                            description:
+                              - "Field privateKey."
+                            type: str
+                            returned: success
+                        skip_host_key_verify:
+                            description:
+                              - "Field skipHostKeyVerify."
+                            type: bool
+                            returned: success
+                        storage_id:
+                            description:
+                              - "Field storageId."
+                            type: str
+                            returned: success
+                        username:
+                            description:
+                              - "Field username."
+                            type: str
+                            returned: success
+                type:
+                    description:
+                      - "Field type."
+                    type: str
+                    returned: success
+                workspace_id:
+                    description:
+                      - "Field workspaceId."
+                    type: str
+                    returned: success
+        storage_id:
+            description:
+              - "Field storageId."
+            type: str
+            returned: success
 changed:
     description: Indicates whether any change was made.
     type: bool
@@ -132,6 +621,7 @@ msg:
 
 
 import json
+import shlex
 from typing import Any, Dict, List, Optional, Tuple
 from urllib import error, parse
 
@@ -159,25 +649,34 @@ DELETE_METHOD = None
 DELETE_PATH = None
 DELETE_PATH_PARAMS = []
 DELETE_QUERY_PARAMS = []
-BODY_FIELDS = [
-    'backup_interval',
-    'database_id',
-    'encryption',
-    'is_backups_enabled',
-    'is_retry_if_failed',
-    'max_failed_tries_count',
-    'retention_count',
-    'retention_gfs_days',
-    'retention_gfs_hours',
-    'retention_gfs_months',
-    'retention_gfs_weeks',
-    'retention_gfs_years',
-    'retention_policy_type',
-    'retention_time_period',
-    'send_notifications_on',
-    'storage',
-    'storage_id',
-]
+BODY_SCHEMA = {
+    'backup_interval': {
+        'api': 'backupInterval',
+        'type': 'dict',
+        'nested': {
+            'cron_expression': {'api': 'cronExpression', 'type': 'str'},
+            'day_of_month': {'api': 'dayOfMonth', 'type': 'int'},
+            'time_of_day': {'api': 'timeOfDay', 'type': 'str'},
+            'type': {'api': 'type', 'type': 'str'},
+            'weekday': {'api': 'weekday', 'type': 'int'},
+        },
+    },
+    'database_id': {'api': 'databaseId', 'type': 'str'},
+    'encryption': {'api': 'encryption', 'type': 'str'},
+    'is_backups_enabled': {'api': 'isBackupsEnabled', 'type': 'bool'},
+    'is_retry_if_failed': {'api': 'isRetryIfFailed', 'type': 'bool'},
+    'max_failed_tries_count': {'api': 'maxFailedTriesCount', 'type': 'int'},
+    'retention_count': {'api': 'retentionCount', 'type': 'int'},
+    'retention_gfs_days': {'api': 'retentionGfsDays', 'type': 'int'},
+    'retention_gfs_hours': {'api': 'retentionGfsHours', 'type': 'int'},
+    'retention_gfs_months': {'api': 'retentionGfsMonths', 'type': 'int'},
+    'retention_gfs_weeks': {'api': 'retentionGfsWeeks', 'type': 'int'},
+    'retention_gfs_years': {'api': 'retentionGfsYears', 'type': 'int'},
+    'retention_policy_type': {'api': 'retentionPolicyType', 'type': 'str'},
+    'retention_time_period': {'api': 'retentionTimePeriod', 'type': 'str'},
+    'send_notifications_on': {'api': 'sendNotificationsOn', 'type': 'list'},
+    'storage_id': {'api': 'storageId', 'type': 'str'},
+}
 READ_ONLY = False
 API_NAME_MAP = {
     'api_url': 'api_url',
@@ -199,12 +698,20 @@ API_NAME_MAP = {
     'retention_policy_type': 'retentionPolicyType',
     'retention_time_period': 'retentionTimePeriod',
     'send_notifications_on': 'sendNotificationsOn',
-    'storage': 'storage',
     'storage_id': 'storageId',
 }
 REQUIRED_DELETE_PATH_PARAMS = []
 REQUIRED_GET_PATH_PARAMS = ['id']
 REQUIRED_CREATE_PATH_PARAMS = []
+REQUIRED_LIST_QUERY_PARAMS = []
+NAME_ADDRESSABLE = False
+NAME_FIELD = ''
+NAME_API = ''
+ID_FIELD = ''
+ID_API = ''
+MATCH_FIELDS = []
+CREATE_IS_UPSERT = True
+EXPAND_STORAGE_ID_TO_STORAGE = True
 
 
 def _build_url(api_url: str, path_template: str, path_params: Dict[str, Any], query_params: Optional[Dict[str, Any]] = None) -> str:
@@ -226,6 +733,28 @@ def _decode_body(raw: str) -> Any:
         return {'raw': raw}
 
 
+def _build_curl(method: str, url: str, headers: Dict[str, Any], data: Optional[bytes]) -> str:
+    parts = ['curl', '-sS', '-X', method.upper()]
+    for key, value in headers.items():
+        header_value = str(value)
+        if key.lower() == 'authorization':
+            header_value = 'Bearer <REDACTED>'
+        parts += ['-H', shlex.quote(f'{key}: {header_value}')]
+    if data is not None:
+        parts += ['--data', shlex.quote(data.decode('utf-8', errors='replace'))]
+    parts.append(shlex.quote(url))
+    return ' '.join(parts)
+
+
+def _is_verbose_enabled(module: AnsibleModule) -> bool:
+    return int(getattr(module, '_verbosity', 0) or 0) >= 3
+
+
+def _verbose_http_log(module: AnsibleModule, message: str) -> None:
+    if _is_verbose_enabled(module):
+        module.warn(message)
+
+
 def _request_json(
     module: AnsibleModule,
     method: str,
@@ -240,9 +769,12 @@ def _request_json(
         'Authorization': f'Bearer {token}',
     }
     data = None
+    response_headers: Dict[str, Any] = {}
     if payload is not None:
         headers['Content-Type'] = 'application/json'
         data = json.dumps(payload).encode('utf-8')
+    equivalent_curl = _build_curl(method, url, headers, data)
+    _verbose_http_log(module, f'Databasus API request: {equivalent_curl}')
 
     try:
         with open_url(
@@ -253,18 +785,53 @@ def _request_json(
             timeout=30,
         ) as response:
             status = int(response.getcode())
+            response_headers = dict(getattr(response, 'headers', {}) or {})
             raw = response.read().decode('utf-8')
+            _verbose_http_log(module, f'Databasus API response: HTTP {status} on {method.upper()} {url}')
     except error.HTTPError as exc:
         status = int(exc.code)
         raw = exc.read().decode('utf-8', errors='replace')
+        decoded = _decode_body(raw)
+        reason = str(getattr(exc, 'reason', '') or '')
+        response_headers = dict(getattr(exc, 'headers', {}) or {})
         if allow_statuses and status in allow_statuses:
-            return status, _decode_body(raw)
-        module.fail_json(msg=f'HTTP {status} on {method} {url}: {raw}')
+            _verbose_http_log(module, f'Databasus API response: HTTP {status} on {method.upper()} {url} (allowed status)')
+            return status, decoded
+        _verbose_http_log(module, f'Databasus API response: HTTP {status} on {method.upper()} {url}')
+        module.fail_json(
+            msg=f'HTTP {status} on {method} {url}. Reason: {reason}. Response body: {raw}. Equivalent curl: {equivalent_curl}',
+            http_status=status,
+            method=method,
+            url=url,
+            reason=reason,
+            response_headers=response_headers,
+            response_body=raw,
+            response_json=decoded,
+            equivalent_curl=equivalent_curl,
+        )
     except error.URLError as exc:
-        module.fail_json(msg=f'Connection error on {method} {url}: {exc}')
+        reason = str(getattr(exc, 'reason', exc))
+        _verbose_http_log(module, f'Databasus API connection error on {method.upper()} {url}: {reason}')
+        module.fail_json(
+            msg=f'Connection error on {method} {url}: {reason}',
+            method=method,
+            url=url,
+            reason=reason,
+        )
 
     if expected_statuses and status not in expected_statuses:
-        module.fail_json(msg=f'Unexpected HTTP {status} on {method} {url}: {raw}')
+        decoded = _decode_body(raw)
+        module.fail_json(
+            msg=f'Unexpected HTTP {status} on {method} {url}. Response body: {raw}. Equivalent curl: {equivalent_curl}',
+            http_status=status,
+            expected_statuses=expected_statuses,
+            method=method,
+            url=url,
+            response_headers=response_headers,
+            response_body=raw,
+            response_json=decoded,
+            equivalent_curl=equivalent_curl,
+        )
 
     return status, _decode_body(raw)
 
@@ -278,13 +845,51 @@ def _collect_params(module_params: Dict[str, Any], names: List[str]) -> Dict[str
     return out
 
 
-def _desired_payload(module_params: Dict[str, Any]) -> Dict[str, Any]:
+def _build_payload(values: Dict[str, Any], schema: Dict[str, Any]) -> Dict[str, Any]:
     payload: Dict[str, Any] = {}
-    for name in BODY_FIELDS:
-        value = module_params.get(name)
-        if value is not None:
-            payload[API_NAME_MAP.get(name, name)] = value
+    for field_name, field_info in schema.items():
+        val = values.get(field_name)
+        if val is None:
+            continue
+        api_name = field_info['api']
+        nested = field_info.get('nested')
+        ftype = field_info.get('type', 'str')
+        if nested and ftype == 'dict' and isinstance(val, dict):
+            inner = _build_payload(val, nested)
+            if inner:
+                payload[api_name] = inner
+        elif nested and ftype == 'list' and isinstance(val, list):
+            payload[api_name] = [
+                _build_payload(item, nested) for item in val if isinstance(item, dict)
+            ]
+        else:
+            payload[api_name] = val
     return payload
+
+
+def _desired_payload(module_params: Dict[str, Any]) -> Dict[str, Any]:
+    return _build_payload(module_params, BODY_SCHEMA)
+
+
+def _expand_storage_id_to_storage(
+    module: AnsibleModule,
+    api_url: str,
+    api_token: str,
+    desired: Dict[str, Any],
+) -> Dict[str, Any]:
+    if not EXPAND_STORAGE_ID_TO_STORAGE:
+        return desired
+    storage_id = desired.get('storageId')
+    if not storage_id:
+        return desired
+    storage_url = _build_url(api_url, '/storages/{id}', {'id': storage_id})
+    storage_resource = _request_json(module, 'GET', storage_url, api_token, expected_statuses=[200])[1]
+    if not isinstance(storage_resource, dict):
+        module.fail_json(msg='Unexpected storage response while resolving storage_id to storage object')
+    expanded = dict(desired)
+    expanded.pop('storageId', None)
+    expanded['storage'] = storage_resource
+    return expanded
 
 
 def _needs_update(current: Any, desired: Dict[str, Any]) -> bool:
@@ -296,6 +901,39 @@ def _needs_update(current: Any, desired: Dict[str, Any]) -> bool:
         if current.get(key) != value:
             return True
     return False
+
+
+def _extract_items(listing: Any) -> List[Any]:
+    if isinstance(listing, list):
+        return listing
+    if isinstance(listing, dict):
+        for value in listing.values():
+            if isinstance(value, list):
+                return value
+    return []
+
+
+def _find_by_name(
+    listing: Any,
+    name_api: str,
+    desired_name: str,
+    match_fields: List[Tuple[str, Any]],
+) -> Optional[Dict[str, Any]]:
+    if not name_api or desired_name is None:
+        return None
+    for item in _extract_items(listing):
+        if not isinstance(item, dict) or item.get(name_api) != desired_name:
+            continue
+        matches_scope = True
+        for field_api_name, desired_value in match_fields:
+            if desired_value is None:
+                continue
+            if item.get(field_api_name) != desired_value:
+                matches_scope = False
+                break
+        if matches_scope:
+            return item
+    return None
 
 
 def _has_required(module_params: Dict[str, Any], names: List[str]) -> bool:
@@ -313,9 +951,18 @@ def run_module() -> None:
         state=dict(type='str', default='present', choices=['present', 'absent']),
         api_url=dict(type='str', required=True),
         api_token=dict(type='str', required=True, no_log=True),
-        backup_interval=dict(type='dict'),
+        backup_interval=dict(
+            type='dict',
+            options={
+                'cron_expression': dict(type='str'),
+                'day_of_month': dict(type='int'),
+                'time_of_day': dict(type='str'),
+                'type': dict(type='str', choices=['HOURLY', 'DAILY', 'WEEKLY', 'MONTHLY', 'CRON']),
+                'weekday': dict(type='int'),
+            },
+        ),
         database_id=dict(type='str'),
-        encryption=dict(type='str'),
+        encryption=dict(type='str', choices=['NONE', 'ENCRYPTED']),
         id=dict(type='str'),
         is_backups_enabled=dict(type='bool'),
         is_retry_if_failed=dict(type='bool'),
@@ -326,10 +973,12 @@ def run_module() -> None:
         retention_gfs_months=dict(type='int'),
         retention_gfs_weeks=dict(type='int'),
         retention_gfs_years=dict(type='int'),
-        retention_policy_type=dict(type='str'),
-        retention_time_period=dict(type='str'),
-        send_notifications_on=dict(type='list', elements='str'),
-        storage=dict(type='dict'),
+        retention_policy_type=dict(type='str', choices=['TIME_PERIOD', 'COUNT', 'GFS']),
+        retention_time_period=dict(
+            type='str',
+            choices=['DAY', 'WEEK', 'MONTH', '3_MONTH', '6_MONTH', 'YEAR', '2_YEARS', '3_YEARS', '4_YEARS', '5_YEARS', 'FOREVER'],
+        ),
+        send_notifications_on=dict(type='list', elements='str', choices=['BACKUP_FAILED', 'BACKUP_SUCCESS']),
         storage_id=dict(type='str'),
     )
     module = AnsibleModule(argument_spec=module_args, supports_check_mode=not READ_ONLY)
@@ -362,6 +1011,22 @@ def run_module() -> None:
     exists = False
     current: Any = {}
 
+    if NAME_ADDRESSABLE:
+        if not LIST_PATH:
+            module.fail_json(msg='Name-based idempotency requires a list endpoint')
+        _ensure_required(module, params, [NAME_FIELD], 'name-based lookup')
+        _ensure_required(module, params, REQUIRED_LIST_QUERY_PARAMS, 'name-based lookup')
+
+        list_url = _build_url(api_url, LIST_PATH, _collect_params(params, LIST_PATH_PARAMS), _collect_params(params, LIST_QUERY_PARAMS))
+        listing = _request_json(module, LIST_METHOD, list_url, api_token, expected_statuses=[200])[1]
+        scoped_match_fields = [(api_name, params.get(field_name)) for field_name, api_name in MATCH_FIELDS]
+        matched = _find_by_name(listing, NAME_API, params.get(NAME_FIELD), scoped_match_fields)
+        if matched is not None:
+            exists = True
+            current = matched
+            if ID_FIELD and ID_API and matched.get(ID_API) is not None:
+                params[ID_FIELD] = matched.get(ID_API)
+
     if GET_PATH and _has_required(params, GET_PATH_PARAMS):
         get_url = _build_url(api_url, GET_PATH, _collect_params(params, GET_PATH_PARAMS), _collect_params(params, GET_QUERY_PARAMS))
         status, body = _request_json(module, GET_METHOD, get_url, api_token, expected_statuses=[200], allow_statuses=[404])
@@ -370,16 +1035,18 @@ def run_module() -> None:
             current = body
 
     desired = _desired_payload(params)
+    desired = _expand_storage_id_to_storage(module, api_url, api_token, desired)
 
     if state == 'absent':
         if not DELETE_PATH:
             result['msg'] = 'Resource does not support delete operation'
             module.fail_json(**result)
-        _ensure_required(module, params, REQUIRED_DELETE_PATH_PARAMS or DELETE_PATH_PARAMS, 'delete')
 
         if not exists:
             result['msg'] = 'Resource is already absent'
             module.exit_json(**result)
+
+        _ensure_required(module, params, REQUIRED_DELETE_PATH_PARAMS or DELETE_PATH_PARAMS, 'delete')
 
         if module.check_mode:
             result['changed'] = True
@@ -409,6 +1076,26 @@ def run_module() -> None:
             _ensure_required(module, params, UPDATE_PATH_PARAMS, 'update')
             update_url = _build_url(api_url, UPDATE_PATH, _collect_params(params, UPDATE_PATH_PARAMS), _collect_params(params, UPDATE_QUERY_PARAMS))
             updated = _request_json(module, UPDATE_METHOD, update_url, api_token, payload=desired, expected_statuses=[200, 201])[1]
+            result['changed'] = True
+            result['resource'] = updated if isinstance(updated, dict) else {'value': updated}
+            result['msg'] = 'Resource updated'
+            module.exit_json(**result)
+
+        if CREATE_IS_UPSERT:
+            if not _needs_update(current, desired):
+                result['resource'] = current if isinstance(current, dict) else {'value': current}
+                result['msg'] = 'Resource already in desired state'
+                module.exit_json(**result)
+
+            if module.check_mode:
+                result['changed'] = True
+                result['resource'] = current if isinstance(current, dict) else {'value': current}
+                result['msg'] = 'Update planned (check_mode)'
+                module.exit_json(**result)
+
+            _ensure_required(module, params, REQUIRED_CREATE_PATH_PARAMS or CREATE_PATH_PARAMS, 'create')
+            create_url = _build_url(api_url, CREATE_PATH, _collect_params(params, CREATE_PATH_PARAMS), _collect_params(params, CREATE_QUERY_PARAMS))
+            updated = _request_json(module, CREATE_METHOD, create_url, api_token, payload=desired, expected_statuses=[200, 201, 202])[1]
             result['changed'] = True
             result['resource'] = updated if isinstance(updated, dict) else {'value': updated}
             result['msg'] = 'Resource updated'

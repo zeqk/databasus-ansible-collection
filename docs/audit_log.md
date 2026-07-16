@@ -5,6 +5,10 @@ Allows managing audit\_log resources using the Databasus API\.
 
 This module is read\-only and does not support state\=absent\.
 
+Uses \`\`GET /audit\-logs/global\`\`\.
+
+Uses \`\`GET /audit\-logs/users/\{userId\}\`\`\.
+
 
 
 ## Parameters
@@ -29,3 +33,25 @@ This module is read\-only and does not support state\=absent\.
         api_token: "{{ databasus_token }}"
 
 ```
+
+
+## Return Values
+
+| return value | comments |
+|---|---|
+| resource | always, dict. Resource object as returned by the API\. |
+| resource.audit_logs | success, list. Field auditLogs\. |
+| resource.audit_logs.created_at | success, str. Field createdAt\. |
+| resource.audit_logs.id | success, str. Field id\. |
+| resource.audit_logs.message | success, str. Field message\. |
+| resource.audit_logs.user_email | success, str. Field userEmail\. |
+| resource.audit_logs.user_id | success, str. Field userId\. |
+| resource.audit_logs.user_name | success, str. Field userName\. |
+| resource.audit_logs.workspace_id | success, str. Field workspaceId\. |
+| resource.audit_logs.workspace_name | success, str. Field workspaceName\. |
+| resource.limit | success, int. Field limit\. |
+| resource.offset | success, int. Field offset\. |
+| resource.total | success, int. Field total\. |
+| changed | always, bool. Indicates whether any change was made\. |
+| msg | always, str. Descriptive operation message\. |
+

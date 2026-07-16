@@ -17,7 +17,44 @@ from collections import defaultdict
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
+try:
+    import tomllib
+except ModuleNotFoundError:  # pragma: no cover - fallback for Python < 3.11
+    import tomli as tomllib
+
+from jinja2 import Environment, FileSystemLoader
+
 HTTP_METHODS = {"get", "post", "put", "patch", "delete"}
+PUBLIC_ACTION_MODULES = {
+    ("post", "/users/signin"): "user_signin",
+}
+
+PATH_RESOURCE_OVERRIDES: Dict[str, str] = {
+    "/backup-configs/physical/database/{id}": "backup_config_physical",
+    "/backup-configs/physical/save": "backup_config_physical",
+    "/backup-configs/physical/database/{id}/transfer": "backup_config_physical",
+}
+
+
+EXPAND_STORAGE_ID_TO_STORAGE_RESOURCES = {
+    "backup_config",
+    "backup_config_physical",
+}
+
+EXCLUDED_BODY_FIELDS_BY_RESOURCE_ACTION: Dict[str, Dict[str, set[str]]] = {
+    "backup_config": {
+        "create": {"storage"},
+        "update": {"storage"},
+    },
+    "backup_config_physical": {
+        "create": {"storage"},
+        "update": {"storage"},
+    },
+}
+
+
+def excluded_body_fields(resource: str, action: str) -> set[str]:
+    return EXCLUDED_BODY_FIELDS_BY_RESOURCE_ACTION.get(resource, {}).get(action, set())
 
 
 def is_param(token: str) -> bool:
@@ -70,6 +107,9 @@ def classify(method: str, path: str) -> Optional[str]:
     if not parts:
         return None
     end_param = is_param(parts[-1])
+    end_literal = parts[-1].lower() if parts else ""
+    if method == "post" and end_literal in {"update", "patch", "partial-update", "partial_update"}:
+        return "update"
     if method == "post" and not end_param:
         return "create"
     if method == "get" and not end_param:
@@ -105,46 +145,260 @@ def resolve_schema(schema: Any, definitions: Dict[str, Any], depth: int = 0) -> 
         return {}
 
     if "allOf" in schema:
-        merged = {"type": "object", "properties": {}, "required": []}
+        merged_props: Dict[str, Any] = {}
+        merged_required: List[str] = []
+        enum_part: Optional[Dict[str, Any]] = None
         for sub in schema["allOf"]:
             part = resolve_schema(sub, definitions, depth + 1)
-            merged["properties"].update(part.get("properties", {}))
-            merged["required"].extend(part.get("required", []))
-        merged["required"] = sorted(set(merged["required"]))
-        return merged
+            if "enum" in part and not part.get("properties"):
+                enum_part = part  # scalar/enum sub-schema (e.g. allOf:[{$ref: SomeStringEnum}])
+            merged_props.update(part.get("properties", {}))
+            merged_required.extend(part.get("required", []))
+        if enum_part is not None and not merged_props:
+            # allOf resolves to a scalar enum; return it directly
+            return enum_part
+        return {"type": "object", "properties": merged_props, "required": sorted(set(merged_required))}
 
     return schema
+
+
+def _needs_yaml_quoting(value: str) -> bool:
+    """Return True when the string value needs YAML quoting to remain a string type."""
+    if not value:
+        return True
+    if value.lower() in ("true", "false", "null", "yes", "no", "on", "off"):
+        return True
+    try:
+        float(value)
+        return True
+    except ValueError:
+        return False
+
+
+_SECRET_SUBSTRINGS = ("token", "secret", "password", "apikey", "api_key", "key")
+
+
+def _get_enum_choices(raw_pdef: Dict[str, Any], definitions: Dict[str, Any]) -> Optional[List[str]]:
+    """Return enum values as strings if the schema describes an enum type, else None."""
+    if not isinstance(raw_pdef, dict):
+        return None
+    # 1. Inline enum on the raw property (e.g. TriggerBackupRequest.type has both enum and allOf)
+    if "enum" in raw_pdef:
+        return [str(v) for v in raw_pdef["enum"]]
+    # 2. After full resolution ($ref → enum, allOf → scalar enum)
+    resolved = resolve_schema(raw_pdef, definitions)
+    if "enum" in resolved:
+        return [str(v) for v in resolved["enum"]]
+    return None
+
+
+def _build_field_meta(
+    api_name: str,
+    raw_pdef: Dict[str, Any],
+    definitions: Dict[str, Any],
+    required: bool,
+    source: str,
+    depth: int = 0,
+) -> Dict[str, Any]:
+    """Build complete field metadata for one OpenAPI property, including nested suboptions."""
+    _MAX_DEPTH = 3
+    resolved = resolve_schema(raw_pdef, definitions)
+    ptype = json_type_to_ansible(resolved.get("type", "string"))
+    description = sanitize_text(
+        (raw_pdef.get("description") if isinstance(raw_pdef, dict) else None)
+        or resolved.get("description")
+        or f"Body field {api_name}."
+    )
+    meta: Dict[str, Any] = {
+        "api_name": api_name,
+        "description": description,
+        "type": ptype,
+        "required": required,
+        "source": source,
+    }
+    lname = api_name.lower()
+    if any(s in lname for s in _SECRET_SUBSTRINGS):
+        meta["no_log"] = True
+
+    # Detect enum choices (handles direct enum, $ref→enum, allOf→scalar enum)
+    choices = _get_enum_choices(raw_pdef, definitions)
+    if choices:
+        meta["choices"] = choices
+        return meta
+
+    if ptype == "list":
+        raw_items: Dict[str, Any] = (raw_pdef.get("items") or {}) if isinstance(raw_pdef, dict) else {}
+        if not raw_items:
+            raw_items = resolved.get("items") or {}
+        items_resolved = resolve_schema(raw_items, definitions)
+        items_type = json_type_to_ansible(items_resolved.get("type", "string"))
+
+        # Array of enum scalars (e.g. sendNotificationsOn: [BackupNotificationType, ...])
+        item_choices = _get_enum_choices(raw_items, definitions)
+        if item_choices:
+            meta["elements"] = "str"
+            meta["choices"] = item_choices
+            return meta
+
+        # Array of objects
+        if items_type == "dict" and depth < _MAX_DEPTH and items_resolved.get("properties"):
+            items_props = items_resolved.get("properties", {})
+            items_req = set(items_resolved.get("required") or [])
+            sub_opts: Dict[str, Any] = {}
+            for child_api_name, child_raw in items_props.items():
+                child_meta = _build_field_meta(
+                    child_api_name, child_raw, definitions,
+                    required=(child_api_name in items_req),
+                    source=source,
+                    depth=depth + 1,
+                )
+                sub_opts[snake(child_api_name)] = child_meta
+            meta["elements"] = "dict"
+            if sub_opts:
+                meta["options"] = sub_opts
+        else:
+            meta["elements"] = items_type if items_type != "dict" else "str"
+        return meta
+
+    # Nested object
+    if ptype == "dict" and depth < _MAX_DEPTH and resolved.get("properties"):
+        props = resolved.get("properties", {})
+        req_set = set(resolved.get("required") or [])
+        sub_opts = {}
+        for child_api_name, child_raw in props.items():
+            child_meta = _build_field_meta(
+                child_api_name, child_raw, definitions,
+                required=(child_api_name in req_set),
+                source=source,
+                depth=depth + 1,
+            )
+            sub_opts[snake(child_api_name)] = child_meta
+        if sub_opts:
+            meta["options"] = sub_opts
+
+    return meta
 
 
 def extract_body_fields(schema: Dict[str, Any], definitions: Dict[str, Any]) -> Dict[str, Dict[str, Any]]:
     schema = resolve_schema(schema, definitions)
     if not isinstance(schema, dict):
         return {}
-
     props = schema.get("properties") or {}
     required = set(schema.get("required") or [])
     out: Dict[str, Dict[str, Any]] = {}
     for api_name, pdef in props.items():
-        pdef = resolve_schema(pdef, definitions)
         name = snake(api_name)
-        ptype = json_type_to_ansible(pdef.get("type", "string"))
-        elements = None
-        if ptype == "list":
-            items = resolve_schema(pdef.get("items", {}), definitions)
-            elements = json_type_to_ansible(items.get("type", "string"))
-        out[name] = {
-            "api_name": api_name,
-            "description": sanitize_text(pdef.get("description") or f"Body field {api_name}."),
-            "type": ptype,
-            "required": api_name in required,
-            "source": "body",
-        }
-        if elements:
-            out[name]["elements"] = elements
-        lname = api_name.lower()
-        if any(secret in lname for secret in ("token", "secret", "password", "apikey", "api_key", "key")):
-            out[name]["no_log"] = True
+        out[name] = _build_field_meta(
+            api_name, pdef, definitions,
+            required=(api_name in required),
+            source="body",
+            depth=0,
+        )
     return out
+
+
+def success_response_schema(op_spec: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+    responses = (op_spec or {}).get("responses", {}) or {}
+    for code in ("200", "201"):
+        response = responses.get(code)
+        if isinstance(response, dict) and isinstance(response.get("schema"), dict):
+            return response["schema"]
+    return None
+
+
+def schema_fields(schema: Any, definitions: Dict[str, Any], depth: int = 0) -> Dict[str, Dict[str, Any]]:
+    schema = resolve_schema(schema, definitions)
+    if not isinstance(schema, dict):
+        return {}
+
+    props = schema.get("properties") or {}
+    out: Dict[str, Dict[str, Any]] = {}
+    for api_name, raw_field in props.items():
+        field_schema = resolve_schema(raw_field, definitions)
+        field_name = snake(api_name)
+        field_type = json_type_to_ansible(field_schema.get("type", "string"))
+        field_meta: Dict[str, Any] = {
+            "description": sanitize_text(
+                (raw_field.get("description") if isinstance(raw_field, dict) else None)
+                or field_schema.get("description")
+                or f"Field {api_name}."
+            ),
+            "type": field_type,
+        }
+
+        if field_type == "list":
+            items = resolve_schema(field_schema.get("items", {}), definitions)
+            field_meta["elements"] = json_type_to_ansible(items.get("type", "string"))
+            if depth < 3 and items.get("properties"):
+                nested = schema_fields(items, definitions, depth + 1)
+                if nested:
+                    field_meta["contains"] = nested
+        elif field_type == "dict" and depth < 3 and field_schema.get("properties"):
+            nested = schema_fields(field_schema, definitions, depth + 1)
+            if nested:
+                field_meta["contains"] = nested
+
+        out[field_name] = field_meta
+
+    return out
+
+
+def resource_response_fields(ops: Dict[str, Any], definitions: Dict[str, Any]) -> Dict[str, Dict[str, Any]]:
+    for operation_name in ("get", "create", "update", "list"):
+        op = ops.get(operation_name)
+        if not op:
+            continue
+
+        schema = success_response_schema(op.get("spec", {}))
+        if not schema:
+            continue
+
+        resolved = resolve_schema(schema, definitions)
+
+        if operation_name == "list":
+            list_item_schema = None
+            for list_field in (resolved.get("properties") or {}).values():
+                list_field_schema = resolve_schema(list_field, definitions)
+                if json_type_to_ansible(list_field_schema.get("type", "string")) != "list":
+                    continue
+                candidate_items = resolve_schema(list_field_schema.get("items", {}), definitions)
+                if isinstance(candidate_items, dict) and candidate_items.get("properties"):
+                    list_item_schema = candidate_items
+                    break
+            if list_item_schema is not None:
+                resolved = list_item_schema
+
+        fields = schema_fields(resolved, definitions)
+        if fields:
+            return fields
+
+    return {}
+
+
+def render_return_fields(fields: Dict[str, Dict[str, Any]], indent: int = 4) -> List[str]:
+    padding = " " * indent
+    lines: List[str] = []
+    for name in sorted(fields):
+        field_meta = fields[name]
+        description = sanitize_text(field_meta.get("description") or f"Field {name}.")
+        wrapped_description = textwrap.wrap(description, width=100) or [description]
+
+        lines.append(f"{padding}{name}:")
+        lines.append(f"{padding}    description:")
+        for desc_line in wrapped_description:
+            escaped_line = desc_line.replace("\\", "\\\\").replace('"', '\\"')
+            lines.append(f'{padding}      - "{escaped_line}"')
+        lines.append(f"{padding}    type: {field_meta.get('type', 'raw')}")
+        if field_meta.get("elements"):
+            lines.append(f"{padding}    elements: {field_meta['elements']}")
+        lines.append(f"{padding}    returned: success")
+
+        nested = field_meta.get("contains")
+        if isinstance(nested, dict) and nested:
+            lines.append(f"{padding}    contains:")
+            lines.extend(render_return_fields(nested, indent + 8))
+
+    return lines
 
 
 def pick_best(ops: List[Dict[str, Any]]) -> Optional[Dict[str, Any]]:
@@ -153,25 +407,40 @@ def pick_best(ops: List[Dict[str, Any]]) -> Optional[Dict[str, Any]]:
     return sorted(ops, key=lambda x: (len(x["path"]), x["path"]))[0]
 
 
-def option_doc_block(name: str, meta: Dict[str, Any]) -> str:
-    lines = [f"  {name}:"]
-    lines.append("    description:")
-    lines.append(f"      - {sanitize_text(meta.get('description', 'No description.')).replace(':', ';')}")
-    lines.append(f"    type: {meta.get('type', 'str')}")
-    if meta.get("type") == "list":
-        lines.append(f"    elements: {meta.get('elements', 'str')}")
-    if meta.get("required"):
-        lines.append("    required: true")
+def option_doc_block(name: str, meta: Dict[str, Any], indent: int = 0) -> str:
+    i = indent
+    lines = [f"{' ' * (i + 2)}{name}:"]
+    lines.append(f"{' ' * (i + 4)}description:")
+    desc = sanitize_text(meta.get("description", "No description.")).replace(":", ";")
     if "choices" in meta:
-        lines.append("    choices:")
+        choices_str = ", ".join(str(c) for c in meta["choices"])
+        desc = f"{desc} Possible values; {choices_str}."
+    lines.append(f"{' ' * (i + 6)}- {desc}")
+    lines.append(f"{' ' * (i + 4)}type: {meta.get('type', 'str')}")
+    if meta.get("type") == "list":
+        lines.append(f"{' ' * (i + 4)}elements: {meta.get('elements', 'str')}")
+    if meta.get("required"):
+        lines.append(f"{' ' * (i + 4)}required: true")
+    if "choices" in meta:
+        lines.append(f"{' ' * (i + 4)}choices:")
         for choice in meta["choices"]:
-            lines.append(f"      - {choice}")
+            choice_str = str(choice)
+            if _needs_yaml_quoting(choice_str):
+                lines.append(f"{' ' * (i + 6)}- '{choice_str}'")
+            else:
+                lines.append(f"{' ' * (i + 6)}- {choice_str}")
     if "default" in meta:
-        lines.append(f"    default: {meta['default']}")
+        lines.append(f"{' ' * (i + 4)}default: {meta['default']}")
+    sub_opts = meta.get("options")
+    if sub_opts:
+        lines.append(f"{' ' * (i + 4)}suboptions:")
+        for sub_name in sorted(sub_opts):
+            lines.append(option_doc_block(sub_name, sub_opts[sub_name], indent=i + 4))
     return "\n".join(lines)
 
 
 def arg_spec_line(meta: Dict[str, Any]) -> str:
+    """Return the dict(...) fragment for a simple (non-nested) arg_spec entry."""
     chunks = [f"type='{meta.get('type', 'str')}'"]
     if meta.get("type") == "list":
         chunks.append(f"elements='{meta.get('elements', 'str')}'")
@@ -200,13 +469,194 @@ def format_dict_literal(values: Dict[str, str]) -> str:
     return "{\n" + "\n".join(lines) + "\n}"
 
 
+def _meta_to_schema_info(meta: Dict[str, Any]) -> Dict[str, Any]:
+    """Convert internal field meta to the compact form stored in BODY_SCHEMA."""
+    info: Dict[str, Any] = {"api": meta.get("api_name", ""), "type": meta.get("type", "str")}
+    sub_opts = meta.get("options")
+    if sub_opts:
+        info["nested"] = {k: _meta_to_schema_info(v) for k, v in sub_opts.items()}
+    return info
+
+
+def _format_schema_literal(schema: Dict[str, Any], indent: int = 0) -> str:
+    """Render a BODY_SCHEMA dict as valid Python source code."""
+    if not schema:
+        return "{}"
+    prefix = " " * indent
+    inner = " " * (indent + 4)
+    lines = ["{"]
+    for name, info in schema.items():
+        nested = info.get("nested")
+        ftype = info.get("type", "str")
+        api = info.get("api", "")
+        if nested:
+            nested_str = _format_schema_literal(nested, indent + 8)
+            lines.append(f"{inner}{repr(name)}: {{")
+            lines.append(f"{inner}    'api': {repr(api)},")
+            lines.append(f"{inner}    'type': {repr(ftype)},")
+            lines.append(f"{inner}    'nested': {nested_str},")
+            lines.append(f"{inner}}},")
+        else:
+            lines.append(f"{inner}{repr(name)}: {{'api': {repr(api)}, 'type': {repr(ftype)}}},")
+    lines.append(f"{prefix}}}")
+    return "\n".join(lines)
+
+
+def _format_nested_arg_spec(meta: Dict[str, Any], indent: int) -> str:
+    """Return the dict(...) fragment for one arg_spec entry, with recursive suboptions."""
+    ptype = meta.get("type", "str")
+    chunks: List[str] = [f"type='{ptype}'"]
+    if ptype == "list":
+        chunks.append(f"elements='{meta.get('elements', 'str')}'")
+    if meta.get("required"):
+        chunks.append("required=True")
+    if "default" in meta:
+        chunks.append(f"default='{meta['default']}'")
+    if "choices" in meta:
+        choices_str = ", ".join(f"'{c}'" for c in meta["choices"])
+        chunks.append(f"choices=[{choices_str}]")
+    if meta.get("no_log"):
+        chunks.append("no_log=True")
+
+    sub_opts = meta.get("options")
+    if not sub_opts:
+        simple = f"dict({', '.join(chunks)})"
+        # Break onto multiple lines when too long to avoid pep8 E501
+        if len(simple) > 110:
+            inner_indent = indent + 4
+            chunks_joined = f",\n{' ' * inner_indent}".join(chunks)
+            return f"dict(\n{' ' * inner_indent}{chunks_joined},\n{' ' * indent})"
+        return simple
+
+    # Has nested options → emit multiline.
+    # Use dict-literal syntax {key: val} (not dict(key=val) kwargs) so that
+    # API field names that are Python keywords (e.g. 'from') remain valid.
+    inner_indent = indent + 4
+    chunks_joined = f",\n{' ' * inner_indent}".join(chunks)
+    sub_lines = []
+    for sub_name in sorted(sub_opts):
+        sub_spec = _format_nested_arg_spec(sub_opts[sub_name], inner_indent + 4)
+        sub_lines.append(f"{' ' * (inner_indent + 4)}{repr(sub_name)}: {sub_spec},")
+    sub_block = "\n".join(sub_lines)
+    return (
+        f"dict(\n"
+        f"{' ' * inner_indent}{chunks_joined},\n"
+        f"{' ' * inner_indent}options={{\n"
+        f"{sub_block}\n"
+        f"{' ' * inner_indent}}},\n"
+        f"{' ' * indent})"
+    )
+
+
+def format_arg_spec_entry(name: str, meta: Dict[str, Any], indent: int = 8) -> str:
+    """Return the complete arg_spec line(s) for one module parameter."""
+    spec = _format_nested_arg_spec(meta, indent)
+    return f"{' ' * indent}{name}={spec},"
+
+
+def create_jinja_env(template_dir: Path) -> Environment:
+    return Environment(
+        loader=FileSystemLoader(str(template_dir)),
+        autoescape=False,
+        keep_trailing_newline=True,
+    )
+
+
+def derive_collection_names(output_dir: Path) -> Tuple[str, str]:
+    parts = output_dir.parts
+    if "ansible_collections" in parts:
+        idx = parts.index("ansible_collections")
+        if idx + 2 < len(parts):
+            return parts[idx + 1], parts[idx + 2]
+    return "zeqk", "databasus"
+
+
+def _project_readme(readme_value: Any) -> Optional[str]:
+    if isinstance(readme_value, str) and readme_value.strip():
+        return Path(readme_value.strip()).name
+    if isinstance(readme_value, dict):
+        file_value = readme_value.get("file")
+        if isinstance(file_value, str) and file_value.strip():
+            return Path(file_value.strip()).name
+    return None
+
+
+def _project_license(license_value: Any) -> Optional[str]:
+    if isinstance(license_value, str) and license_value.strip():
+        return license_value.strip()
+    if isinstance(license_value, dict):
+        for key in ("text", "file"):
+            raw_value = license_value.get(key)
+            if isinstance(raw_value, str) and raw_value.strip():
+                return raw_value.strip()
+    return None
+
+
+def load_galaxy_metadata(pyproject_path: Path, output_dir: Path) -> Dict[str, Any]:
+    namespace, name = derive_collection_names(output_dir)
+    metadata: Dict[str, Any] = {
+        "namespace": namespace,
+        "name": name,
+        "version": "1.0.0",
+        "readme": "README.md",
+        "description": "Ansible collection to manage Databasus resources via REST API.",
+        "license": ["MIT"],
+        "authors": ["zeqk"],
+        "tags": ["database", "api", "crud"],
+        "dependencies": {},
+    }
+
+    if not pyproject_path.exists():
+        return metadata
+
+    pyproject = tomllib.loads(pyproject_path.read_text())
+    project = pyproject.get("project", {}) if isinstance(pyproject, dict) else {}
+    if not isinstance(project, dict):
+        return metadata
+
+    version = project.get("version")
+    if isinstance(version, str) and version.strip():
+        metadata["version"] = version.strip()
+
+    description = project.get("description")
+    if isinstance(description, str) and description.strip():
+        metadata["description"] = description.strip().rstrip(".") + "."
+
+    readme = _project_readme(project.get("readme"))
+    if readme:
+        metadata["readme"] = readme
+
+    license_name = _project_license(project.get("license"))
+    if license_name:
+        metadata["license"] = [license_name]
+
+    authors = project.get("authors")
+    if isinstance(authors, list):
+        parsed_authors: List[str] = []
+        for author in authors:
+            if isinstance(author, dict):
+                author_name = author.get("name")
+                if isinstance(author_name, str) and author_name.strip():
+                    parsed_authors.append(author_name.strip())
+        if parsed_authors:
+            metadata["authors"] = parsed_authors
+
+    keywords = project.get("keywords")
+    if isinstance(keywords, list):
+        parsed_keywords = [k.strip() for k in keywords if isinstance(k, str) and k.strip()]
+        if parsed_keywords:
+            metadata["tags"] = parsed_keywords
+
+    return metadata
+
+
 def build_resources(spec: Dict[str, Any]) -> Dict[str, Dict[str, Any]]:
     paths = spec.get("paths", {})
     definitions = spec.get("definitions", {})
 
     resource_ops: Dict[str, Dict[str, List[Dict[str, Any]]]] = defaultdict(lambda: defaultdict(list))
     for path, op_map in paths.items():
-        resource = resource_from_path(path)
+        resource = PATH_RESOURCE_OVERRIDES.get(path) or resource_from_path(path)
         for method, op in op_map.items():
             m = method.lower()
             if m not in HTTP_METHODS:
@@ -261,7 +711,7 @@ def build_resources(spec: Dict[str, Any]) -> Dict[str, Dict[str, Any]]:
                 "source": "base",
             }
 
-        for _, op in selected.items():
+        for action, op in selected.items():
             if not op:
                 continue
             for p in op.get("parameters", []):
@@ -270,7 +720,10 @@ def build_resources(spec: Dict[str, Any]) -> Dict[str, Dict[str, Any]]:
                     continue
 
                 if pin == "body":
+                    excluded_fields = excluded_body_fields(resource, action)
                     for k, v in extract_body_fields(p.get("schema", {}), definitions).items():
+                        if k in excluded_fields:
+                            continue
                         if k in params and params[k].get("source") in {"path", "query"}:
                             continue
                         params[k] = v
@@ -287,7 +740,12 @@ def build_resources(spec: Dict[str, Any]) -> Dict[str, Dict[str, Any]]:
                     elements = json_type_to_ansible(p.get("items", {}).get("type", "string"))
 
                 if existing:
-                    existing["required"] = existing.get("required", False) or required
+                    # Path/query requiredness is operation-specific and enforced at runtime.
+                    # Do not promote it to a global argument requirement.
+                    if source in {"path", "query"}:
+                        existing["required_in_api"] = existing.get("required_in_api", False) or required
+                    else:
+                        existing["required"] = existing.get("required", False) or required
                     continue
 
                 params[pname] = {
@@ -300,6 +758,15 @@ def build_resources(spec: Dict[str, Any]) -> Dict[str, Dict[str, Any]]:
                 }
                 if elements:
                     params[pname]["elements"] = elements
+                # Capture enum choices for query/path params
+                p_enum = p.get("enum")
+                if p_enum:
+                    params[pname]["choices"] = [str(v) for v in p_enum]
+                elif ptype == "list":
+                    items_spec = p.get("items") or {}
+                    item_enum = items_spec.get("enum") if isinstance(items_spec, dict) else None
+                    if item_enum:
+                        params[pname]["choices"] = [str(v) for v in item_enum]
                 lname = str(p.get("name", pname)).lower()
                 if any(secret in lname for secret in ("token", "secret", "password", "apikey", "api_key", "key")):
                     params[pname]["no_log"] = True
@@ -317,35 +784,20 @@ def build_resources(spec: Dict[str, Any]) -> Dict[str, Dict[str, Any]]:
 
 def generate_collection(spec_path: Path, output_dir: Path) -> Tuple[int, List[Tuple[str, str]]]:
     spec = json.loads(spec_path.read_text())
+    paths = spec.get("paths", {})
     definitions = spec.get("definitions", {})
     resources = build_resources(spec)
+    template_dir = Path(__file__).resolve().parent / "templates"
+    template_env = create_jinja_env(template_dir)
+    pyproject_path = Path(__file__).resolve().parent.parent / "pyproject.toml"
+    galaxy_metadata = load_galaxy_metadata(pyproject_path, output_dir)
 
     modules_dir = output_dir / "plugins" / "modules"
     roles_dir = output_dir / "roles"
     modules_dir.mkdir(parents=True, exist_ok=True)
     roles_dir.mkdir(parents=True, exist_ok=True)
 
-    (output_dir / "galaxy.yml").write_text(
-        "\n".join(
-            [
-                "namespace: zeqk",
-                "name: databasus",
-                "version: 1.0.0",
-                "readme: README.md",
-                "description: Ansible collection to manage Databasus resources via REST API.",
-                "license:",
-                "  - MIT",
-                "authors:",
-                "  - zeqk",
-                "tags:",
-                "  - database",
-                "  - api",
-                "  - crud",
-                "dependencies: {}",
-                "",
-            ]
-        )
-    )
+    (output_dir / "galaxy.yml").write_text(template_env.get_template("galaxy.yml.j2").render(**galaxy_metadata))
 
     (roles_dir / ".gitkeep").write_text("")
 
@@ -358,6 +810,7 @@ def generate_collection(spec_path: Path, output_dir: Path) -> Tuple[int, List[Tu
         mutable = data["mutable"]
 
         body_field_names: List[str] = []
+        body_field_api_map: Dict[str, str] = {}
         path_params_by_op: Dict[str, List[str]] = {}
         query_params_by_op: Dict[str, List[str]] = {}
 
@@ -372,11 +825,61 @@ def generate_collection(spec_path: Path, output_dir: Path) -> Tuple[int, List[Tu
                 elif p.get("in") == "query":
                     qnames.append(snake(p["name"]))
                 elif p.get("in") == "body":
-                    body_field_names.extend(extract_body_fields(p.get("schema", {}), definitions).keys())
+                    excluded_fields = excluded_body_fields(resource, opname)
+                    fields = extract_body_fields(p.get("schema", {}), definitions)
+                    body_field_names.extend([k for k in fields.keys() if k not in excluded_fields])
+                    for field_name, field_meta in fields.items():
+                        if field_name in excluded_fields:
+                            continue
+                        body_field_api_map[field_name] = field_meta.get("api_name", field_name)
             path_params_by_op[opname] = sorted(set(pnames))
             query_params_by_op[opname] = sorted(set(qnames))
 
         body_field_names = sorted(set(body_field_names))
+
+        body_schema = {}
+        for field_name in body_field_names:
+            if field_name not in params:
+                continue
+            meta = dict(params[field_name])
+            # The query/path param for this field may have been recorded with a
+            # snake_case api_name (e.g. "workspace_id") while the body uses the
+            # original camelCase name (e.g. "workspaceId"). Always prefer the
+            # body's api_name so the request payload uses the correct key.
+            if field_name in body_field_api_map:
+                meta["api_name"] = body_field_api_map[field_name]
+            body_schema[field_name] = _meta_to_schema_info(meta)
+        body_schema_literal = _format_schema_literal(body_schema)
+
+        name_addressable = "name" in body_field_names and bool(ops.get("list"))
+        create_spec = (ops.get("create") or {}).get("spec", {})
+        create_text = " ".join(
+            [
+                sanitize_text(create_spec.get("summary") or ""),
+                sanitize_text(create_spec.get("description") or ""),
+            ]
+        )
+        create_is_upsert = bool(re.search(r"\b(create|save)\s+or\s+update\b", create_text, flags=re.IGNORECASE))
+
+        if name_addressable and "name" in params:
+            params["name"]["required"] = True
+
+        input_excluded: set[str] = set()
+        if name_addressable and "id" in params:
+            input_excluded.add("id")
+
+        name_field = "name" if name_addressable and "name" in params else ""
+        id_field = "id" if name_addressable and "id" in params else ""
+        name_api = body_field_api_map.get(name_field, name_field) if name_field else ""
+        id_api = body_field_api_map.get(id_field, id_field) if id_field else ""
+        match_fields: List[Tuple[str, str]] = []
+        if name_addressable:
+            for field_name in sorted(body_field_names):
+                field_api_name = body_field_api_map.get(field_name, field_name)
+                if re.fullmatch(r"workspace_?id", field_name, flags=re.IGNORECASE) or re.fullmatch(
+                    r"workspace_?id", field_api_name, flags=re.IGNORECASE
+                ):
+                    match_fields.append((field_name, field_api_name))
 
         def op_const(name: str) -> Tuple[str, str, str, str]:
             op = ops.get(name)
@@ -402,7 +905,9 @@ def generate_collection(spec_path: Path, output_dir: Path) -> Tuple[int, List[Tu
                 operation_ids.append(f"{key}={op['operation_id']}")
 
         option_blocks = []
-        ordered = ["state", "api_url", "api_token"] + sorted([k for k in params if k not in {"state", "api_url", "api_token"}])
+        ordered = ["state", "api_url", "api_token"] + sorted(
+            [k for k in params if k not in {"state", "api_url", "api_token"} and k not in input_excluded]
+        )
         for k in ordered:
             if k in params:
                 option_blocks.append(option_doc_block(k, params[k]))
@@ -412,6 +917,10 @@ def generate_collection(spec_path: Path, output_dir: Path) -> Tuple[int, List[Tu
             desc_lines.append("  - operationId references are included in generated operation constants.")
         if not mutable:
             desc_lines.append("  - This module is read-only and does not support state=absent.")
+        for _crud_key in ("list", "get", "create", "update", "delete"):
+            _op = ops.get(_crud_key)
+            if _op:
+                desc_lines.append(f"  - Uses ``{_op['method'].upper()} {_op['path']}``.")
 
         examples = [
             "- name: Query resource",
@@ -427,8 +936,12 @@ def generate_collection(spec_path: Path, output_dir: Path) -> Tuple[int, List[Tu
                 "    api_url: https://api.example.com",
                 '    api_token: "{{ databasus_token }}"',
             ]
+        if mutable and name_field:
+            examples.append("    name: example-name")
         for name in sorted(params):
             if name in {"state", "api_url", "api_token"}:
+                continue
+            if name in input_excluded or (name_field and name == name_field):
                 continue
             if params[name]["source"] == "body":
                 examples.append(f"    {name}: null")
@@ -442,358 +955,164 @@ def generate_collection(spec_path: Path, output_dir: Path) -> Tuple[int, List[Tu
                 "    api_url: https://api.example.com",
                 '    api_token: "{{ databasus_token }}"',
             ]
+            if name_field:
+                examples.append("    name: example-name")
 
-        arg_lines = [f"        {p}={arg_spec_line(params[p])}," for p in ordered if p in params]
+        arg_lines = [format_arg_spec_entry(p, params[p]) for p in ordered if p in params]
 
         required_delete = [p for p in path_params_by_op.get("delete", []) if params.get(p, {}).get("required_in_api")]
         required_get = [p for p in path_params_by_op.get("get", []) if params.get(p, {}).get("required_in_api")]
         required_create = [p for p in path_params_by_op.get("create", []) if params.get(p, {}).get("required_in_api")]
+        required_list_query = [p for p in query_params_by_op.get("list", []) if params.get(p, {}).get("required_in_api")]
 
         api_name_map = {k: v["api_name"] for k, v in params.items() if "api_name" in v}
 
-        body_fields_literal = format_list_literal(body_field_names)
+        match_fields_literal = repr(match_fields)
         api_name_map_literal = format_dict_literal(api_name_map)
+        resource_return_fields = resource_response_fields(ops, definitions)
+        return_resource_contains_block = ""
+        if resource_return_fields:
+            return_resource_contains_block = "\n    contains:\n" + "\n".join(
+                render_return_fields(resource_return_fields, indent=8)
+            )
 
-        code = textwrap.dedent(
-            f'''
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
-
-# Copyright: (c) 2026, zeqk (@zeqk)
-# GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
-
-DOCUMENTATION = r"""
----
-module: {resource}
-short_description: Manage {resource} resources in Databasus.
-description:
-{chr(10).join(desc_lines)}
-options:
-{chr(10).join(option_blocks)}
-author:
-    - zeqk (@zeqk)
-"""
-
-EXAMPLES = r"""
-{chr(10).join(examples)}
-"""
-
-RETURN = r"""
-resource:
-    description: Resource object as returned by the API.
-    type: dict
-    returned: always
-changed:
-    description: Indicates whether any change was made.
-    type: bool
-    returned: always
-msg:
-    description: Descriptive operation message.
-    type: str
-    returned: always
-"""
-
-
-import json
-from typing import Any, Dict, List, Optional, Tuple
-from urllib import error, parse
-
-from ansible.module_utils.basic import AnsibleModule
-from ansible.module_utils.urls import open_url
-
-
-CREATE_METHOD = {c_method}
-CREATE_PATH = {c_path}
-CREATE_PATH_PARAMS = {c_pp}
-CREATE_QUERY_PARAMS = {c_qp}
-LIST_METHOD = {l_method}
-LIST_PATH = {l_path}
-LIST_PATH_PARAMS = {l_pp}
-LIST_QUERY_PARAMS = {l_qp}
-GET_METHOD = {g_method}
-GET_PATH = {g_path}
-GET_PATH_PARAMS = {g_pp}
-GET_QUERY_PARAMS = {g_qp}
-UPDATE_METHOD = {u_method}
-UPDATE_PATH = {u_path}
-UPDATE_PATH_PARAMS = {u_pp}
-UPDATE_QUERY_PARAMS = {u_qp}
-DELETE_METHOD = {d_method}
-DELETE_PATH = {d_path}
-DELETE_PATH_PARAMS = {d_pp}
-DELETE_QUERY_PARAMS = {d_qp}
-BODY_FIELDS = {body_fields_literal}
-READ_ONLY = {str(not mutable)}
-API_NAME_MAP = {api_name_map_literal}
-REQUIRED_DELETE_PATH_PARAMS = {repr(required_delete)}
-REQUIRED_GET_PATH_PARAMS = {repr(required_get)}
-REQUIRED_CREATE_PATH_PARAMS = {repr(required_create)}
-
-
-def _build_url(api_url: str, path_template: str, path_params: Dict[str, Any], query_params: Optional[Dict[str, Any]] = None) -> str:
-    encoded = {{k: parse.quote(str(v), safe='') for k, v in path_params.items()}}
-    path = path_template.format(**encoded)
-    url = api_url.rstrip('/') + path
-    clean_query = {{k: v for k, v in (query_params or {{}}).items() if v is not None}}
-    if clean_query:
-        url += '?' + parse.urlencode(clean_query, doseq=True)
-    return url
-
-
-def _decode_body(raw: str) -> Any:
-    if not raw:
-        return {{}}
-    try:
-        return json.loads(raw)
-    except json.JSONDecodeError:
-        return {{'raw': raw}}
-
-
-def _request_json(
-    module: AnsibleModule,
-    method: str,
-    url: str,
-    token: str,
-    payload: Optional[Dict[str, Any]] = None,
-    expected_statuses: Optional[List[int]] = None,
-    allow_statuses: Optional[List[int]] = None,
-) -> Tuple[int, Any]:
-    headers = {{
-        'Accept': 'application/json',
-        'Authorization': f'Bearer {{token}}',
-    }}
-    data = None
-    if payload is not None:
-        headers['Content-Type'] = 'application/json'
-        data = json.dumps(payload).encode('utf-8')
-
-    try:
-        with open_url(
-            url,
-            data=data,
-            headers=headers,
-            method=method,
-            timeout=30,
-        ) as response:
-            status = int(response.getcode())
-            raw = response.read().decode('utf-8')
-    except error.HTTPError as exc:
-        status = int(exc.code)
-        raw = exc.read().decode('utf-8', errors='replace')
-        if allow_statuses and status in allow_statuses:
-            return status, _decode_body(raw)
-        module.fail_json(msg=f'HTTP {{status}} on {{method}} {{url}}: {{raw}}')
-    except error.URLError as exc:
-        module.fail_json(msg=f'Connection error on {{method}} {{url}}: {{exc}}')
-
-    if expected_statuses and status not in expected_statuses:
-        module.fail_json(msg=f'Unexpected HTTP {{status}} on {{method}} {{url}}: {{raw}}')
-
-    return status, _decode_body(raw)
-
-
-def _collect_params(module_params: Dict[str, Any], names: List[str]) -> Dict[str, Any]:
-    out: Dict[str, Any] = {{}}
-    for name in names:
-        value = module_params.get(name)
-        if value is not None:
-            out[API_NAME_MAP.get(name, name)] = value
-    return out
-
-
-def _desired_payload(module_params: Dict[str, Any]) -> Dict[str, Any]:
-    payload: Dict[str, Any] = {{}}
-    for name in BODY_FIELDS:
-        value = module_params.get(name)
-        if value is not None:
-            payload[API_NAME_MAP.get(name, name)] = value
-    return payload
-
-
-def _needs_update(current: Any, desired: Dict[str, Any]) -> bool:
-    if not desired:
-        return False
-    if not isinstance(current, dict):
-        return True
-    for key, value in desired.items():
-        if current.get(key) != value:
-            return True
-    return False
-
-
-def _has_required(module_params: Dict[str, Any], names: List[str]) -> bool:
-    return all(module_params.get(name) is not None for name in names)
-
-
-def _ensure_required(module: AnsibleModule, module_params: Dict[str, Any], names: List[str], context: str) -> None:
-    missing = [name for name in names if module_params.get(name) is None]
-    if missing:
-        module.fail_json(msg=f'Missing required parameters for {{context}}: {{", ".join(missing)}}')
-
-
-def run_module() -> None:
-    module_args = dict(
-{chr(10).join(arg_lines)}
-    )
-    module = AnsibleModule(argument_spec=module_args, supports_check_mode=not READ_ONLY)
-    params = module.params
-
-    api_url = params['api_url']
-    api_token = params['api_token']
-    state = params.get('state', 'present')
-
-    result: Dict[str, Any] = dict(changed=False, resource={{}}, msg='No changes')
-
-    if READ_ONLY:
-        if GET_PATH and _has_required(params, GET_PATH_PARAMS):
-            get_url = _build_url(api_url, GET_PATH, _collect_params(params, GET_PATH_PARAMS), _collect_params(params, GET_QUERY_PARAMS))
-            current = _request_json(module, GET_METHOD, get_url, api_token, expected_statuses=[200])[1]
-            result['resource'] = current if isinstance(current, dict) else {{'value': current}}
-            result['msg'] = 'Single-resource query completed'
-            module.exit_json(**result)
-
-        if LIST_PATH:
-            list_url = _build_url(api_url, LIST_PATH, _collect_params(params, LIST_PATH_PARAMS), _collect_params(params, LIST_QUERY_PARAMS))
-            listing = _request_json(module, LIST_METHOD, list_url, api_token, expected_statuses=[200])[1]
-            result['resource'] = listing if isinstance(listing, dict) else {{'items': listing}}
-            result['msg'] = 'List query completed'
-            module.exit_json(**result)
-
-        result['msg'] = 'No usable GET endpoint for this module'
-        module.fail_json(**result)
-
-    exists = False
-    current: Any = {{}}
-
-    if GET_PATH and _has_required(params, GET_PATH_PARAMS):
-        get_url = _build_url(api_url, GET_PATH, _collect_params(params, GET_PATH_PARAMS), _collect_params(params, GET_QUERY_PARAMS))
-        status, body = _request_json(module, GET_METHOD, get_url, api_token, expected_statuses=[200], allow_statuses=[404])
-        if status == 200:
-            exists = True
-            current = body
-
-    desired = _desired_payload(params)
-
-    if state == 'absent':
-        if not DELETE_PATH:
-            result['msg'] = 'Resource does not support delete operation'
-            module.fail_json(**result)
-        _ensure_required(module, params, REQUIRED_DELETE_PATH_PARAMS or DELETE_PATH_PARAMS, 'delete')
-
-        if not exists:
-            result['msg'] = 'Resource is already absent'
-            module.exit_json(**result)
-
-        if module.check_mode:
-            result['changed'] = True
-            result['msg'] = 'Delete planned (check_mode)'
-            module.exit_json(**result)
-
-        delete_url = _build_url(api_url, DELETE_PATH, _collect_params(params, DELETE_PATH_PARAMS), _collect_params(params, DELETE_QUERY_PARAMS))
-        _request_json(module, DELETE_METHOD, delete_url, api_token, expected_statuses=[200, 202, 204])
-        result['changed'] = True
-        result['resource'] = {{}}
-        result['msg'] = 'Resource deleted'
-        module.exit_json(**result)
-
-    if exists:
-        if UPDATE_PATH:
-            if not _needs_update(current, desired):
-                result['resource'] = current if isinstance(current, dict) else {{'value': current}}
-                result['msg'] = 'Resource already in desired state'
-                module.exit_json(**result)
-
-            if module.check_mode:
-                result['changed'] = True
-                result['resource'] = current if isinstance(current, dict) else {{'value': current}}
-                result['msg'] = 'Update planned (check_mode)'
-                module.exit_json(**result)
-
-            _ensure_required(module, params, UPDATE_PATH_PARAMS, 'update')
-            update_url = _build_url(api_url, UPDATE_PATH, _collect_params(params, UPDATE_PATH_PARAMS), _collect_params(params, UPDATE_QUERY_PARAMS))
-            updated = _request_json(module, UPDATE_METHOD, update_url, api_token, payload=desired, expected_statuses=[200, 201])[1]
-            result['changed'] = True
-            result['resource'] = updated if isinstance(updated, dict) else {{'value': updated}}
-            result['msg'] = 'Resource updated'
-            module.exit_json(**result)
-
-        result['resource'] = current if isinstance(current, dict) else {{'value': current}}
-        result['msg'] = 'Resource exists; no update endpoint available'
-        module.exit_json(**result)
-
-    if not CREATE_PATH:
-        result['msg'] = 'Resource does not exist and there is no create endpoint'
-        module.fail_json(**result)
-
-    _ensure_required(module, params, REQUIRED_CREATE_PATH_PARAMS or CREATE_PATH_PARAMS, 'create')
-
-    if module.check_mode:
-        result['changed'] = True
-        result['msg'] = 'Create planned (check_mode)'
-        module.exit_json(**result)
-
-    create_url = _build_url(api_url, CREATE_PATH, _collect_params(params, CREATE_PATH_PARAMS), _collect_params(params, CREATE_QUERY_PARAMS))
-    created = _request_json(module, CREATE_METHOD, create_url, api_token, payload=desired, expected_statuses=[200, 201, 202])[1]
-    result['changed'] = True
-    result['resource'] = created if isinstance(created, dict) else {{'value': created}}
-    result['msg'] = 'Resource created'
-    module.exit_json(**result)
-
-
-def main() -> None:
-    run_module()
-
-
-if __name__ == '__main__':
-    main()
-'''
-        ).lstrip()
+        module_template = template_env.get_template("module.py.j2")
+        expand_storage_id_to_storage = resource in EXPAND_STORAGE_ID_TO_STORAGE_RESOURCES
+        code = module_template.render(
+            resource=resource,
+            desc_block="\n".join(desc_lines),
+            option_blocks_block="\n".join(option_blocks),
+            examples_block="\n".join(examples),
+            return_resource_contains_block=return_resource_contains_block,
+            c_method=c_method,
+            c_path=c_path,
+            c_pp=c_pp,
+            c_qp=c_qp,
+            l_method=l_method,
+            l_path=l_path,
+            l_pp=l_pp,
+            l_qp=l_qp,
+            g_method=g_method,
+            g_path=g_path,
+            g_pp=g_pp,
+            g_qp=g_qp,
+            u_method=u_method,
+            u_path=u_path,
+            u_pp=u_pp,
+            u_qp=u_qp,
+            d_method=d_method,
+            d_path=d_path,
+            d_pp=d_pp,
+            d_qp=d_qp,
+            body_schema_literal=body_schema_literal,
+            read_only=str(not mutable),
+            api_name_map_literal=api_name_map_literal,
+            required_delete=repr(required_delete),
+            required_get=repr(required_get),
+            required_create=repr(required_create),
+            required_list_query=repr(required_list_query),
+            name_addressable=str(name_addressable),
+            name_field_repr=repr(name_field),
+            name_api_repr=repr(name_api),
+            id_field_repr=repr(id_field),
+            id_api_repr=repr(id_api),
+            match_fields_literal=match_fields_literal,
+            create_is_upsert=str(create_is_upsert),
+            expand_storage_id_to_storage=expand_storage_id_to_storage,
+            arg_lines_block="\n".join(arg_lines),
+        )
 
         (modules_dir / f"{resource}.py").write_text(code)
         module_rows.append((resource, ", ".join(sorted(data["ops_present"]))))
 
-    readme = [
-        "# zeqk.databasus",
-        "",
-        "Ansible collection generated from `openapi.json` to manage Databasus API resources.",
-        "",
-        "## Requirements",
-        "",
-        "- Ansible Core 2.14+",
-        "- Python 3 on the controller node",
-        "",
-        "## Generated modules",
-        "",
-        "| Module | FQCN | Detected operations |",
-        "|---|---|---|",
-    ]
-    for module_name, ops_text in sorted(module_rows):
-        readme.append(f"| `{module_name}` | `zeqk.databasus.{module_name}` | `{ops_text}` |")
+        if name_addressable and name_field and ops.get("list"):
+            info_ordered = ["api_url", "api_token", name_field]
+            for field_name, _field_api_name in match_fields:
+                if field_name in params and field_name not in info_ordered:
+                    info_ordered.append(field_name)
+            for field_name in required_list_query:
+                if field_name in params and field_name not in info_ordered:
+                    info_ordered.append(field_name)
 
-    readme += [
-        "",
-        "## Basic usage",
-        "",
-        "```yaml",
-        "- name: Manage database",
-        "  hosts: localhost",
-        "  tasks:",
-        "    - name: Create database",
-        "      zeqk.databasus.database:",
-        "        state: present",
-        "        api_url: \"https://api.databasus.example.com\"",
-        "        api_token: \"{{ lookup('env', 'DATABASUS_TOKEN') }}\"",
-        "        name: \"production-db\"",
-        "",
-        "    - name: Delete database",
-        "      zeqk.databasus.database:",
-        "        state: absent",
-        "        api_url: \"https://api.databasus.example.com\"",
-        "        api_token: \"{{ lookup('env', 'DATABASUS_TOKEN') }}\"",
-        "        id: \"db-abc123\"",
-        "```",
-    ]
-    (output_dir / "README.md").write_text("\n".join(readme) + "\n")
+            info_option_blocks = [option_doc_block(k, params[k]) for k in info_ordered if k in params]
+            info_arg_lines = [f"        {p}={arg_spec_line(params[p])}," for p in info_ordered if p in params]
+
+            info_template = template_env.get_template("module_info.py.j2")
+            info_code = info_template.render(
+                resource=resource,
+                module_name=f"{resource}_info",
+                option_blocks_block="\n".join(info_option_blocks),
+                return_resource_contains_block=return_resource_contains_block,
+                l_method=l_method,
+                l_path=l_path,
+                l_method_raw=ops["list"]["method"].upper(),
+                l_path_raw=ops["list"]["path"],
+                l_pp=l_pp,
+                l_qp=l_qp,
+                api_name_map_literal=api_name_map_literal,
+                required_list_query=repr(required_list_query),
+                name_field_repr=repr(name_field),
+                name_api_repr=repr(name_api),
+                match_fields_literal=match_fields_literal,
+                arg_lines_block="\n".join(info_arg_lines),
+            )
+
+            (modules_dir / f"{resource}_info.py").write_text(info_code)
+            module_rows.append((f"{resource}_info", "get_by_name"))
+
+    for (method, path), module_name in PUBLIC_ACTION_MODULES.items():
+        path_item = paths.get(path) if isinstance(paths, dict) else None
+        op = path_item.get(method) if isinstance(path_item, dict) else None
+        if not isinstance(op, dict):
+            continue
+
+        params: Dict[str, Dict[str, Any]] = {
+            "api_url": {
+                "api_name": "api_url",
+                "description": "Base API URL.",
+                "type": "str",
+                "required": True,
+                "source": "base",
+            }
+        }
+
+        for p in op.get("parameters", []):
+            if p.get("in") != "body":
+                continue
+            params.update(extract_body_fields(p.get("schema", {}), definitions))
+
+        ordered = ["api_url"] + sorted([k for k in params if k != "api_url"])
+        option_blocks = [option_doc_block(k, params[k]) for k in ordered if k in params]
+        arg_lines = [f"        {p}={arg_spec_line(params[p])}," for p in ordered if p in params]
+
+        response_fields: Dict[str, Dict[str, Any]] = {}
+        response_schema = success_response_schema(op)
+        if response_schema:
+            response_fields = schema_fields(response_schema, definitions)
+
+        return_resource_contains_block = ""
+        if response_fields:
+            return_resource_contains_block = "\n    contains:\n" + "\n".join(
+                render_return_fields(response_fields, indent=8)
+            )
+
+        signin_template = template_env.get_template("user_signin.py.j2")
+        signin_code = signin_template.render(
+            module_name=module_name,
+            option_blocks_block="\n".join(option_blocks),
+            arg_lines_block="\n".join(arg_lines),
+            return_resource_contains_block=return_resource_contains_block,
+            signin_method=repr(method.upper()),
+            signin_path=repr(path),
+            signin_method_raw=method.upper(),
+            signin_path_raw=path,
+        )
+
+        (modules_dir / f"{module_name}.py").write_text(signin_code)
+        module_rows.append((module_name, "signin"))
+
+    readme = template_env.get_template("README.md.j2").render(module_rows=sorted(module_rows))
+    (output_dir / "README.md").write_text(readme)
 
     return len(module_rows), module_rows
 

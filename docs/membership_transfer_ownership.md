@@ -3,13 +3,15 @@
 ## Synopsis
 Allows managing membership\_transfer\_ownership resources using the Databasus API\.
 
+Uses \`\`POST /workspaces/memberships/\{id\}/transfer\-ownership\`\`\.
+
 
 
 ## Parameters
 
 | parameter | comments |
 |---|---|
-| state | optional, str, default=present. Desired state of the resource\. |
+| state | optional, str, default=present. Desired state of the resource\. Possible values\; present\, absent\. |
 | api_url | True, str, default=None. Base API URL\. |
 | api_token | True, str, default=None. Bearer authentication token\. |
 | id | optional, str, default=None. Workspace ID |
@@ -28,3 +30,13 @@ Allows managing membership\_transfer\_ownership resources using the Databasus AP
         new_owner_email: null
 
 ```
+
+
+## Return Values
+
+| return value | comments |
+|---|---|
+| resource | always, dict. Resource object as returned by the API\. |
+| changed | always, bool. Indicates whether any change was made\. |
+| msg | always, str. Descriptive operation message\. |
+

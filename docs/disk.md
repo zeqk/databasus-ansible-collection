@@ -5,6 +5,8 @@ Allows managing disk resources using the Databasus API\.
 
 This module is read\-only and does not support state\=absent\.
 
+Uses \`\`GET /disk/usage\`\`\.
+
 
 
 ## Parameters
@@ -25,3 +27,16 @@ This module is read\-only and does not support state\=absent\.
         api_token: "{{ databasus_token }}"
 
 ```
+
+
+## Return Values
+
+| return value | comments |
+|---|---|
+| resource | always, dict. Resource object as returned by the API\. |
+| resource.free_space_bytes | success, int. Field freeSpaceBytes\. |
+| resource.total_space_bytes | success, int. Field totalSpaceBytes\. |
+| resource.used_space_bytes | success, int. Field usedSpaceBytes\. |
+| changed | always, bool. Indicates whether any change was made\. |
+| msg | always, str. Descriptive operation message\. |
+

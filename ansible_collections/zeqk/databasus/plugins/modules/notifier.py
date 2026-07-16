@@ -11,10 +11,14 @@ short_description: Manage notifier resources in Databasus.
 description:
   - Allows managing notifier resources using the Databasus API.
   - operationId references are included in generated operation constants.
+  - Uses ``GET /notifiers``.
+  - Uses ``GET /notifiers/{id}``.
+  - Uses ``POST /notifiers``.
+  - Uses ``DELETE /notifiers/{id}``.
 options:
   state:
     description:
-      - Desired state of the resource.
+      - Desired state of the resource. Possible values; present, absent.
     type: str
     choices:
       - present
@@ -34,15 +38,52 @@ options:
     description:
       - Body field discordNotifier.
     type: dict
+    suboptions:
+      channel_webhook_url:
+        description:
+          - Body field channelWebhookUrl.
+        type: str
+      notifier_id:
+        description:
+          - Body field notifierId.
+        type: str
   email_notifier:
     description:
       - Body field emailNotifier.
     type: dict
-  id:
-    description:
-      - Body field id.
-    type: str
-    required: true
+    suboptions:
+      from:
+        description:
+          - Body field from.
+        type: str
+      is_insecure_skip_verify:
+        description:
+          - Body field isInsecureSkipVerify.
+        type: bool
+      notifier_id:
+        description:
+          - Body field notifierId.
+        type: str
+      smtp_host:
+        description:
+          - Body field smtpHost.
+        type: str
+      smtp_password:
+        description:
+          - Body field smtpPassword.
+        type: str
+      smtp_port:
+        description:
+          - Body field smtpPort.
+        type: int
+      smtp_user:
+        description:
+          - Body field smtpUser.
+        type: str
+      target_email:
+        description:
+          - Body field targetEmail.
+        type: str
   last_send_error:
     description:
       - Body field lastSendError.
@@ -51,26 +92,115 @@ options:
     description:
       - Body field name.
     type: str
+    required: true
   notifier_type:
     description:
-      - Body field notifierType.
+      - Body field notifierType. Possible values; EMAIL, TELEGRAM, WEBHOOK, SLACK, DISCORD, TEAMS.
     type: str
+    choices:
+      - EMAIL
+      - TELEGRAM
+      - WEBHOOK
+      - SLACK
+      - DISCORD
+      - TEAMS
   slack_notifier:
     description:
       - Body field slackNotifier.
     type: dict
+    suboptions:
+      bot_token:
+        description:
+          - Body field botToken.
+        type: str
+      notifier_id:
+        description:
+          - Body field notifierId.
+        type: str
+      target_chat_id:
+        description:
+          - Body field targetChatId.
+        type: str
   teams_notifier:
     description:
       - Body field teamsNotifier.
     type: dict
+    suboptions:
+      notifier_id:
+        description:
+          - Body field notifierId.
+        type: str
+      power_automate_url:
+        description:
+          - Body field powerAutomateUrl.
+        type: str
   telegram_notifier:
     description:
-      - Body field telegramNotifier.
+      - specific notifier
     type: dict
+    suboptions:
+      bot_token:
+        description:
+          - Body field botToken.
+        type: str
+      is_proxy_enabled:
+        description:
+          - Body field isProxyEnabled.
+        type: bool
+      notifier_id:
+        description:
+          - Body field notifierId.
+        type: str
+      proxy_url:
+        description:
+          - Body field proxyUrl.
+        type: str
+      target_chat_id:
+        description:
+          - Body field targetChatId.
+        type: str
+      thread_id:
+        description:
+          - Body field threadId.
+        type: int
   webhook_notifier:
     description:
       - Body field webhookNotifier.
     type: dict
+    suboptions:
+      body_template:
+        description:
+          - Body field bodyTemplate.
+        type: str
+      headers:
+        description:
+          - Body field headers.
+        type: list
+        elements: dict
+        suboptions:
+          key:
+            description:
+              - Body field key.
+            type: str
+          value:
+            description:
+              - Body field value.
+            type: str
+      notifier_id:
+        description:
+          - Body field notifierId.
+        type: str
+      webhook_method:
+        description:
+          - Body field webhookMethod. Possible values; POST, GET.
+        type: str
+        choices:
+          - POST
+          - GET
+      webhook_url:
+        description:
+          - Body field webhookUrl.
+        type: str
   workspace_id:
     description:
       - Workspace ID
@@ -85,6 +215,7 @@ EXAMPLES = r"""
     state: present
     api_url: https://api.example.com
     api_token: "{{ databasus_token }}"
+    name: example-name
     discord_notifier: null
 
 - name: Delete resource
@@ -92,6 +223,7 @@ EXAMPLES = r"""
     state: absent
     api_url: https://api.example.com
     api_token: "{{ databasus_token }}"
+    name: example-name
 """
 
 RETURN = r"""
@@ -99,6 +231,210 @@ resource:
     description: Resource object as returned by the API.
     type: dict
     returned: always
+    contains:
+        discord_notifier:
+            description:
+              - "Field discordNotifier."
+            type: dict
+            returned: success
+            contains:
+                channel_webhook_url:
+                    description:
+                      - "Field channelWebhookUrl."
+                    type: str
+                    returned: success
+                notifier_id:
+                    description:
+                      - "Field notifierId."
+                    type: str
+                    returned: success
+        email_notifier:
+            description:
+              - "Field emailNotifier."
+            type: dict
+            returned: success
+            contains:
+                from:
+                    description:
+                      - "Field from."
+                    type: str
+                    returned: success
+                is_insecure_skip_verify:
+                    description:
+                      - "Field isInsecureSkipVerify."
+                    type: bool
+                    returned: success
+                notifier_id:
+                    description:
+                      - "Field notifierId."
+                    type: str
+                    returned: success
+                smtp_host:
+                    description:
+                      - "Field smtpHost."
+                    type: str
+                    returned: success
+                smtp_password:
+                    description:
+                      - "Field smtpPassword."
+                    type: str
+                    returned: success
+                smtp_port:
+                    description:
+                      - "Field smtpPort."
+                    type: int
+                    returned: success
+                smtp_user:
+                    description:
+                      - "Field smtpUser."
+                    type: str
+                    returned: success
+                target_email:
+                    description:
+                      - "Field targetEmail."
+                    type: str
+                    returned: success
+        id:
+            description:
+              - "Field id."
+            type: str
+            returned: success
+        last_send_error:
+            description:
+              - "Field lastSendError."
+            type: str
+            returned: success
+        name:
+            description:
+              - "Field name."
+            type: str
+            returned: success
+        notifier_type:
+            description:
+              - "Field notifierType."
+            type: str
+            returned: success
+        slack_notifier:
+            description:
+              - "Field slackNotifier."
+            type: dict
+            returned: success
+            contains:
+                bot_token:
+                    description:
+                      - "Field botToken."
+                    type: str
+                    returned: success
+                notifier_id:
+                    description:
+                      - "Field notifierId."
+                    type: str
+                    returned: success
+                target_chat_id:
+                    description:
+                      - "Field targetChatId."
+                    type: str
+                    returned: success
+        teams_notifier:
+            description:
+              - "Field teamsNotifier."
+            type: dict
+            returned: success
+            contains:
+                notifier_id:
+                    description:
+                      - "Field notifierId."
+                    type: str
+                    returned: success
+                power_automate_url:
+                    description:
+                      - "Field powerAutomateUrl."
+                    type: str
+                    returned: success
+        telegram_notifier:
+            description:
+              - "specific notifier"
+            type: dict
+            returned: success
+            contains:
+                bot_token:
+                    description:
+                      - "Field botToken."
+                    type: str
+                    returned: success
+                is_proxy_enabled:
+                    description:
+                      - "Field isProxyEnabled."
+                    type: bool
+                    returned: success
+                notifier_id:
+                    description:
+                      - "Field notifierId."
+                    type: str
+                    returned: success
+                proxy_url:
+                    description:
+                      - "Field proxyUrl."
+                    type: str
+                    returned: success
+                target_chat_id:
+                    description:
+                      - "Field targetChatId."
+                    type: str
+                    returned: success
+                thread_id:
+                    description:
+                      - "Field threadId."
+                    type: int
+                    returned: success
+        webhook_notifier:
+            description:
+              - "Field webhookNotifier."
+            type: dict
+            returned: success
+            contains:
+                body_template:
+                    description:
+                      - "Field bodyTemplate."
+                    type: str
+                    returned: success
+                headers:
+                    description:
+                      - "Field headers."
+                    type: list
+                    elements: dict
+                    returned: success
+                    contains:
+                        key:
+                            description:
+                              - "Field key."
+                            type: str
+                            returned: success
+                        value:
+                            description:
+                              - "Field value."
+                            type: str
+                            returned: success
+                notifier_id:
+                    description:
+                      - "Field notifierId."
+                    type: str
+                    returned: success
+                webhook_method:
+                    description:
+                      - "Field webhookMethod."
+                    type: str
+                    returned: success
+                webhook_url:
+                    description:
+                      - "Field webhookUrl."
+                    type: str
+                    returned: success
+        workspace_id:
+            description:
+              - "Field workspaceId."
+            type: str
+            returned: success
 changed:
     description: Indicates whether any change was made.
     type: bool
@@ -111,6 +447,7 @@ msg:
 
 
 import json
+import shlex
 from typing import Any, Dict, List, Optional, Tuple
 from urllib import error, parse
 
@@ -138,19 +475,82 @@ DELETE_METHOD = 'DELETE'
 DELETE_PATH = '/notifiers/{id}'
 DELETE_PATH_PARAMS = ['id']
 DELETE_QUERY_PARAMS = []
-BODY_FIELDS = [
-    'discord_notifier',
-    'email_notifier',
-    'id',
-    'last_send_error',
-    'name',
-    'notifier_type',
-    'slack_notifier',
-    'teams_notifier',
-    'telegram_notifier',
-    'webhook_notifier',
-    'workspace_id',
-]
+BODY_SCHEMA = {
+    'discord_notifier': {
+        'api': 'discordNotifier',
+        'type': 'dict',
+        'nested': {
+            'channel_webhook_url': {'api': 'channelWebhookUrl', 'type': 'str'},
+            'notifier_id': {'api': 'notifierId', 'type': 'str'},
+        },
+    },
+    'email_notifier': {
+        'api': 'emailNotifier',
+        'type': 'dict',
+        'nested': {
+            'from': {'api': 'from', 'type': 'str'},
+            'is_insecure_skip_verify': {'api': 'isInsecureSkipVerify', 'type': 'bool'},
+            'notifier_id': {'api': 'notifierId', 'type': 'str'},
+            'smtp_host': {'api': 'smtpHost', 'type': 'str'},
+            'smtp_password': {'api': 'smtpPassword', 'type': 'str'},
+            'smtp_port': {'api': 'smtpPort', 'type': 'int'},
+            'smtp_user': {'api': 'smtpUser', 'type': 'str'},
+            'target_email': {'api': 'targetEmail', 'type': 'str'},
+        },
+    },
+    'id': {'api': 'id', 'type': 'str'},
+    'last_send_error': {'api': 'lastSendError', 'type': 'str'},
+    'name': {'api': 'name', 'type': 'str'},
+    'notifier_type': {'api': 'notifierType', 'type': 'str'},
+    'slack_notifier': {
+        'api': 'slackNotifier',
+        'type': 'dict',
+        'nested': {
+            'bot_token': {'api': 'botToken', 'type': 'str'},
+            'notifier_id': {'api': 'notifierId', 'type': 'str'},
+            'target_chat_id': {'api': 'targetChatId', 'type': 'str'},
+        },
+    },
+    'teams_notifier': {
+        'api': 'teamsNotifier',
+        'type': 'dict',
+        'nested': {
+            'notifier_id': {'api': 'notifierId', 'type': 'str'},
+            'power_automate_url': {'api': 'powerAutomateUrl', 'type': 'str'},
+        },
+    },
+    'telegram_notifier': {
+        'api': 'telegramNotifier',
+        'type': 'dict',
+        'nested': {
+            'bot_token': {'api': 'botToken', 'type': 'str'},
+            'is_proxy_enabled': {'api': 'isProxyEnabled', 'type': 'bool'},
+            'notifier_id': {'api': 'notifierId', 'type': 'str'},
+            'proxy_url': {'api': 'proxyUrl', 'type': 'str'},
+            'target_chat_id': {'api': 'targetChatId', 'type': 'str'},
+            'thread_id': {'api': 'threadId', 'type': 'int'},
+        },
+    },
+    'webhook_notifier': {
+        'api': 'webhookNotifier',
+        'type': 'dict',
+        'nested': {
+            'body_template': {'api': 'bodyTemplate', 'type': 'str'},
+            'headers': {
+                'api': 'headers',
+                'type': 'list',
+                'nested': {
+                    'key': {'api': 'key', 'type': 'str'},
+                    'value': {'api': 'value', 'type': 'str'},
+                },
+            },
+            'notifier_id': {'api': 'notifierId', 'type': 'str'},
+            'webhook_method': {'api': 'webhookMethod', 'type': 'str'},
+            'webhook_url': {'api': 'webhookUrl', 'type': 'str'},
+        },
+    },
+    'workspace_id': {'api': 'workspaceId', 'type': 'str'},
+}
 READ_ONLY = False
 API_NAME_MAP = {
     'api_url': 'api_url',
@@ -168,9 +568,18 @@ API_NAME_MAP = {
     'telegram_notifier': 'telegramNotifier',
     'webhook_notifier': 'webhookNotifier',
 }
-REQUIRED_DELETE_PATH_PARAMS = []
-REQUIRED_GET_PATH_PARAMS = []
+REQUIRED_DELETE_PATH_PARAMS = ['id']
+REQUIRED_GET_PATH_PARAMS = ['id']
 REQUIRED_CREATE_PATH_PARAMS = []
+REQUIRED_LIST_QUERY_PARAMS = ['workspace_id']
+NAME_ADDRESSABLE = True
+NAME_FIELD = 'name'
+NAME_API = 'name'
+ID_FIELD = 'id'
+ID_API = 'id'
+MATCH_FIELDS = [('workspace_id', 'workspaceId')]
+CREATE_IS_UPSERT = True
+EXPAND_STORAGE_ID_TO_STORAGE = False
 
 
 def _build_url(api_url: str, path_template: str, path_params: Dict[str, Any], query_params: Optional[Dict[str, Any]] = None) -> str:
@@ -192,6 +601,28 @@ def _decode_body(raw: str) -> Any:
         return {'raw': raw}
 
 
+def _build_curl(method: str, url: str, headers: Dict[str, Any], data: Optional[bytes]) -> str:
+    parts = ['curl', '-sS', '-X', method.upper()]
+    for key, value in headers.items():
+        header_value = str(value)
+        if key.lower() == 'authorization':
+            header_value = 'Bearer <REDACTED>'
+        parts += ['-H', shlex.quote(f'{key}: {header_value}')]
+    if data is not None:
+        parts += ['--data', shlex.quote(data.decode('utf-8', errors='replace'))]
+    parts.append(shlex.quote(url))
+    return ' '.join(parts)
+
+
+def _is_verbose_enabled(module: AnsibleModule) -> bool:
+    return int(getattr(module, '_verbosity', 0) or 0) >= 3
+
+
+def _verbose_http_log(module: AnsibleModule, message: str) -> None:
+    if _is_verbose_enabled(module):
+        module.warn(message)
+
+
 def _request_json(
     module: AnsibleModule,
     method: str,
@@ -206,9 +637,12 @@ def _request_json(
         'Authorization': f'Bearer {token}',
     }
     data = None
+    response_headers: Dict[str, Any] = {}
     if payload is not None:
         headers['Content-Type'] = 'application/json'
         data = json.dumps(payload).encode('utf-8')
+    equivalent_curl = _build_curl(method, url, headers, data)
+    _verbose_http_log(module, f'Databasus API request: {equivalent_curl}')
 
     try:
         with open_url(
@@ -219,18 +653,53 @@ def _request_json(
             timeout=30,
         ) as response:
             status = int(response.getcode())
+            response_headers = dict(getattr(response, 'headers', {}) or {})
             raw = response.read().decode('utf-8')
+            _verbose_http_log(module, f'Databasus API response: HTTP {status} on {method.upper()} {url}')
     except error.HTTPError as exc:
         status = int(exc.code)
         raw = exc.read().decode('utf-8', errors='replace')
+        decoded = _decode_body(raw)
+        reason = str(getattr(exc, 'reason', '') or '')
+        response_headers = dict(getattr(exc, 'headers', {}) or {})
         if allow_statuses and status in allow_statuses:
-            return status, _decode_body(raw)
-        module.fail_json(msg=f'HTTP {status} on {method} {url}: {raw}')
+            _verbose_http_log(module, f'Databasus API response: HTTP {status} on {method.upper()} {url} (allowed status)')
+            return status, decoded
+        _verbose_http_log(module, f'Databasus API response: HTTP {status} on {method.upper()} {url}')
+        module.fail_json(
+            msg=f'HTTP {status} on {method} {url}. Reason: {reason}. Response body: {raw}. Equivalent curl: {equivalent_curl}',
+            http_status=status,
+            method=method,
+            url=url,
+            reason=reason,
+            response_headers=response_headers,
+            response_body=raw,
+            response_json=decoded,
+            equivalent_curl=equivalent_curl,
+        )
     except error.URLError as exc:
-        module.fail_json(msg=f'Connection error on {method} {url}: {exc}')
+        reason = str(getattr(exc, 'reason', exc))
+        _verbose_http_log(module, f'Databasus API connection error on {method.upper()} {url}: {reason}')
+        module.fail_json(
+            msg=f'Connection error on {method} {url}: {reason}',
+            method=method,
+            url=url,
+            reason=reason,
+        )
 
     if expected_statuses and status not in expected_statuses:
-        module.fail_json(msg=f'Unexpected HTTP {status} on {method} {url}: {raw}')
+        decoded = _decode_body(raw)
+        module.fail_json(
+            msg=f'Unexpected HTTP {status} on {method} {url}. Response body: {raw}. Equivalent curl: {equivalent_curl}',
+            http_status=status,
+            expected_statuses=expected_statuses,
+            method=method,
+            url=url,
+            response_headers=response_headers,
+            response_body=raw,
+            response_json=decoded,
+            equivalent_curl=equivalent_curl,
+        )
 
     return status, _decode_body(raw)
 
@@ -244,13 +713,51 @@ def _collect_params(module_params: Dict[str, Any], names: List[str]) -> Dict[str
     return out
 
 
-def _desired_payload(module_params: Dict[str, Any]) -> Dict[str, Any]:
+def _build_payload(values: Dict[str, Any], schema: Dict[str, Any]) -> Dict[str, Any]:
     payload: Dict[str, Any] = {}
-    for name in BODY_FIELDS:
-        value = module_params.get(name)
-        if value is not None:
-            payload[API_NAME_MAP.get(name, name)] = value
+    for field_name, field_info in schema.items():
+        val = values.get(field_name)
+        if val is None:
+            continue
+        api_name = field_info['api']
+        nested = field_info.get('nested')
+        ftype = field_info.get('type', 'str')
+        if nested and ftype == 'dict' and isinstance(val, dict):
+            inner = _build_payload(val, nested)
+            if inner:
+                payload[api_name] = inner
+        elif nested and ftype == 'list' and isinstance(val, list):
+            payload[api_name] = [
+                _build_payload(item, nested) for item in val if isinstance(item, dict)
+            ]
+        else:
+            payload[api_name] = val
     return payload
+
+
+def _desired_payload(module_params: Dict[str, Any]) -> Dict[str, Any]:
+    return _build_payload(module_params, BODY_SCHEMA)
+
+
+def _expand_storage_id_to_storage(
+    module: AnsibleModule,
+    api_url: str,
+    api_token: str,
+    desired: Dict[str, Any],
+) -> Dict[str, Any]:
+    if not EXPAND_STORAGE_ID_TO_STORAGE:
+        return desired
+    storage_id = desired.get('storageId')
+    if not storage_id:
+        return desired
+    storage_url = _build_url(api_url, '/storages/{id}', {'id': storage_id})
+    storage_resource = _request_json(module, 'GET', storage_url, api_token, expected_statuses=[200])[1]
+    if not isinstance(storage_resource, dict):
+        module.fail_json(msg='Unexpected storage response while resolving storage_id to storage object')
+    expanded = dict(desired)
+    expanded.pop('storageId', None)
+    expanded['storage'] = storage_resource
+    return expanded
 
 
 def _needs_update(current: Any, desired: Dict[str, Any]) -> bool:
@@ -262,6 +769,39 @@ def _needs_update(current: Any, desired: Dict[str, Any]) -> bool:
         if current.get(key) != value:
             return True
     return False
+
+
+def _extract_items(listing: Any) -> List[Any]:
+    if isinstance(listing, list):
+        return listing
+    if isinstance(listing, dict):
+        for value in listing.values():
+            if isinstance(value, list):
+                return value
+    return []
+
+
+def _find_by_name(
+    listing: Any,
+    name_api: str,
+    desired_name: str,
+    match_fields: List[Tuple[str, Any]],
+) -> Optional[Dict[str, Any]]:
+    if not name_api or desired_name is None:
+        return None
+    for item in _extract_items(listing):
+        if not isinstance(item, dict) or item.get(name_api) != desired_name:
+            continue
+        matches_scope = True
+        for field_api_name, desired_value in match_fields:
+            if desired_value is None:
+                continue
+            if item.get(field_api_name) != desired_value:
+                matches_scope = False
+                break
+        if matches_scope:
+            return item
+    return None
 
 
 def _has_required(module_params: Dict[str, Any], names: List[str]) -> bool:
@@ -279,16 +819,72 @@ def run_module() -> None:
         state=dict(type='str', default='present', choices=['present', 'absent']),
         api_url=dict(type='str', required=True),
         api_token=dict(type='str', required=True, no_log=True),
-        discord_notifier=dict(type='dict'),
-        email_notifier=dict(type='dict'),
-        id=dict(type='str', required=True),
+        discord_notifier=dict(
+            type='dict',
+            options={
+                'channel_webhook_url': dict(type='str'),
+                'notifier_id': dict(type='str'),
+            },
+        ),
+        email_notifier=dict(
+            type='dict',
+            options={
+                'from': dict(type='str'),
+                'is_insecure_skip_verify': dict(type='bool'),
+                'notifier_id': dict(type='str'),
+                'smtp_host': dict(type='str'),
+                'smtp_password': dict(type='str', no_log=True),
+                'smtp_port': dict(type='int'),
+                'smtp_user': dict(type='str'),
+                'target_email': dict(type='str'),
+            },
+        ),
         last_send_error=dict(type='str'),
-        name=dict(type='str'),
-        notifier_type=dict(type='str'),
-        slack_notifier=dict(type='dict'),
-        teams_notifier=dict(type='dict'),
-        telegram_notifier=dict(type='dict'),
-        webhook_notifier=dict(type='dict'),
+        name=dict(type='str', required=True),
+        notifier_type=dict(type='str', choices=['EMAIL', 'TELEGRAM', 'WEBHOOK', 'SLACK', 'DISCORD', 'TEAMS']),
+        slack_notifier=dict(
+            type='dict',
+            options={
+                'bot_token': dict(type='str', no_log=True),
+                'notifier_id': dict(type='str'),
+                'target_chat_id': dict(type='str'),
+            },
+        ),
+        teams_notifier=dict(
+            type='dict',
+            options={
+                'notifier_id': dict(type='str'),
+                'power_automate_url': dict(type='str'),
+            },
+        ),
+        telegram_notifier=dict(
+            type='dict',
+            options={
+                'bot_token': dict(type='str', no_log=True),
+                'is_proxy_enabled': dict(type='bool'),
+                'notifier_id': dict(type='str'),
+                'proxy_url': dict(type='str'),
+                'target_chat_id': dict(type='str'),
+                'thread_id': dict(type='int'),
+            },
+        ),
+        webhook_notifier=dict(
+            type='dict',
+            options={
+                'body_template': dict(type='str'),
+                'headers': dict(
+                    type='list',
+                    elements='dict',
+                    options={
+                        'key': dict(type='str', no_log=True),
+                        'value': dict(type='str'),
+                    },
+                ),
+                'notifier_id': dict(type='str'),
+                'webhook_method': dict(type='str', choices=['POST', 'GET']),
+                'webhook_url': dict(type='str'),
+            },
+        ),
         workspace_id=dict(type='str'),
     )
     module = AnsibleModule(argument_spec=module_args, supports_check_mode=not READ_ONLY)
@@ -321,6 +917,22 @@ def run_module() -> None:
     exists = False
     current: Any = {}
 
+    if NAME_ADDRESSABLE:
+        if not LIST_PATH:
+            module.fail_json(msg='Name-based idempotency requires a list endpoint')
+        _ensure_required(module, params, [NAME_FIELD], 'name-based lookup')
+        _ensure_required(module, params, REQUIRED_LIST_QUERY_PARAMS, 'name-based lookup')
+
+        list_url = _build_url(api_url, LIST_PATH, _collect_params(params, LIST_PATH_PARAMS), _collect_params(params, LIST_QUERY_PARAMS))
+        listing = _request_json(module, LIST_METHOD, list_url, api_token, expected_statuses=[200])[1]
+        scoped_match_fields = [(api_name, params.get(field_name)) for field_name, api_name in MATCH_FIELDS]
+        matched = _find_by_name(listing, NAME_API, params.get(NAME_FIELD), scoped_match_fields)
+        if matched is not None:
+            exists = True
+            current = matched
+            if ID_FIELD and ID_API and matched.get(ID_API) is not None:
+                params[ID_FIELD] = matched.get(ID_API)
+
     if GET_PATH and _has_required(params, GET_PATH_PARAMS):
         get_url = _build_url(api_url, GET_PATH, _collect_params(params, GET_PATH_PARAMS), _collect_params(params, GET_QUERY_PARAMS))
         status, body = _request_json(module, GET_METHOD, get_url, api_token, expected_statuses=[200], allow_statuses=[404])
@@ -329,16 +941,18 @@ def run_module() -> None:
             current = body
 
     desired = _desired_payload(params)
+    desired = _expand_storage_id_to_storage(module, api_url, api_token, desired)
 
     if state == 'absent':
         if not DELETE_PATH:
             result['msg'] = 'Resource does not support delete operation'
             module.fail_json(**result)
-        _ensure_required(module, params, REQUIRED_DELETE_PATH_PARAMS or DELETE_PATH_PARAMS, 'delete')
 
         if not exists:
             result['msg'] = 'Resource is already absent'
             module.exit_json(**result)
+
+        _ensure_required(module, params, REQUIRED_DELETE_PATH_PARAMS or DELETE_PATH_PARAMS, 'delete')
 
         if module.check_mode:
             result['changed'] = True
@@ -368,6 +982,26 @@ def run_module() -> None:
             _ensure_required(module, params, UPDATE_PATH_PARAMS, 'update')
             update_url = _build_url(api_url, UPDATE_PATH, _collect_params(params, UPDATE_PATH_PARAMS), _collect_params(params, UPDATE_QUERY_PARAMS))
             updated = _request_json(module, UPDATE_METHOD, update_url, api_token, payload=desired, expected_statuses=[200, 201])[1]
+            result['changed'] = True
+            result['resource'] = updated if isinstance(updated, dict) else {'value': updated}
+            result['msg'] = 'Resource updated'
+            module.exit_json(**result)
+
+        if CREATE_IS_UPSERT:
+            if not _needs_update(current, desired):
+                result['resource'] = current if isinstance(current, dict) else {'value': current}
+                result['msg'] = 'Resource already in desired state'
+                module.exit_json(**result)
+
+            if module.check_mode:
+                result['changed'] = True
+                result['resource'] = current if isinstance(current, dict) else {'value': current}
+                result['msg'] = 'Update planned (check_mode)'
+                module.exit_json(**result)
+
+            _ensure_required(module, params, REQUIRED_CREATE_PATH_PARAMS or CREATE_PATH_PARAMS, 'create')
+            create_url = _build_url(api_url, CREATE_PATH, _collect_params(params, CREATE_PATH_PARAMS), _collect_params(params, CREATE_QUERY_PARAMS))
+            updated = _request_json(module, CREATE_METHOD, create_url, api_token, payload=desired, expected_statuses=[200, 201, 202])[1]
             result['changed'] = True
             result['resource'] = updated if isinstance(updated, dict) else {'value': updated}
             result['msg'] = 'Resource updated'

@@ -22,7 +22,7 @@
 {%     set desc = spec.description | default([]) %}
 | {{ full_name }} | {{ req }}, {{ typ }}, default={{ def_val }}{% if desc %}. {% if desc is string %}{{ desc | md_ify | replace('\n', ' ') | replace('|', '\\|') }}{% else %}{% for para in desc %}{{ para | md_ify | replace('\n', ' ') | replace('|', '\\|') }}{% if not loop.last %} {% endif %}{% endfor %}{% endif %}{% endif %} |
 {%     if spec.suboptions %}
-{{ render_rows(spec.suboptions, full_name + '.') }}
+{{ render_rows(spec.suboptions, full_name + '.') -}}
 {%     endif %}
 {%   endfor %}
 {%- endmacro %}
@@ -41,4 +41,26 @@
 ```yaml
 {{ examples | indent(4, True) }}
 ```
+{% endif %}
+
+{% macro render_returns(results, prefix='') -%}
+{%   for name, spec in results.items() %}
+{%     set full_name = prefix + name %}
+{%     set ret = spec.returned | default('n/a') %}
+{%     set typ = spec.type | default('any') %}
+{%     set sample = spec.sample if spec.sample is defined else none %}
+{%     set desc = spec.description | default([]) %}
+| {{ full_name }} | {{ ret }}, {{ typ }}{% if sample is not none %}, sample={{ sample }}{% endif %}{% if desc %}. {% if desc is string %}{{ desc | md_ify | replace('\n', ' ') | replace('|', '\\|') }}{% else %}{% for para in desc %}{{ para | md_ify | replace('\n', ' ') | replace('|', '\\|') }}{% if not loop.last %} {% endif %}{% endfor %}{% endif %}{% endif %} |
+{%     if spec.contains %}
+{{ render_returns(spec.contains, full_name + '.') -}}
+{%     endif %}
+{%   endfor %}
+{%- endmacro %}
+
+{% if returndocs -%}
+## Return Values
+
+| return value | comments |
+|---|---|
+{{ render_returns(returndocs) }}
 {% endif %}

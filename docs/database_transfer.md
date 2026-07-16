@@ -3,13 +3,15 @@
 ## Synopsis
 Allows managing database\_transfer resources using the Databasus API\.
 
+Uses \`\`POST /backup\-configs/database/\{id\}/transfer\`\`\.
+
 
 
 ## Parameters
 
 | parameter | comments |
 |---|---|
-| state | optional, str, default=present. Desired state of the resource\. |
+| state | optional, str, default=present. Desired state of the resource\. Possible values\; present\, absent\. |
 | api_url | True, str, default=None. Base API URL\. |
 | api_token | True, str, default=None. Bearer authentication token\. |
 | id | optional, str, default=None. Database ID |
@@ -32,3 +34,13 @@ Allows managing database\_transfer resources using the Databasus API\.
         is_transfer_with_notifiers: null
 
 ```
+
+
+## Return Values
+
+| return value | comments |
+|---|---|
+| resource | always, dict. Resource object as returned by the API\. |
+| changed | always, bool. Indicates whether any change was made\. |
+| msg | always, str. Descriptive operation message\. |
+

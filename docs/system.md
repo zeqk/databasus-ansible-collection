@@ -5,6 +5,8 @@ Allows managing system resources using the Databasus API\.
 
 This module is read\-only and does not support state\=absent\.
 
+Uses \`\`GET /system/health\`\`\.
+
 
 
 ## Parameters
@@ -25,3 +27,14 @@ This module is read\-only and does not support state\=absent\.
         api_token: "{{ databasus_token }}"
 
 ```
+
+
+## Return Values
+
+| return value | comments |
+|---|---|
+| resource | always, dict. Resource object as returned by the API\. |
+| resource.status | success, str. Field status\. |
+| changed | always, bool. Indicates whether any change was made\. |
+| msg | always, str. Descriptive operation message\. |
+

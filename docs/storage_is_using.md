@@ -5,6 +5,8 @@ Allows managing storage\_is\_using resources using the Databasus API\.
 
 This module is read\-only and does not support state\=absent\.
 
+Uses \`\`GET /backup\-configs/storage/\{id\}/is\-using\`\`\.
+
 
 
 ## Parameters
@@ -26,3 +28,13 @@ This module is read\-only and does not support state\=absent\.
         api_token: "{{ databasus_token }}"
 
 ```
+
+
+## Return Values
+
+| return value | comments |
+|---|---|
+| resource | always, dict. Resource object as returned by the API\. |
+| changed | always, bool. Indicates whether any change was made\. |
+| msg | always, str. Descriptive operation message\. |
+

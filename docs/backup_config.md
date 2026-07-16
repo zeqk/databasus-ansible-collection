@@ -3,18 +3,27 @@
 ## Synopsis
 Allows managing backup\_config resources using the Databasus API\.
 
+Uses \`\`GET /backup\-configs/database/\{id\}\`\`\.
+
+Uses \`\`POST /backup\-configs/save\`\`\.
+
 
 
 ## Parameters
 
 | parameter | comments |
 |---|---|
-| state | optional, str, default=present. Desired state of the resource\. |
+| state | optional, str, default=present. Desired state of the resource\. Possible values\; present\, absent\. |
 | api_url | True, str, default=None. Base API URL\. |
 | api_token | True, str, default=None. Bearer authentication token\. |
 | backup_interval | optional, dict, default=None. Body field backupInterval\. |
+| backup_interval.cron_expression | optional, str, default=None. Body field cronExpression\. |
+| backup_interval.day_of_month | optional, int, default=None. Body field dayOfMonth\. |
+| backup_interval.time_of_day | optional, str, default=None. Body field timeOfDay\. |
+| backup_interval.type | optional, str, default=None. Body field type\. Possible values\; HOURLY\, DAILY\, WEEKLY\, MONTHLY\, CRON\. |
+| backup_interval.weekday | optional, int, default=None. Body field weekday\. |
 | database_id | optional, str, default=None. Body field databaseId\. |
-| encryption | optional, str, default=None. Body field encryption\. |
+| encryption | optional, str, default=None. Body field encryption\. Possible values\; NONE\, ENCRYPTED\. |
 | id | optional, str, default=None. Database ID |
 | is_backups_enabled | optional, bool, default=None. Body field isBackupsEnabled\. |
 | is_retry_if_failed | optional, bool, default=None. Body field isRetryIfFailed\. |
@@ -25,10 +34,9 @@ Allows managing backup\_config resources using the Databasus API\.
 | retention_gfs_months | optional, int, default=None. Body field retentionGfsMonths\. |
 | retention_gfs_weeks | optional, int, default=None. Body field retentionGfsWeeks\. |
 | retention_gfs_years | optional, int, default=None. Body field retentionGfsYears\. |
-| retention_policy_type | optional, str, default=None. Body field retentionPolicyType\. |
-| retention_time_period | optional, str, default=None. Body field retentionTimePeriod\. |
-| send_notifications_on | optional, list, default=None. Body field sendNotificationsOn\. |
-| storage | optional, dict, default=None. Body field storage\. |
+| retention_policy_type | optional, str, default=None. Body field retentionPolicyType\. Possible values\; TIME\_PERIOD\, COUNT\, GFS\. |
+| retention_time_period | optional, str, default=None. Body field retentionTimePeriod\. Possible values\; DAY\, WEEK\, MONTH\, 3\_MONTH\, 6\_MONTH\, YEAR\, 2\_YEARS\, 3\_YEARS\, 4\_YEARS\, 5\_YEARS\, FOREVER\. |
+| send_notifications_on | optional, list, default=None. Body field sendNotificationsOn\. Possible values\; BACKUP\_FAILED\, BACKUP\_SUCCESS\. |
 | storage_id | optional, str, default=None. Body field storageId\. |
 
 
@@ -44,3 +52,99 @@ Allows managing backup\_config resources using the Databasus API\.
         backup_interval: null
 
 ```
+
+
+## Return Values
+
+| return value | comments |
+|---|---|
+| resource | always, dict. Resource object as returned by the API\. |
+| resource.backup_interval | success, dict. Field backupInterval\. |
+| resource.backup_interval.cron_expression | success, str. Field cronExpression\. |
+| resource.backup_interval.day_of_month | success, int. Field dayOfMonth\. |
+| resource.backup_interval.time_of_day | success, str. Field timeOfDay\. |
+| resource.backup_interval.type | success, str. Field type\. |
+| resource.backup_interval.weekday | success, int. Field weekday\. |
+| resource.database_id | success, str. Field databaseId\. |
+| resource.encryption | success, str. Field encryption\. |
+| resource.is_backups_enabled | success, bool. Field isBackupsEnabled\. |
+| resource.is_retry_if_failed | success, bool. Field isRetryIfFailed\. |
+| resource.max_failed_tries_count | success, int. Field maxFailedTriesCount\. |
+| resource.retention_count | success, int. Field retentionCount\. |
+| resource.retention_gfs_days | success, int. Field retentionGfsDays\. |
+| resource.retention_gfs_hours | success, int. Field retentionGfsHours\. |
+| resource.retention_gfs_months | success, int. Field retentionGfsMonths\. |
+| resource.retention_gfs_weeks | success, int. Field retentionGfsWeeks\. |
+| resource.retention_gfs_years | success, int. Field retentionGfsYears\. |
+| resource.retention_policy_type | success, str. Field retentionPolicyType\. |
+| resource.retention_time_period | success, str. Field retentionTimePeriod\. |
+| resource.send_notifications_on | success, list. Field sendNotificationsOn\. |
+| resource.storage | success, dict. Field storage\. |
+| resource.storage.azure_blob_storage | success, dict. Field azureBlobStorage\. |
+| resource.storage.azure_blob_storage.account_key | success, str. Field accountKey\. |
+| resource.storage.azure_blob_storage.account_name | success, str. Field accountName\. |
+| resource.storage.azure_blob_storage.auth_method | success, str. Field authMethod\. |
+| resource.storage.azure_blob_storage.connection_string | success, str. Field connectionString\. |
+| resource.storage.azure_blob_storage.container_name | success, str. Field containerName\. |
+| resource.storage.azure_blob_storage.endpoint | success, str. Field endpoint\. |
+| resource.storage.azure_blob_storage.prefix | success, str. Field prefix\. |
+| resource.storage.azure_blob_storage.storage_id | success, str. Field storageId\. |
+| resource.storage.ftp_storage | success, dict. Field ftpStorage\. |
+| resource.storage.ftp_storage.host | success, str. Field host\. |
+| resource.storage.ftp_storage.password | success, str. Field password\. |
+| resource.storage.ftp_storage.path | success, str. Field path\. |
+| resource.storage.ftp_storage.port | success, int. Field port\. |
+| resource.storage.ftp_storage.skip_tls_verify | success, bool. Field skipTlsVerify\. |
+| resource.storage.ftp_storage.storage_id | success, str. Field storageId\. |
+| resource.storage.ftp_storage.use_ssl | success, bool. Field useSsl\. |
+| resource.storage.ftp_storage.username | success, str. Field username\. |
+| resource.storage.google_drive_storage | success, dict. Field googleDriveStorage\. |
+| resource.storage.google_drive_storage.client_id | success, str. Field clientId\. |
+| resource.storage.google_drive_storage.client_secret | success, str. Field clientSecret\. |
+| resource.storage.google_drive_storage.storage_id | success, str. Field storageId\. |
+| resource.storage.google_drive_storage.token_json | success, str. Field tokenJson\. |
+| resource.storage.id | success, str. Field id\. |
+| resource.storage.last_save_error | success, str. Field lastSaveError\. |
+| resource.storage.local_storage | success, dict. specific storage |
+| resource.storage.local_storage.storage_id | success, str. Field storageId\. |
+| resource.storage.name | success, str. Field name\. |
+| resource.storage.nas_storage | success, dict. Field nasStorage\. |
+| resource.storage.nas_storage.domain | success, str. Field domain\. |
+| resource.storage.nas_storage.host | success, str. Field host\. |
+| resource.storage.nas_storage.password | success, str. Field password\. |
+| resource.storage.nas_storage.path | success, str. Field path\. |
+| resource.storage.nas_storage.port | success, int. Field port\. |
+| resource.storage.nas_storage.share | success, str. Field share\. |
+| resource.storage.nas_storage.storage_id | success, str. Field storageId\. |
+| resource.storage.nas_storage.use_ssl | success, bool. Field useSsl\. |
+| resource.storage.nas_storage.username | success, str. Field username\. |
+| resource.storage.rclone_storage | success, dict. Field rcloneStorage\. |
+| resource.storage.rclone_storage.config_content | success, str. Field configContent\. |
+| resource.storage.rclone_storage.remote_path | success, str. Field remotePath\. |
+| resource.storage.rclone_storage.storage_id | success, str. Field storageId\. |
+| resource.storage.s3_storage | success, dict. Field s3Storage\. |
+| resource.storage.s3_storage.s3_access_key | success, str. Field s3AccessKey\. |
+| resource.storage.s3_storage.s3_bucket | success, str. Field s3Bucket\. |
+| resource.storage.s3_storage.s3_endpoint | success, str. Field s3Endpoint\. |
+| resource.storage.s3_storage.s3_prefix | success, str. Field s3Prefix\. |
+| resource.storage.s3_storage.s3_region | success, str. Field s3Region\. |
+| resource.storage.s3_storage.s3_secret_key | success, str. Field s3SecretKey\. |
+| resource.storage.s3_storage.s3_storage_class | success, str. Field s3StorageClass\. |
+| resource.storage.s3_storage.s3_use_virtual_hosted_style | success, bool. Field s3UseVirtualHostedStyle\. |
+| resource.storage.s3_storage.skip_tlsverify | success, bool. Field skipTLSVerify\. |
+| resource.storage.s3_storage.storage_id | success, str. Field storageId\. |
+| resource.storage.sftp_storage | success, dict. Field sftpStorage\. |
+| resource.storage.sftp_storage.host | success, str. Field host\. |
+| resource.storage.sftp_storage.password | success, str. Field password\. |
+| resource.storage.sftp_storage.path | success, str. Field path\. |
+| resource.storage.sftp_storage.port | success, int. Field port\. |
+| resource.storage.sftp_storage.private_key | success, str. Field privateKey\. |
+| resource.storage.sftp_storage.skip_host_key_verify | success, bool. Field skipHostKeyVerify\. |
+| resource.storage.sftp_storage.storage_id | success, str. Field storageId\. |
+| resource.storage.sftp_storage.username | success, str. Field username\. |
+| resource.storage.type | success, str. Field type\. |
+| resource.storage.workspace_id | success, str. Field workspaceId\. |
+| resource.storage_id | success, str. Field storageId\. |
+| changed | always, bool. Indicates whether any change was made\. |
+| msg | always, str. Descriptive operation message\. |
+

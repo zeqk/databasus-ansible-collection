@@ -5,6 +5,8 @@ Allows managing notifier\_databases\_count resources using the Databasus API\.
 
 This module is read\-only and does not support state\=absent\.
 
+Uses \`\`GET /databases/notifier/\{id\}/databases\-count\`\`\.
+
 
 
 ## Parameters
@@ -26,3 +28,13 @@ This module is read\-only and does not support state\=absent\.
         api_token: "{{ databasus_token }}"
 
 ```
+
+
+## Return Values
+
+| return value | comments |
+|---|---|
+| resource | always, dict. Resource object as returned by the API\. |
+| changed | always, bool. Indicates whether any change was made\. |
+| msg | always, str. Descriptive operation message\. |
+

@@ -5,17 +5,19 @@ Allows managing database\_trigger resources using the Databasus API\.
 
 operationId references are included in generated operation constants\.
 
+Uses \`\`POST /backups/physical/database/\{id\}/trigger\`\`\.
+
 
 
 ## Parameters
 
 | parameter | comments |
 |---|---|
-| state | optional, str, default=present. Desired state of the resource\. |
+| state | optional, str, default=present. Desired state of the resource\. Possible values\; present\, absent\. |
 | api_url | True, str, default=None. Base API URL\. |
 | api_token | True, str, default=None. Bearer authentication token\. |
 | id | optional, str, default=None. Database ID |
-| type | True, dict, default=None. Body field type\. |
+| type | True, str, default=None. Body field type\. Possible values\; auto\, full\, incremental\. |
 
 
 ## Examples
@@ -30,3 +32,13 @@ operationId references are included in generated operation constants\.
         type: null
 
 ```
+
+
+## Return Values
+
+| return value | comments |
+|---|---|
+| resource | always, dict. Resource object as returned by the API\. |
+| changed | always, bool. Indicates whether any change was made\. |
+| msg | always, str. Descriptive operation message\. |
+

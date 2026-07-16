@@ -3,13 +3,15 @@
 ## Synopsis
 Allows managing verification\_heartbeat resources using the Databasus API\.
 
+Uses \`\`POST /agent/verification/\{agentId\}/heartbeat\`\`\.
+
 
 
 ## Parameters
 
 | parameter | comments |
 |---|---|
-| state | optional, str, default=present. Desired state of the resource\. |
+| state | optional, str, default=present. Desired state of the resource\. Possible values\; present\, absent\. |
 | api_url | True, str, default=None. Base API URL\. |
 | api_token | True, str, default=None. Bearer authentication token\. |
 | agent_id | optional, str, default=None. Agent UUID |
@@ -32,3 +34,15 @@ Allows managing verification\_heartbeat resources using the Databasus API\.
         current_verification_ids: null
 
 ```
+
+
+## Return Values
+
+| return value | comments |
+|---|---|
+| resource | always, dict. Resource object as returned by the API\. |
+| resource.abort_verification_ids | success, list. IDs that vanished\, were flipped to CANCELED or are no longer owned by this agent\. So it needs to drop them\. |
+| resource.last_seen_at | success, str. Field lastSeenAt\. |
+| changed | always, bool. Indicates whether any change was made\. |
+| msg | always, str. Descriptive operation message\. |
+

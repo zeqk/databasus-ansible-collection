@@ -1,0 +1,18 @@
+namespace: {{ namespace }}
+name: {{ name }}
+version: {{ version }}
+readme: {{ readme }}
+description: {{ description }}
+license:
+{%- for value in license %}
+  - {{ value }}
+{%- endfor %}
+authors:
+{%- for value in authors %}
+  - {{ value }}
+{%- endfor %}
+tags:
+{%- for value in tags %}
+  - {{ value }}
+{%- endfor %}
+dependencies: {{ dependencies }}
