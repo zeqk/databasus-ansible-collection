@@ -11,6 +11,10 @@ short_description: Manage notifier resources in Databasus.
 description:
   - Allows managing notifier resources using the Databasus API.
   - operationId references are included in generated operation constants.
+  - Uses ``GET /notifiers``.
+  - Uses ``GET /notifiers/{id}``.
+  - Uses ``POST /notifiers``.
+  - Uses ``DELETE /notifiers/{id}``.
 options:
   state:
     description:

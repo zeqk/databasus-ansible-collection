@@ -10,6 +10,7 @@ module: storage_test
 short_description: Manage storage_test resources in Databasus.
 description:
   - Allows managing storage_test resources using the Databasus API.
+  - Uses ``POST /storages/{id}/test``.
 options:
   state:
     description:

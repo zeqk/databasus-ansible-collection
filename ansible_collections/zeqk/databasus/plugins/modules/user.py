@@ -11,6 +11,9 @@ short_description: Manage user resources in Databasus.
 description:
   - Allows managing user resources using the Databasus API.
   - operationId references are included in generated operation constants.
+  - Uses ``GET /users``.
+  - Uses ``GET /users/{id}``.
+  - Uses ``POST /users/invite``.
 options:
   state:
     description:

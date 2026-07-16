@@ -5,6 +5,8 @@ Allows managing workspace\_audit\_log resources using the Databasus API\.
 
 This module is read\-only and does not support state\=absent\.
 
+Uses \`\`GET /workspaces/\{id\}/audit\-logs\`\`\.
+
 
 
 ## Parameters

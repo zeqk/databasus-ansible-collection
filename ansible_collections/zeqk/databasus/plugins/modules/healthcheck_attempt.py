@@ -11,6 +11,7 @@ short_description: Manage healthcheck_attempt resources in Databasus.
 description:
   - Allows managing healthcheck_attempt resources using the Databasus API.
   - This module is read-only and does not support state=absent.
+  - Uses ``GET /healthcheck-attempts/{databaseId}``.
 options:
   api_url:
     description:

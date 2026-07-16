@@ -5,6 +5,8 @@ Allows managing storage\_is\_using resources using the Databasus API\.
 
 This module is read\-only and does not support state\=absent\.
 
+Uses \`\`GET /backup\-configs/storage/\{id\}/is\-using\`\`\.
+
 
 
 ## Parameters

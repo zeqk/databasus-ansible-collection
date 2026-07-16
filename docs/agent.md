@@ -3,6 +3,10 @@
 ## Synopsis
 Allows managing agent resources using the Databasus API\.
 
+Uses \`\`GET /agent/verifications/\{agentId\}/\{id\}/backup\-stream\`\`\.
+
+Uses \`\`POST /agent/verifications/\{agentId\}/\{id\}/report\`\`\.
+
 
 
 ## Parameters

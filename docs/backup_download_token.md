@@ -3,6 +3,8 @@
 ## Synopsis
 Allows managing backup\_download\_token resources using the Databasus API\.
 
+Uses \`\`POST /backups/\{id\}/download\-token\`\`\.
+
 
 
 ## Parameters

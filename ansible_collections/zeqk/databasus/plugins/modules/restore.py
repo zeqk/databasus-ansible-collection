@@ -11,6 +11,7 @@ short_description: Manage restore resources in Databasus.
 description:
   - Allows managing restore resources using the Databasus API.
   - This module is read-only and does not support state=absent.
+  - Uses ``GET /restores/{backupId}``.
 options:
   api_url:
     description:

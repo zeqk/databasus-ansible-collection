@@ -10,6 +10,7 @@ module: verification_cancel
 short_description: Manage verification_cancel resources in Databasus.
 description:
   - Allows managing verification_cancel resources using the Databasus API.
+  - Uses ``POST /verifications/{id}/cancel``.
 options:
   state:
     description:

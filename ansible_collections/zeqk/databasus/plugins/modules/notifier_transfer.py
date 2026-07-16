@@ -10,6 +10,7 @@ module: notifier_transfer
 short_description: Manage notifier_transfer resources in Databasus.
 description:
   - Allows managing notifier_transfer resources using the Databasus API.
+  - Uses ``POST /notifiers/{id}/transfer``.
 options:
   state:
     description:

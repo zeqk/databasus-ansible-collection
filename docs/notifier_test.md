@@ -3,6 +3,8 @@
 ## Synopsis
 Allows managing notifier\_test resources using the Databasus API\.
 
+Uses \`\`POST /notifiers/\{id\}/test\`\`\.
+
 
 
 ## Parameters

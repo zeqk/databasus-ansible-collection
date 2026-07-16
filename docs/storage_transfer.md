@@ -3,6 +3,8 @@
 ## Synopsis
 Allows managing storage\_transfer resources using the Databasus API\.
 
+Uses \`\`POST /storages/\{id\}/transfer\`\`\.
+
 
 
 ## Parameters

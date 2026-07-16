@@ -10,6 +10,7 @@ module: user_deactivate
 short_description: Manage user_deactivate resources in Databasus.
 description:
   - Allows managing user_deactivate resources using the Databasus API.
+  - Uses ``POST /users/{id}/deactivate``.
 options:
   state:
     description:

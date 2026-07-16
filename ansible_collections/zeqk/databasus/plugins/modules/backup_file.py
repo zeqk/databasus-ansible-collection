@@ -11,6 +11,7 @@ short_description: Manage backup_file resources in Databasus.
 description:
   - Allows managing backup_file resources using the Databasus API.
   - This module is read-only and does not support state=absent.
+  - Uses ``GET /backups/{id}/file``.
 options:
   api_url:
     description:

@@ -5,6 +5,12 @@ Allows managing backup resources using the Databasus API\.
 
 operationId references are included in generated operation constants\.
 
+Uses \`\`GET /backups\`\`\.
+
+Uses \`\`POST /backups\`\`\.
+
+Uses \`\`DELETE /backups/\{id\}\`\`\.
+
 
 
 ## Parameters

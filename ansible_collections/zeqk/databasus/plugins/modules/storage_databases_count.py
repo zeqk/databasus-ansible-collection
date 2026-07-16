@@ -11,6 +11,7 @@ short_description: Manage storage_databases_count resources in Databasus.
 description:
   - Allows managing storage_databases_count resources using the Databasus API.
   - This module is read-only and does not support state=absent.
+  - Uses ``GET /backup-configs/storage/{id}/databases-count``.
 options:
   api_url:
     description:

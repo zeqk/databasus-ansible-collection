@@ -3,6 +3,8 @@
 ## Synopsis
 Allows managing verification\_claim resources using the Databasus API\.
 
+Uses \`\`POST /agent/verifications/\{agentId\}/claim\`\`\.
+
 
 
 ## Parameters

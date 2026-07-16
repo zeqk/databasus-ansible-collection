@@ -5,6 +5,14 @@ Allows managing storage resources using the Databasus API\.
 
 operationId references are included in generated operation constants\.
 
+Uses \`\`GET /storages\`\`\.
+
+Uses \`\`GET /storages/\{id\}\`\`\.
+
+Uses \`\`POST /storages\`\`\.
+
+Uses \`\`DELETE /storages/\{id\}\`\`\.
+
 
 
 ## Parameters

@@ -5,6 +5,10 @@ Allows managing verification\_config resources using the Databasus API\.
 
 operationId references are included in generated operation constants\.
 
+Uses \`\`GET /verification\-config/\{databaseId\}\`\`\.
+
+Uses \`\`PUT /verification\-config/\{databaseId\}\`\`\.
+
 
 
 ## Parameters

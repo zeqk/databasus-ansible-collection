@@ -10,6 +10,7 @@ module: backup_cancel
 short_description: Manage backup_cancel resources in Databasus.
 description:
   - Allows managing backup_cancel resources using the Databasus API.
+  - Uses ``POST /backups/{id}/cancel``.
 options:
   state:
     description:

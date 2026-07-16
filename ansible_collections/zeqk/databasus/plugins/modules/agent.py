@@ -10,6 +10,8 @@ module: agent
 short_description: Manage agent resources in Databasus.
 description:
   - Allows managing agent resources using the Databasus API.
+  - Uses ``GET /agent/verifications/{agentId}/{id}/backup-stream``.
+  - Uses ``POST /agent/verifications/{agentId}/{id}/report``.
 options:
   state:
     description:

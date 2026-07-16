@@ -10,6 +10,7 @@ module: membership_transfer_ownership
 short_description: Manage membership_transfer_ownership resources in Databasus.
 description:
   - Allows managing membership_transfer_ownership resources using the Databasus API.
+  - Uses ``POST /workspaces/memberships/{id}/transfer-ownership``.
 options:
   state:
     description:

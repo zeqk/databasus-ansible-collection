@@ -3,6 +3,8 @@
 ## Synopsis
 Allows managing restore\_restore resources using the Databasus API\.
 
+Uses \`\`POST /restores/\{backupId\}/restore\`\`\.
+
 
 
 ## Parameters

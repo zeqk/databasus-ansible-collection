@@ -9,7 +9,8 @@ DOCUMENTATION = r"""
 module: database_info
 short_description: Gather information about database resources in Databasus.
 description:
-  - Retrieves a database resource by name using Databasus list endpoints.
+  - Retrieves a database resource by name using the Databasus API.
+  - Uses ``GET /databases``.
   - This module is read-only and never changes remote state.
 options:
   api_url:

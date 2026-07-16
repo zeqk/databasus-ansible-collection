@@ -3,6 +3,8 @@
 ## Synopsis
 Allows managing notifier\_transfer resources using the Databasus API\.
 
+Uses \`\`POST /notifiers/\{id\}/transfer\`\`\.
+
 
 
 ## Parameters

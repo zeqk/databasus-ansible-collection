@@ -10,6 +10,7 @@ module: auth
 short_description: Manage auth resources in Databasus.
 description:
   - Allows managing auth resources using the Databasus API.
+  - Uses ``POST /auth/github/callback``.
 options:
   state:
     description:

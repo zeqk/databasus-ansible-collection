@@ -5,6 +5,12 @@ Allows managing membership\_member resources using the Databasus API\.
 
 operationId references are included in generated operation constants\.
 
+Uses \`\`GET /workspaces/memberships/\{id\}/members\`\`\.
+
+Uses \`\`POST /workspaces/memberships/\{id\}/members\`\`\.
+
+Uses \`\`DELETE /workspaces/memberships/\{id\}/members/\{userId\}\`\`\.
+
 
 
 ## Parameters

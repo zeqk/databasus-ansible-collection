@@ -10,6 +10,7 @@ module: storage_transfer
 short_description: Manage storage_transfer resources in Databasus.
 description:
   - Allows managing storage_transfer resources using the Databasus API.
+  - Uses ``POST /storages/{id}/transfer``.
 options:
   state:
     description:

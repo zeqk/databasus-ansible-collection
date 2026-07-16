@@ -10,6 +10,7 @@ module: database_test_connection
 short_description: Manage database_test_connection resources in Databasus.
 description:
   - Allows managing database_test_connection resources using the Databasus API.
+  - Uses ``POST /databases/{id}/test-connection``.
 options:
   state:
     description:

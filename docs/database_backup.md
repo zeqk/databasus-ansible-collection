@@ -7,6 +7,8 @@ operationId references are included in generated operation constants\.
 
 This module is read\-only and does not support state\=absent\.
 
+Uses \`\`GET /backups/physical/database/\{id\}/backups\`\`\.
+
 
 
 ## Parameters

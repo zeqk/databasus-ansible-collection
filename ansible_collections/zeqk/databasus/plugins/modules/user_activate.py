@@ -10,6 +10,7 @@ module: user_activate
 short_description: Manage user_activate resources in Databasus.
 description:
   - Allows managing user_activate resources using the Databasus API.
+  - Uses ``POST /users/{id}/activate``.
 options:
   state:
     description:

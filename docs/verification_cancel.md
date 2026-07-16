@@ -3,6 +3,8 @@
 ## Synopsis
 Allows managing verification\_cancel resources using the Databasus API\.
 
+Uses \`\`POST /verifications/\{id\}/cancel\`\`\.
+
 
 
 ## Parameters

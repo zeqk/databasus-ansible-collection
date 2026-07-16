@@ -3,6 +3,8 @@
 ## Synopsis
 Allows managing database\_test\_connection resources using the Databasus API\.
 
+Uses \`\`POST /databases/\{id\}/test\-connection\`\`\.
+
 
 
 ## Parameters

@@ -11,6 +11,7 @@ short_description: Manage database_trigger resources in Databasus.
 description:
   - Allows managing database_trigger resources using the Databasus API.
   - operationId references are included in generated operation constants.
+  - Uses ``POST /backups/physical/database/{id}/trigger``.
 options:
   state:
     description:

@@ -3,6 +3,8 @@
 ## Synopsis
 Allows managing agent\_rotate\_token resources using the Databasus API\.
 
+Uses \`\`POST /verification/agents/\{id\}/rotate\-token\`\`\.
+
 
 
 ## Parameters

@@ -11,6 +11,8 @@ short_description: Manage healthcheck_config resources in Databasus.
 description:
   - Allows managing healthcheck_config resources using the Databasus API.
   - operationId references are included in generated operation constants.
+  - Uses ``GET /healthcheck-config/{databaseId}``.
+  - Uses ``POST /healthcheck-config``.
 options:
   state:
     description:

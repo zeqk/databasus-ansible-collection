@@ -12,6 +12,7 @@ description:
   - Performs user login against the Databasus API.
   - Uses a public endpoint and does not require an existing bearer token.
   - This module is read-only and never changes remote state.
+  - Uses ``{{ signin_method_raw }} {{ signin_path_raw }}``.
 options:
 {{ option_blocks_block }}
 author:

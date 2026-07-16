@@ -10,6 +10,7 @@ module: notifier_test
 short_description: Manage notifier_test resources in Databasus.
 description:
   - Allows managing notifier_test resources using the Databasus API.
+  - Uses ``POST /notifiers/{id}/test``.
 options:
   state:
     description:

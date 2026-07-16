@@ -5,6 +5,8 @@ Allows managing storage\_databases\_count resources using the Databasus API\.
 
 This module is read\-only and does not support state\=absent\.
 
+Uses \`\`GET /backup\-configs/storage/\{id\}/databases\-count\`\`\.
+
 
 
 ## Parameters

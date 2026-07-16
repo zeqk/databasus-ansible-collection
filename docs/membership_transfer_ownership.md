@@ -3,6 +3,8 @@
 ## Synopsis
 Allows managing membership\_transfer\_ownership resources using the Databasus API\.
 
+Uses \`\`POST /workspaces/memberships/\{id\}/transfer\-ownership\`\`\.
+
 
 
 ## Parameters

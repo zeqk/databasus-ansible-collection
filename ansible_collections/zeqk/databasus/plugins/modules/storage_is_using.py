@@ -11,6 +11,7 @@ short_description: Manage storage_is_using resources in Databasus.
 description:
   - Allows managing storage_is_using resources using the Databasus API.
   - This module is read-only and does not support state=absent.
+  - Uses ``GET /backup-configs/storage/{id}/is-using``.
 options:
   api_url:
     description:

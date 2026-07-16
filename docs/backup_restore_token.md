@@ -3,6 +3,8 @@
 ## Synopsis
 Allows managing backup\_restore\_token resources using the Databasus API\.
 
+Uses \`\`POST /backups/physical/backups/\{backupId\}/restore\-token\`\`\.
+
 
 
 ## Parameters

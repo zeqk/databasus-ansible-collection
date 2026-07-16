@@ -3,6 +3,8 @@
 ## Synopsis
 Allows managing auth resources using the Databasus API\.
 
+Uses \`\`POST /auth/github/callback\`\`\.
+
 
 
 ## Parameters

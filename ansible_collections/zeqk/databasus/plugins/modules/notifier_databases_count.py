@@ -11,6 +11,7 @@ short_description: Manage notifier_databases_count resources in Databasus.
 description:
   - Allows managing notifier_databases_count resources using the Databasus API.
   - This module is read-only and does not support state=absent.
+  - Uses ``GET /databases/notifier/{id}/databases-count``.
 options:
   api_url:
     description:

@@ -11,6 +11,7 @@ short_description: Manage workspace_audit_log resources in Databasus.
 description:
   - Allows managing workspace_audit_log resources using the Databasus API.
   - This module is read-only and does not support state=absent.
+  - Uses ``GET /workspaces/{id}/audit-logs``.
 options:
   api_url:
     description:

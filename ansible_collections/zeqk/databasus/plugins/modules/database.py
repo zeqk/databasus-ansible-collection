@@ -11,6 +11,10 @@ short_description: Manage database resources in Databasus.
 description:
   - Allows managing database resources using the Databasus API.
   - operationId references are included in generated operation constants.
+  - Uses ``GET /databases``.
+  - Uses ``GET /databases/{id}``.
+  - Uses ``POST /databases/create``.
+  - Uses ``DELETE /databases/{id}``.
 options:
   state:
     description:

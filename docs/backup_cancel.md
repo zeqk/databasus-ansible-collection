@@ -3,6 +3,8 @@
 ## Synopsis
 Allows managing backup\_cancel resources using the Databasus API\.
 
+Uses \`\`POST /backups/\{id\}/cancel\`\`\.
+
 
 
 ## Parameters

@@ -7,6 +7,8 @@ Uses a public endpoint and does not require an existing bearer token\.
 
 This module is read\-only and never changes remote state\.
 
+Uses \`\`POST /users/signin\`\`\.
+
 
 
 ## Parameters

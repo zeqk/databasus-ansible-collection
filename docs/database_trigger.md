@@ -5,6 +5,8 @@ Allows managing database\_trigger resources using the Databasus API\.
 
 operationId references are included in generated operation constants\.
 
+Uses \`\`POST /backups/physical/database/\{id\}/trigger\`\`\.
+
 
 
 ## Parameters

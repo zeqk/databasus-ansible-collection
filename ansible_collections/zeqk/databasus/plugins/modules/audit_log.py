@@ -11,6 +11,8 @@ short_description: Manage audit_log resources in Databasus.
 description:
   - Allows managing audit_log resources using the Databasus API.
   - This module is read-only and does not support state=absent.
+  - Uses ``GET /audit-logs/global``.
+  - Uses ``GET /audit-logs/users/{userId}``.
 options:
   api_url:
     description:

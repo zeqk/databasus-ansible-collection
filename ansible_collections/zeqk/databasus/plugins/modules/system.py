@@ -11,6 +11,7 @@ short_description: Manage system resources in Databasus.
 description:
   - Allows managing system resources using the Databasus API.
   - This module is read-only and does not support state=absent.
+  - Uses ``GET /system/health``.
 options:
   api_url:
     description:

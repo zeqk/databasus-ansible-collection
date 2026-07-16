@@ -3,6 +3,8 @@
 ## Synopsis
 Allows managing database\_copy resources using the Databasus API\.
 
+Uses \`\`POST /databases/\{id\}/copy\`\`\.
+
 
 
 ## Parameters

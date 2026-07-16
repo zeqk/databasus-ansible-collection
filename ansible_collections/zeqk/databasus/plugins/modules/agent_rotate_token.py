@@ -10,6 +10,7 @@ module: agent_rotate_token
 short_description: Manage agent_rotate_token resources in Databasus.
 description:
   - Allows managing agent_rotate_token resources using the Databasus API.
+  - Uses ``POST /verification/agents/{id}/rotate-token``.
 options:
   state:
     description:

@@ -5,6 +5,14 @@ Allows managing verification resources using the Databasus API\.
 
 operationId references are included in generated operation constants\.
 
+Uses \`\`GET /verification/agents\`\`\.
+
+Uses \`\`GET /verifications/\{id\}\`\`\.
+
+Uses \`\`POST /verification/agents\`\`\.
+
+Uses \`\`DELETE /verification/agents/\{id\}\`\`\.
+
 
 
 ## Parameters

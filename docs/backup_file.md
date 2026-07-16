@@ -5,6 +5,8 @@ Allows managing backup\_file resources using the Databasus API\.
 
 This module is read\-only and does not support state\=absent\.
 
+Uses \`\`GET /backups/\{id\}/file\`\`\.
+
 
 
 ## Parameters

@@ -881,6 +881,10 @@ def generate_collection(spec_path: Path, output_dir: Path) -> Tuple[int, List[Tu
             desc_lines.append("  - operationId references are included in generated operation constants.")
         if not mutable:
             desc_lines.append("  - This module is read-only and does not support state=absent.")
+        for _crud_key in ("list", "get", "create", "update", "delete"):
+            _op = ops.get(_crud_key)
+            if _op:
+                desc_lines.append(f"  - Uses ``{_op['method'].upper()} {_op['path']}``.")
 
         examples = [
             "- name: Query resource",
@@ -1003,6 +1007,8 @@ def generate_collection(spec_path: Path, output_dir: Path) -> Tuple[int, List[Tu
                 return_resource_contains_block=return_resource_contains_block,
                 l_method=l_method,
                 l_path=l_path,
+                l_method_raw=ops["list"]["method"].upper(),
+                l_path_raw=ops["list"]["path"],
                 l_pp=l_pp,
                 l_qp=l_qp,
                 api_name_map_literal=api_name_map_literal,
@@ -1060,6 +1066,8 @@ def generate_collection(spec_path: Path, output_dir: Path) -> Tuple[int, List[Tu
             return_resource_contains_block=return_resource_contains_block,
             signin_method=repr(method.upper()),
             signin_path=repr(path),
+            signin_method_raw=method.upper(),
+            signin_path_raw=path,
         )
 
         (modules_dir / f"{module_name}.py").write_text(signin_code)

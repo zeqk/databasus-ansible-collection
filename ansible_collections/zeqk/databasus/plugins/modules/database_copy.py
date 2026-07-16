@@ -10,6 +10,7 @@ module: database_copy
 short_description: Manage database_copy resources in Databasus.
 description:
   - Allows managing database_copy resources using the Databasus API.
+  - Uses ``POST /databases/{id}/copy``.
 options:
   state:
     description:

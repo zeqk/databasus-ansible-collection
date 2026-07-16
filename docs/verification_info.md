@@ -1,7 +1,9 @@
 # verification_info -- Gather information about verification resources in Databasus\.
 
 ## Synopsis
-Retrieves a verification resource by name using Databasus list endpoints\.
+Retrieves a verification resource by name using the Databasus API\.
+
+Uses \`\`GET /verification/agents\`\`\.
 
 This module is read\-only and never changes remote state\.
 

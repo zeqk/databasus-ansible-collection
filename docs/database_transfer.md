@@ -3,6 +3,8 @@
 ## Synopsis
 Allows managing database\_transfer resources using the Databasus API\.
 
+Uses \`\`POST /backup\-configs/database/\{id\}/transfer\`\`\.
+
 
 
 ## Parameters

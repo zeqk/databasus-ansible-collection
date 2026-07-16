@@ -9,7 +9,8 @@ DOCUMENTATION = r"""
 module: {{ module_name }}
 short_description: Gather information about {{ resource }} resources in Databasus.
 description:
-  - Retrieves a {{ resource }} resource by name using Databasus list endpoints.
+  - Retrieves a {{ resource }} resource by name using the Databasus API.
+  - Uses ``{{ l_method_raw }} {{ l_path_raw }}``.
   - This module is read-only and never changes remote state.
 options:
 {{ option_blocks_block }}

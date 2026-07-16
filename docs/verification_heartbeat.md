@@ -3,6 +3,8 @@
 ## Synopsis
 Allows managing verification\_heartbeat resources using the Databasus API\.
 
+Uses \`\`POST /agent/verification/\{agentId\}/heartbeat\`\`\.
+
 
 
 ## Parameters

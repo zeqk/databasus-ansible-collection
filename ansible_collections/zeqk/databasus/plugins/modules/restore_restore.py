@@ -10,6 +10,7 @@ module: restore_restore
 short_description: Manage restore_restore resources in Databasus.
 description:
   - Allows managing restore_restore resources using the Databasus API.
+  - Uses ``POST /restores/{backupId}/restore``.
 options:
   state:
     description:

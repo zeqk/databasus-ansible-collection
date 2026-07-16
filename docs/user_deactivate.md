@@ -3,6 +3,8 @@
 ## Synopsis
 Allows managing user\_deactivate resources using the Databasus API\.
 
+Uses \`\`POST /users/\{id\}/deactivate\`\`\.
+
 
 
 ## Parameters

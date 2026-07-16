@@ -10,6 +10,7 @@ module: verification_claim
 short_description: Manage verification_claim resources in Databasus.
 description:
   - Allows managing verification_claim resources using the Databasus API.
+  - Uses ``POST /agent/verifications/{agentId}/claim``.
 options:
   state:
     description:

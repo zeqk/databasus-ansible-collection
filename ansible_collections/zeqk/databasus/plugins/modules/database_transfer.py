@@ -10,6 +10,7 @@ module: database_transfer
 short_description: Manage database_transfer resources in Databasus.
 description:
   - Allows managing database_transfer resources using the Databasus API.
+  - Uses ``POST /backup-configs/database/{id}/transfer``.
 options:
   state:
     description:

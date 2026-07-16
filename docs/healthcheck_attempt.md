@@ -5,6 +5,8 @@ Allows managing healthcheck\_attempt resources using the Databasus API\.
 
 This module is read\-only and does not support state\=absent\.
 
+Uses \`\`GET /healthcheck\-attempts/\{databaseId\}\`\`\.
+
 
 
 ## Parameters

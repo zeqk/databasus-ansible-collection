@@ -10,6 +10,8 @@ module: backup_config
 short_description: Manage backup_config resources in Databasus.
 description:
   - Allows managing backup_config resources using the Databasus API.
+  - Uses ``GET /backup-configs/database/{id}``.
+  - Uses ``POST /backup-configs/save``.
 options:
   state:
     description:

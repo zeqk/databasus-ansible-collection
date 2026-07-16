@@ -11,6 +11,11 @@ short_description: Manage workspace resources in Databasus.
 description:
   - Allows managing workspace resources using the Databasus API.
   - operationId references are included in generated operation constants.
+  - Uses ``GET /workspaces``.
+  - Uses ``GET /workspaces/{id}``.
+  - Uses ``POST /workspaces``.
+  - Uses ``PUT /workspaces/{id}``.
+  - Uses ``DELETE /workspaces/{id}``.
 options:
   state:
     description:

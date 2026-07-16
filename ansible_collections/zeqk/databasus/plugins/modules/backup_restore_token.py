@@ -10,6 +10,7 @@ module: backup_restore_token
 short_description: Manage backup_restore_token resources in Databasus.
 description:
   - Allows managing backup_restore_token resources using the Databasus API.
+  - Uses ``POST /backups/physical/backups/{backupId}/restore-token``.
 options:
   state:
     description:

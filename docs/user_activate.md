@@ -3,6 +3,8 @@
 ## Synopsis
 Allows managing user\_activate resources using the Databasus API\.
 
+Uses \`\`POST /users/\{id\}/activate\`\`\.
+
 
 
 ## Parameters

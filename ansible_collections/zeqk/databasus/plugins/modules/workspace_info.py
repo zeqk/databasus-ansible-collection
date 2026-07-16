@@ -9,7 +9,8 @@ DOCUMENTATION = r"""
 module: workspace_info
 short_description: Gather information about workspace resources in Databasus.
 description:
-  - Retrieves a workspace resource by name using Databasus list endpoints.
+  - Retrieves a workspace resource by name using the Databasus API.
+  - Uses ``GET /workspaces``.
   - This module is read-only and never changes remote state.
 options:
   api_url:

@@ -10,6 +10,7 @@ module: verification_heartbeat
 short_description: Manage verification_heartbeat resources in Databasus.
 description:
   - Allows managing verification_heartbeat resources using the Databasus API.
+  - Uses ``POST /agent/verification/{agentId}/heartbeat``.
 options:
   state:
     description:

@@ -1,7 +1,9 @@
 # database_info -- Gather information about database resources in Databasus\.
 
 ## Synopsis
-Retrieves a database resource by name using Databasus list endpoints\.
+Retrieves a database resource by name using the Databasus API\.
+
+Uses \`\`GET /databases\`\`\.
 
 This module is read\-only and never changes remote state\.
 

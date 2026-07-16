@@ -3,6 +3,8 @@
 ## Synopsis
 Allows managing storage\_test resources using the Databasus API\.
 
+Uses \`\`POST /storages/\{id\}/test\`\`\.
+
 
 
 ## Parameters

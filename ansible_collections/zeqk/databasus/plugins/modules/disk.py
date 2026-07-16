@@ -11,6 +11,7 @@ short_description: Manage disk resources in Databasus.
 description:
   - Allows managing disk resources using the Databasus API.
   - This module is read-only and does not support state=absent.
+  - Uses ``GET /disk/usage``.
 options:
   api_url:
     description:

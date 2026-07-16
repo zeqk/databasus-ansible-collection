@@ -1,7 +1,9 @@
 # workspace_info -- Gather information about workspace resources in Databasus\.
 
 ## Synopsis
-Retrieves a workspace resource by name using Databasus list endpoints\.
+Retrieves a workspace resource by name using the Databasus API\.
+
+Uses \`\`GET /workspaces\`\`\.
 
 This module is read\-only and never changes remote state\.
 

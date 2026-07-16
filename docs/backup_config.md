@@ -3,6 +3,10 @@
 ## Synopsis
 Allows managing backup\_config resources using the Databasus API\.
 
+Uses \`\`GET /backup\-configs/database/\{id\}\`\`\.
+
+Uses \`\`POST /backup\-configs/save\`\`\.
+
 
 
 ## Parameters

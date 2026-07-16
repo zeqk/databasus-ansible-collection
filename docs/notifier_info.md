@@ -1,7 +1,9 @@
 # notifier_info -- Gather information about notifier resources in Databasus\.
 
 ## Synopsis
-Retrieves a notifier resource by name using Databasus list endpoints\.
+Retrieves a notifier resource by name using the Databasus API\.
+
+Uses \`\`GET /notifiers\`\`\.
 
 This module is read\-only and never changes remote state\.
 

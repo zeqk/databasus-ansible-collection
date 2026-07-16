@@ -12,6 +12,7 @@ description:
   - Allows managing database_backup resources using the Databasus API.
   - operationId references are included in generated operation constants.
   - This module is read-only and does not support state=absent.
+  - Uses ``GET /backups/physical/database/{id}/backups``.
 options:
   api_url:
     description:

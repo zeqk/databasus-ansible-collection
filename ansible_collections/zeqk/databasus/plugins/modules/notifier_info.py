@@ -9,7 +9,8 @@ DOCUMENTATION = r"""
 module: notifier_info
 short_description: Gather information about notifier resources in Databasus.
 description:
-  - Retrieves a notifier resource by name using Databasus list endpoints.
+  - Retrieves a notifier resource by name using the Databasus API.
+  - Uses ``GET /notifiers``.
   - This module is read-only and never changes remote state.
 options:
   api_url:

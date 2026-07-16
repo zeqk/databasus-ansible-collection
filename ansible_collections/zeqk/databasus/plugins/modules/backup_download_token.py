@@ -10,6 +10,7 @@ module: backup_download_token
 short_description: Manage backup_download_token resources in Databasus.
 description:
   - Allows managing backup_download_token resources using the Databasus API.
+  - Uses ``POST /backups/{id}/download-token``.
 options:
   state:
     description:

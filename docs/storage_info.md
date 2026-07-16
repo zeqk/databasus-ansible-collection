@@ -1,7 +1,9 @@
 # storage_info -- Gather information about storage resources in Databasus\.
 
 ## Synopsis
-Retrieves a storage resource by name using Databasus list endpoints\.
+Retrieves a storage resource by name using the Databasus API\.
+
+Uses \`\`GET /storages\`\`\.
 
 This module is read\-only and never changes remote state\.
 

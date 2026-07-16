@@ -5,6 +5,10 @@ Allows managing healthcheck\_config resources using the Databasus API\.
 
 operationId references are included in generated operation constants\.
 
+Uses \`\`GET /healthcheck\-config/\{databaseId\}\`\`\.
+
+Uses \`\`POST /healthcheck\-config\`\`\.
+
 
 
 ## Parameters

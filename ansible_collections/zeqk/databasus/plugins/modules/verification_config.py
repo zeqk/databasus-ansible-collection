@@ -11,6 +11,8 @@ short_description: Manage verification_config resources in Databasus.
 description:
   - Allows managing verification_config resources using the Databasus API.
   - operationId references are included in generated operation constants.
+  - Uses ``GET /verification-config/{databaseId}``.
+  - Uses ``PUT /verification-config/{databaseId}``.
 options:
   state:
     description:
