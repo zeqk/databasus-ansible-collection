@@ -1,0 +1,84 @@
+---
+- name: Bootstrap integration auth/session
+  ansible.builtin.include_tasks: bootstrap.yml
+
+- name: List modules covered by smoke suite
+  ansible.builtin.set_fact:
+    databasus_smoke_modules:
+      - agent
+      - agent_rotate_token
+      - audit_log
+      - auth
+      - backup
+      - backup_cancel
+      - backup_config
+      - backup_config_physical
+      - backup_download_token
+      - backup_file
+      - backup_restore_token
+      - database
+      - database_backup
+      - database_copy
+      - database_info
+      - database_restore_token
+      - database_test_connection
+      - database_transfer
+      - database_trigger
+      - disk
+      - healthcheck_attempt
+      - healthcheck_config
+      - membership_member
+      - membership_transfer_ownership
+      - notifier
+      - notifier_databases_count
+      - notifier_info
+      - notifier_is_using
+      - notifier_test
+      - notifier_transfer
+      - restore
+      - restore_restore
+      - storage
+      - storage_databases_count
+      - storage_info
+      - storage_is_using
+      - storage_test
+      - storage_transfer
+      - system
+      - user
+      - user_activate
+      - user_deactivate
+      - verification
+      - verification_cancel
+      - verification_claim
+      - verification_config
+      - verification_heartbeat
+      - verification_info
+      - workspace
+      - workspace_audit_log
+      - workspace_info
+
+- name: Execute smoke calls for modules that use api_token
+  ansible.builtin.include_tasks: run_module_smoke.yml
+  loop: "{{ databasus_smoke_modules }}"
+  loop_control:
+    loop_var: databasus_module_name
+
+- name: Smoke user_signin module
+  zeqk.databasus.user_signin:
+    api_url: "{{ databasus_api_url }}"
+    email: "{{ databasus_email }}"
+    password: "{{ databasus_password }}"
+  register: databasus_smoke_user_signin
+  ignore_errors: true
+
+- name: Assert user_signin did not crash
+  ansible.builtin.assert:
+    that:
+      - databasus_smoke_user_signin is mapping
+      - (databasus_smoke_user_signin.exception | default('')) is not search('Traceback')
+      - (not databasus_smoke_user_signin.failed) or ((databasus_smoke_user_signin.msg | default('') | length) > 0)
+
+- name: Assert smoke module count
+  ansible.builtin.assert:
+    that:
+      - databasus_smoke_modules | length == 51

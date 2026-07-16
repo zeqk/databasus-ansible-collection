@@ -1,0 +1,15 @@
+---
+- name: Smoke module {{ databasus_module_name }}
+  action: "zeqk.databasus.{{ databasus_module_name }}"
+  args:
+    api_url: "{{ databasus_api_url }}"
+    api_token: "{{ databasus_token }}"
+  register: databasus_smoke_module_result
+  ignore_errors: true
+
+- name: Assert module {{ databasus_module_name }} did not crash
+  ansible.builtin.assert:
+    that:
+      - databasus_smoke_module_result is mapping
+      - (databasus_smoke_module_result.exception | default('')) is not search('Traceback')
+      - (not databasus_smoke_module_result.failed) or ((databasus_smoke_module_result.msg | default('') | length) > 0)

@@ -53,11 +53,12 @@ cd ansible_collections/zeqk/databasus
 uv run ansible-test sanity
 ```
 
-Integration test for workspace module using Databasus container:
+Integration tests using Databasus container (and PostgreSQL service):
 
 ```bash
 docker compose up -d
 cd ansible_collections/zeqk/databasus
+uv run ansible-test integration all_modules_smoke -v
 uv run ansible-test integration workspace -v
 
 docker compose down
