@@ -14,7 +14,7 @@ description:
 options:
   state:
     description:
-      - Desired state of the resource.
+      - Desired state of the resource. Possible values; present, absent.
     type: str
     choices:
       - present
@@ -32,7 +32,7 @@ options:
     required: true
   health_status:
     description:
-      - Body field healthStatus.
+      - Body field healthStatus. Possible values; AVAILABLE, UNAVAILABLE.
     type: str
     choices:
       - AVAILABLE
@@ -105,7 +105,7 @@ options:
         type: str
       version:
         description:
-          - Body field version.
+          - Body field version. Possible values; 5.5, 10.1, 10.2, 10.3, 10.4, 10.5, 10.6, 10.11, 11.4, 11.8, 12.0.
         type: str
         choices:
           - '5.5'
@@ -179,7 +179,7 @@ options:
         type: str
       version:
         description:
-          - Body field version.
+          - Body field version. Possible values; 4, 5, 6, 7, 8.
         type: str
         choices:
           - '4'
@@ -243,7 +243,7 @@ options:
         type: str
       version:
         description:
-          - Body field version.
+          - Body field version. Possible values; 5.7, 8.0, 8.4, 9.
         type: str
         choices:
           - '5.7'
@@ -325,7 +325,7 @@ options:
         type: str
       notifier_type:
         description:
-          - Body field notifierType.
+          - Body field notifierType. Possible values; EMAIL, TELEGRAM, WEBHOOK, SLACK, DISCORD, TEAMS.
         type: str
         choices:
           - EMAIL
@@ -422,7 +422,7 @@ options:
             type: str
           webhook_method:
             description:
-              - Body field webhookMethod.
+              - Body field webhookMethod. Possible values; POST, GET.
             type: str
             choices:
               - POST
@@ -504,7 +504,7 @@ options:
         type: str
       ssl_mode:
         description:
-          - SSL / TLS connection settings
+          - SSL / TLS connection settings Possible values; disable, require, verify-ca, verify-full.
         type: str
         choices:
           - disable
@@ -521,7 +521,7 @@ options:
         type: str
       version:
         description:
-          - Body field version.
+          - Body field version. Possible values; 12, 13, 14, 15, 16, 17, 18.
         type: str
         choices:
           - '12'
@@ -538,7 +538,7 @@ options:
     suboptions:
       backup_type:
         description:
-          - Body field backupType.
+          - Body field backupType. Possible values; FULL, FULL_INCREMENTAL, FULL_INCREMENTAL_WAL_STREAM.
         type: str
         choices:
           - FULL
@@ -574,7 +574,7 @@ options:
         type: str
       ssl_mode:
         description:
-          - SSL / TLS connection settings
+          - SSL / TLS connection settings Possible values; disable, require, verify-ca, verify-full.
         type: str
         choices:
           - disable
@@ -595,7 +595,7 @@ options:
         type: str
       version:
         description:
-          - Body field version.
+          - Body field version. Possible values; 12, 13, 14, 15, 16, 17, 18.
         type: str
         choices:
           - '12'
@@ -611,7 +611,7 @@ options:
         type: int
   type:
     description:
-      - Body field type.
+      - Body field type. Possible values; POSTGRES_LOGICAL, POSTGRES_PHYSICAL, MYSQL, MARIADB, MONGODB.
     type: str
     choices:
       - POSTGRES_LOGICAL

@@ -13,7 +13,7 @@ description:
 options:
   state:
     description:
-      - Desired state of the resource.
+      - Desired state of the resource. Possible values; present, absent.
     type: str
     choices:
       - present

@@ -11,7 +11,7 @@ operationId references are included in generated operation constants\.
 
 | parameter | comments |
 |---|---|
-| state | optional, str, default=present. Desired state of the resource\. |
+| state | optional, str, default=present. Desired state of the resource\. Possible values\; present\, absent\. |
 | api_url | True, str, default=None. Base API URL\. |
 | api_token | True, str, default=None. Bearer authentication token\. |
 | discord_notifier | optional, dict, default=None. Body field discordNotifier\. |
@@ -30,7 +30,7 @@ operationId references are included in generated operation constants\.
 
 | last_send_error | optional, str, default=None. Body field lastSendError\. |
 | name | True, str, default=None. Body field name\. |
-| notifier_type | optional, str, default=None. Body field notifierType\. |
+| notifier_type | optional, str, default=None. Body field notifierType\. Possible values\; EMAIL\, TELEGRAM\, WEBHOOK\, SLACK\, DISCORD\, TEAMS\. |
 | slack_notifier | optional, dict, default=None. Body field slackNotifier\. |
 | slack_notifier.bot_token | optional, str, default=None. Body field botToken\. |
 | slack_notifier.notifier_id | optional, str, default=None. Body field notifierId\. |
@@ -55,7 +55,7 @@ operationId references are included in generated operation constants\.
 | webhook_notifier.headers.value | optional, str, default=None. Body field value\. |
 
 | webhook_notifier.notifier_id | optional, str, default=None. Body field notifierId\. |
-| webhook_notifier.webhook_method | optional, str, default=None. Body field webhookMethod\. |
+| webhook_notifier.webhook_method | optional, str, default=None. Body field webhookMethod\. Possible values\; POST\, GET\. |
 | webhook_notifier.webhook_url | optional, str, default=None. Body field webhookUrl\. |
 
 | workspace_id | optional, str, default=None. Workspace ID |

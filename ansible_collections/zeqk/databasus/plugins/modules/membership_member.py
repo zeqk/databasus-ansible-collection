@@ -14,7 +14,7 @@ description:
 options:
   state:
     description:
-      - Desired state of the resource.
+      - Desired state of the resource. Possible values; present, absent.
     type: str
     choices:
       - present
@@ -41,7 +41,7 @@ options:
     type: str
   role:
     description:
-      - Body field role.
+      - Body field role. Possible values; WORKSPACE_OWNER, WORKSPACE_ADMIN, WORKSPACE_MEMBER, WORKSPACE_VIEWER.
     type: str
     required: true
     choices:

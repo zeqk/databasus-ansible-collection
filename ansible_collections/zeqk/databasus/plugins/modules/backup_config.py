@@ -13,7 +13,7 @@ description:
 options:
   state:
     description:
-      - Desired state of the resource.
+      - Desired state of the resource. Possible values; present, absent.
     type: str
     choices:
       - present
@@ -48,7 +48,7 @@ options:
         type: str
       type:
         description:
-          - Body field type.
+          - Body field type. Possible values; HOURLY, DAILY, WEEKLY, MONTHLY, CRON.
         type: str
         choices:
           - HOURLY
@@ -66,7 +66,7 @@ options:
     type: str
   encryption:
     description:
-      - Body field encryption.
+      - Body field encryption. Possible values; NONE, ENCRYPTED.
     type: str
     choices:
       - NONE
@@ -113,7 +113,7 @@ options:
     type: int
   retention_policy_type:
     description:
-      - Body field retentionPolicyType.
+      - Body field retentionPolicyType. Possible values; TIME_PERIOD, COUNT, GFS.
     type: str
     choices:
       - TIME_PERIOD
@@ -121,7 +121,7 @@ options:
       - GFS
   retention_time_period:
     description:
-      - Body field retentionTimePeriod.
+      - Body field retentionTimePeriod. Possible values; DAY, WEEK, MONTH, 3_MONTH, 6_MONTH, YEAR, 2_YEARS, 3_YEARS, 4_YEARS, 5_YEARS, FOREVER.
     type: str
     choices:
       - DAY
@@ -137,7 +137,7 @@ options:
       - FOREVER
   send_notifications_on:
     description:
-      - Body field sendNotificationsOn.
+      - Body field sendNotificationsOn. Possible values; BACKUP_FAILED, BACKUP_SUCCESS.
     type: list
     elements: str
     choices:
@@ -163,7 +163,7 @@ options:
             type: str
           auth_method:
             description:
-              - Body field authMethod.
+              - Body field authMethod. Possible values; CONNECTION_STRING, ACCOUNT_KEY.
             type: str
             choices:
               - CONNECTION_STRING
@@ -356,7 +356,7 @@ options:
             type: str
           s3_storage_class:
             description:
-              - Body field s3StorageClass.
+              - Body field s3StorageClass. Possible values; , STANDARD, STANDARD_IA, ONEZONE_IA, INTELLIGENT_TIERING, REDUCED_REDUNDANCY, GLACIER_IR.
             type: str
             choices:
               - ''
@@ -417,7 +417,7 @@ options:
             type: str
       type:
         description:
-          - Body field type.
+          - Body field type. Possible values; LOCAL, S3, GOOGLE_DRIVE, NAS, AZURE_BLOB, FTP, SFTP, RCLONE.
         type: str
         choices:
           - LOCAL

@@ -11,14 +11,14 @@ operationId references are included in generated operation constants\.
 
 | parameter | comments |
 |---|---|
-| state | optional, str, default=present. Desired state of the resource\. |
+| state | optional, str, default=present. Desired state of the resource\. Possible values\; present\, absent\. |
 | api_url | True, str, default=None. Base API URL\. |
 | api_token | True, str, default=None. Bearer authentication token\. |
 | before_date | optional, str, default=None. Filter users created before this date \(RFC3339 format\) |
 | email | True, str, default=None. Body field email\. |
 | id | optional, str, default=None. User ID |
 | intended_workspace_id | optional, str, default=None. Body field intendedWorkspaceId\. |
-| intended_workspace_role | optional, str, default=None. Body field intendedWorkspaceRole\. |
+| intended_workspace_role | optional, str, default=None. Body field intendedWorkspaceRole\. Possible values\; WORKSPACE\_OWNER\, WORKSPACE\_ADMIN\, WORKSPACE\_MEMBER\, WORKSPACE\_VIEWER\. |
 | limit | optional, int, default=None. Number of items per page |
 | offset | optional, int, default=None. Page offset |
 | query | optional, str, default=None. Search by email or name \(case\-insensitive\) |

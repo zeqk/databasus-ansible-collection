@@ -9,7 +9,7 @@ Allows managing verification\_claim resources using the Databasus API\.
 
 | parameter | comments |
 |---|---|
-| state | optional, str, default=present. Desired state of the resource\. |
+| state | optional, str, default=present. Desired state of the resource\. Possible values\; present\, absent\. |
 | api_url | True, str, default=None. Base API URL\. |
 | api_token | True, str, default=None. Bearer authentication token\. |
 | agent_id | optional, str, default=None. Agent UUID |

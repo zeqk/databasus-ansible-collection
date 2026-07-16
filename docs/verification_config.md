@@ -11,18 +11,18 @@ operationId references are included in generated operation constants\.
 
 | parameter | comments |
 |---|---|
-| state | optional, str, default=present. Desired state of the resource\. |
+| state | optional, str, default=present. Desired state of the resource\. Possible values\; present\, absent\. |
 | api_url | True, str, default=None. Base API URL\. |
 | api_token | True, str, default=None. Bearer authentication token\. |
 | database_id | optional, str, default=None. Database ID |
 | is_scheduled_verification_enabled | optional, bool, default=None. Body field isScheduledVerificationEnabled\. |
-| schedule_type | optional, str, default=None. Body field scheduleType\. |
-| send_notifications_on | optional, list, default=None. Body field sendNotificationsOn\. |
+| schedule_type | optional, str, default=None. Body field scheduleType\. Possible values\; INTERVAL\, AFTER\_BACKUP\. |
+| send_notifications_on | optional, list, default=None. Body field sendNotificationsOn\. Possible values\; VERIFICATION\_SUCCESS\, VERIFICATION\_FAILED\. |
 | verification_interval | optional, dict, default=None. Body field verificationInterval\. |
 | verification_interval.cron_expression | optional, str, default=None. Body field cronExpression\. |
 | verification_interval.day_of_month | optional, int, default=None. Body field dayOfMonth\. |
 | verification_interval.time_of_day | optional, str, default=None. Body field timeOfDay\. |
-| verification_interval.type | optional, str, default=None. Body field type\. |
+| verification_interval.type | optional, str, default=None. Body field type\. Possible values\; HOURLY\, DAILY\, WEEKLY\, MONTHLY\, CRON\. |
 | verification_interval.weekday | optional, int, default=None. Body field weekday\. |
 
 

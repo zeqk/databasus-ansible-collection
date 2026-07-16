@@ -9,7 +9,7 @@ Allows managing membership\_transfer\_ownership resources using the Databasus AP
 
 | parameter | comments |
 |---|---|
-| state | optional, str, default=present. Desired state of the resource\. |
+| state | optional, str, default=present. Desired state of the resource\. Possible values\; present\, absent\. |
 | api_url | True, str, default=None. Base API URL\. |
 | api_token | True, str, default=None. Bearer authentication token\. |
 | id | optional, str, default=None. Workspace ID |

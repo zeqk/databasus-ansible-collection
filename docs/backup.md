@@ -11,7 +11,7 @@ operationId references are included in generated operation constants\.
 
 | parameter | comments |
 |---|---|
-| state | optional, str, default=present. Desired state of the resource\. |
+| state | optional, str, default=present. Desired state of the resource\. Possible values\; present\, absent\. |
 | api_url | True, str, default=None. Base API URL\. |
 | api_token | True, str, default=None. Bearer authentication token\. |
 | before_date | optional, str, default=None. Filter backups created before this date \(RFC3339\) |
@@ -19,8 +19,8 @@ operationId references are included in generated operation constants\.
 | id | optional, str, default=None. Backup ID |
 | limit | optional, int, default=None. Number of items per page |
 | offset | optional, int, default=None. Offset for pagination |
-| pg_wal_backup_type | optional, str, default=None. Filter by WAL backup type |
-| status | optional, list, default=None. Filter by backup status \(can be repeated\) |
+| pg_wal_backup_type | optional, str, default=None. Filter by WAL backup type Possible values\; PG\_FULL\_BACKUP\, PG\_WAL\_SEGMENT\. |
+| status | optional, list, default=None. Filter by backup status \(can be repeated\) Possible values\; IN\_PROGRESS\, COMPLETED\, FAILED\, CANCELED\. |
 
 
 ## Examples

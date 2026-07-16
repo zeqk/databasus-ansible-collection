@@ -14,7 +14,7 @@ description:
 options:
   state:
     description:
-      - Desired state of the resource.
+      - Desired state of the resource. Possible values; present, absent.
     type: str
     choices:
       - present
@@ -45,7 +45,7 @@ options:
         type: str
       auth_method:
         description:
-          - Body field authMethod.
+          - Body field authMethod. Possible values; CONNECTION_STRING, ACCOUNT_KEY.
         type: str
         choices:
           - CONNECTION_STRING
@@ -235,7 +235,7 @@ options:
         type: str
       s3_storage_class:
         description:
-          - Body field s3StorageClass.
+          - Body field s3StorageClass. Possible values; , STANDARD, STANDARD_IA, ONEZONE_IA, INTELLIGENT_TIERING, REDUCED_REDUNDANCY, GLACIER_IR.
         type: str
         choices:
           - ''
@@ -296,7 +296,7 @@ options:
         type: str
   type:
     description:
-      - Body field type.
+      - Body field type. Possible values; LOCAL, S3, GOOGLE_DRIVE, NAS, AZURE_BLOB, FTP, SFTP, RCLONE.
     type: str
     choices:
       - LOCAL

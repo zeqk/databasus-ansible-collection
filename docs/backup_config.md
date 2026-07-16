@@ -9,18 +9,18 @@ Allows managing backup\_config resources using the Databasus API\.
 
 | parameter | comments |
 |---|---|
-| state | optional, str, default=present. Desired state of the resource\. |
+| state | optional, str, default=present. Desired state of the resource\. Possible values\; present\, absent\. |
 | api_url | True, str, default=None. Base API URL\. |
 | api_token | True, str, default=None. Bearer authentication token\. |
 | backup_interval | optional, dict, default=None. Body field backupInterval\. |
 | backup_interval.cron_expression | optional, str, default=None. Body field cronExpression\. |
 | backup_interval.day_of_month | optional, int, default=None. Body field dayOfMonth\. |
 | backup_interval.time_of_day | optional, str, default=None. Body field timeOfDay\. |
-| backup_interval.type | optional, str, default=None. Body field type\. |
+| backup_interval.type | optional, str, default=None. Body field type\. Possible values\; HOURLY\, DAILY\, WEEKLY\, MONTHLY\, CRON\. |
 | backup_interval.weekday | optional, int, default=None. Body field weekday\. |
 
 | database_id | optional, str, default=None. Body field databaseId\. |
-| encryption | optional, str, default=None. Body field encryption\. |
+| encryption | optional, str, default=None. Body field encryption\. Possible values\; NONE\, ENCRYPTED\. |
 | id | optional, str, default=None. Database ID |
 | is_backups_enabled | optional, bool, default=None. Body field isBackupsEnabled\. |
 | is_retry_if_failed | optional, bool, default=None. Body field isRetryIfFailed\. |
@@ -31,14 +31,14 @@ Allows managing backup\_config resources using the Databasus API\.
 | retention_gfs_months | optional, int, default=None. Body field retentionGfsMonths\. |
 | retention_gfs_weeks | optional, int, default=None. Body field retentionGfsWeeks\. |
 | retention_gfs_years | optional, int, default=None. Body field retentionGfsYears\. |
-| retention_policy_type | optional, str, default=None. Body field retentionPolicyType\. |
-| retention_time_period | optional, str, default=None. Body field retentionTimePeriod\. |
-| send_notifications_on | optional, list, default=None. Body field sendNotificationsOn\. |
+| retention_policy_type | optional, str, default=None. Body field retentionPolicyType\. Possible values\; TIME\_PERIOD\, COUNT\, GFS\. |
+| retention_time_period | optional, str, default=None. Body field retentionTimePeriod\. Possible values\; DAY\, WEEK\, MONTH\, 3\_MONTH\, 6\_MONTH\, YEAR\, 2\_YEARS\, 3\_YEARS\, 4\_YEARS\, 5\_YEARS\, FOREVER\. |
+| send_notifications_on | optional, list, default=None. Body field sendNotificationsOn\. Possible values\; BACKUP\_FAILED\, BACKUP\_SUCCESS\. |
 | storage | optional, dict, default=None. Body field storage\. |
 | storage.azure_blob_storage | optional, dict, default=None. Body field azureBlobStorage\. |
 | storage.azure_blob_storage.account_key | optional, str, default=None. Body field accountKey\. |
 | storage.azure_blob_storage.account_name | optional, str, default=None. Body field accountName\. |
-| storage.azure_blob_storage.auth_method | optional, str, default=None. Body field authMethod\. |
+| storage.azure_blob_storage.auth_method | optional, str, default=None. Body field authMethod\. Possible values\; CONNECTION\_STRING\, ACCOUNT\_KEY\. |
 | storage.azure_blob_storage.connection_string | optional, str, default=None. Body field connectionString\. |
 | storage.azure_blob_storage.container_name | optional, str, default=None. Body field containerName\. |
 | storage.azure_blob_storage.endpoint | optional, str, default=None. Body field endpoint\. |
@@ -90,7 +90,7 @@ Allows managing backup\_config resources using the Databasus API\.
 | storage.s3_storage.s3_prefix | optional, str, default=None. Body field s3Prefix\. |
 | storage.s3_storage.s3_region | optional, str, default=None. Body field s3Region\. |
 | storage.s3_storage.s3_secret_key | optional, str, default=None. Body field s3SecretKey\. |
-| storage.s3_storage.s3_storage_class | optional, str, default=None. Body field s3StorageClass\. |
+| storage.s3_storage.s3_storage_class | optional, str, default=None. Body field s3StorageClass\. Possible values\; \, STANDARD\, STANDARD\_IA\, ONEZONE\_IA\, INTELLIGENT\_TIERING\, REDUCED\_REDUNDANCY\, GLACIER\_IR\. |
 | storage.s3_storage.s3_use_virtual_hosted_style | optional, bool, default=None. Body field s3UseVirtualHostedStyle\. |
 | storage.s3_storage.skip_tlsverify | optional, bool, default=None. Body field skipTLSVerify\. |
 | storage.s3_storage.storage_id | optional, str, default=None. Body field storageId\. |
@@ -105,7 +105,7 @@ Allows managing backup\_config resources using the Databasus API\.
 | storage.sftp_storage.storage_id | optional, str, default=None. Body field storageId\. |
 | storage.sftp_storage.username | optional, str, default=None. Body field username\. |
 
-| storage.type | optional, str, default=None. Body field type\. |
+| storage.type | optional, str, default=None. Body field type\. Possible values\; LOCAL\, S3\, GOOGLE\_DRIVE\, NAS\, AZURE\_BLOB\, FTP\, SFTP\, RCLONE\. |
 | storage.workspace_id | optional, str, default=None. Body field workspaceId\. |
 
 | storage_id | optional, str, default=None. Body field storageId\. |

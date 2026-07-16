@@ -382,6 +382,9 @@ def option_doc_block(name: str, meta: Dict[str, Any], indent: int = 0) -> str:
     lines = [f"{' ' * (i + 2)}{name}:"]
     lines.append(f"{' ' * (i + 4)}description:")
     desc = sanitize_text(meta.get("description", "No description.")).replace(":", ";")
+    if "choices" in meta:
+        choices_str = ", ".join(str(c) for c in meta["choices"])
+        desc = f"{desc} Possible values; {choices_str}."
     lines.append(f"{' ' * (i + 6)}- {desc}")
     lines.append(f"{' ' * (i + 4)}type: {meta.get('type', 'str')}")
     if meta.get("type") == "list":

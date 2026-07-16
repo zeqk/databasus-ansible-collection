@@ -14,7 +14,7 @@ description:
 options:
   state:
     description:
-      - Desired state of the resource.
+      - Desired state of the resource. Possible values; present, absent.
     type: str
     choices:
       - present
@@ -52,14 +52,14 @@ options:
     type: int
   pg_wal_backup_type:
     description:
-      - Filter by WAL backup type
+      - Filter by WAL backup type Possible values; PG_FULL_BACKUP, PG_WAL_SEGMENT.
     type: str
     choices:
       - PG_FULL_BACKUP
       - PG_WAL_SEGMENT
   status:
     description:
-      - Filter by backup status (can be repeated)
+      - Filter by backup status (can be repeated) Possible values; IN_PROGRESS, COMPLETED, FAILED, CANCELED.
     type: list
     elements: str
     choices:

@@ -11,10 +11,10 @@ operationId references are included in generated operation constants\.
 
 | parameter | comments |
 |---|---|
-| state | optional, str, default=present. Desired state of the resource\. |
+| state | optional, str, default=present. Desired state of the resource\. Possible values\; present\, absent\. |
 | api_url | True, str, default=None. Base API URL\. |
 | api_token | True, str, default=None. Bearer authentication token\. |
-| health_status | optional, str, default=None. Body field healthStatus\. |
+| health_status | optional, str, default=None. Body field healthStatus\. Possible values\; AVAILABLE\, UNAVAILABLE\. |
 | last_backup_error_message | optional, str, default=None. Body field lastBackupErrorMessage\. |
 | last_backup_time | optional, str, default=None. these fields are not reliable\, but they are used for pretty UI |
 | mariadb | optional, dict, default=None. Body field mariadb\. |
@@ -31,7 +31,7 @@ operationId references are included in generated operation constants\.
 | mariadb.port | optional, int, default=None. Body field port\. |
 | mariadb.privileges | optional, str, default=None. Body field privileges\. |
 | mariadb.username | optional, str, default=None. Body field username\. |
-| mariadb.version | optional, str, default=None. Body field version\. |
+| mariadb.version | optional, str, default=None. Body field version\. Possible values\; 5\.5\, 10\.1\, 10\.2\, 10\.3\, 10\.4\, 10\.5\, 10\.6\, 10\.11\, 11\.4\, 11\.8\, 12\.0\. |
 
 | mongodb | optional, dict, default=None. Body field mongodb\. |
 | mongodb.auth_database | optional, str, default=None. Body field authDatabase\. |
@@ -47,7 +47,7 @@ operationId references are included in generated operation constants\.
 | mongodb.password | optional, str, default=None. Body field password\. |
 | mongodb.port | optional, int, default=None. Body field port\. |
 | mongodb.username | optional, str, default=None. Body field username\. |
-| mongodb.version | optional, str, default=None. Body field version\. |
+| mongodb.version | optional, str, default=None. Body field version\. Possible values\; 4\, 5\, 6\, 7\, 8\. |
 
 | mysql | optional, dict, default=None. Body field mysql\. |
 | mysql.database | optional, str, default=None. Body field database\. |
@@ -62,7 +62,7 @@ operationId references are included in generated operation constants\.
 | mysql.port | optional, int, default=None. Body field port\. |
 | mysql.privileges | optional, str, default=None. Body field privileges\. |
 | mysql.username | optional, str, default=None. Body field username\. |
-| mysql.version | optional, str, default=None. Body field version\. |
+| mysql.version | optional, str, default=None. Body field version\. Possible values\; 5\.7\, 8\.0\, 8\.4\, 9\. |
 
 | name | True, str, default=None. Body field name\. |
 | notifiers | optional, list, default=None. Body field notifiers\. |
@@ -83,7 +83,7 @@ operationId references are included in generated operation constants\.
 | notifiers.id | optional, str, default=None. Body field id\. |
 | notifiers.last_send_error | optional, str, default=None. Body field lastSendError\. |
 | notifiers.name | optional, str, default=None. Body field name\. |
-| notifiers.notifier_type | optional, str, default=None. Body field notifierType\. |
+| notifiers.notifier_type | optional, str, default=None. Body field notifierType\. Possible values\; EMAIL\, TELEGRAM\, WEBHOOK\, SLACK\, DISCORD\, TEAMS\. |
 | notifiers.slack_notifier | optional, dict, default=None. Body field slackNotifier\. |
 | notifiers.slack_notifier.bot_token | optional, str, default=None. Body field botToken\. |
 | notifiers.slack_notifier.notifier_id | optional, str, default=None. Body field notifierId\. |
@@ -108,7 +108,7 @@ operationId references are included in generated operation constants\.
 | notifiers.webhook_notifier.headers.value | optional, str, default=None. Body field value\. |
 
 | notifiers.webhook_notifier.notifier_id | optional, str, default=None. Body field notifierId\. |
-| notifiers.webhook_notifier.webhook_method | optional, str, default=None. Body field webhookMethod\. |
+| notifiers.webhook_notifier.webhook_method | optional, str, default=None. Body field webhookMethod\. Possible values\; POST\, GET\. |
 | notifiers.webhook_notifier.webhook_url | optional, str, default=None. Body field webhookUrl\. |
 
 | notifiers.workspace_id | optional, str, default=None. Body field workspaceId\. |
@@ -129,13 +129,13 @@ operationId references are included in generated operation constants\.
 | postgresql_logical.port | optional, int, default=None. Body field port\. |
 | postgresql_logical.ssl_client_cert | optional, str, default=None. Body field sslClientCert\. |
 | postgresql_logical.ssl_client_key | optional, str, default=None. Body field sslClientKey\. |
-| postgresql_logical.ssl_mode | optional, str, default=None. SSL / TLS connection settings |
+| postgresql_logical.ssl_mode | optional, str, default=None. SSL / TLS connection settings Possible values\; disable\, require\, verify\-ca\, verify\-full\. |
 | postgresql_logical.ssl_root_cert | optional, str, default=None. Body field sslRootCert\. |
 | postgresql_logical.username | optional, str, default=None. Body field username\. |
-| postgresql_logical.version | optional, str, default=None. Body field version\. |
+| postgresql_logical.version | optional, str, default=None. Body field version\. Possible values\; 12\, 13\, 14\, 15\, 16\, 17\, 18\. |
 
 | postgresql_physical | optional, dict, default=None. Body field postgresqlPhysical\. |
-| postgresql_physical.backup_type | optional, str, default=None. Body field backupType\. |
+| postgresql_physical.backup_type | optional, str, default=None. Body field backupType\. Possible values\; FULL\, FULL\_INCREMENTAL\, FULL\_INCREMENTAL\_WAL\_STREAM\. |
 | postgresql_physical.database_id | optional, str, default=None. Body field databaseId\. |
 | postgresql_physical.host | optional, str, default=None. Body field host\. |
 | postgresql_physical.id | optional, str, default=None. Body field id\. |
@@ -143,14 +143,14 @@ operationId references are included in generated operation constants\.
 | postgresql_physical.port | optional, int, default=None. Body field port\. |
 | postgresql_physical.ssl_client_cert | optional, str, default=None. Body field sslClientCert\. |
 | postgresql_physical.ssl_client_key | optional, str, default=None. Body field sslClientKey\. |
-| postgresql_physical.ssl_mode | optional, str, default=None. SSL / TLS connection settings |
+| postgresql_physical.ssl_mode | optional, str, default=None. SSL / TLS connection settings Possible values\; disable\, require\, verify\-ca\, verify\-full\. |
 | postgresql_physical.ssl_root_cert | optional, str, default=None. Body field sslRootCert\. |
 | postgresql_physical.system_identifier | optional, str, default=None. Body field systemIdentifier\. |
 | postgresql_physical.username | optional, str, default=None. Body field username\. |
-| postgresql_physical.version | optional, str, default=None. Body field version\. |
+| postgresql_physical.version | optional, str, default=None. Body field version\. Possible values\; 12\, 13\, 14\, 15\, 16\, 17\, 18\. |
 | postgresql_physical.wal_segment_size_bytes | optional, int, default=None. WalSegmentSizeBytes captures the source cluster\'s wal\_segment\_size at first connect\. |
 
-| type | optional, str, default=None. Body field type\. |
+| type | optional, str, default=None. Body field type\. Possible values\; POSTGRES\_LOGICAL\, POSTGRES\_PHYSICAL\, MYSQL\, MARIADB\, MONGODB\. |
 | workspace_id | optional, str, default=None. Workspace ID |
 
 

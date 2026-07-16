@@ -13,7 +13,7 @@ description:
 options:
   state:
     description:
-      - Desired state of the resource.
+      - Desired state of the resource. Possible values; present, absent.
     type: str
     choices:
       - present
@@ -63,7 +63,7 @@ options:
     type: int
   status:
     description:
-      - Body field status.
+      - Body field status. Possible values; COMPLETED, FAILED.
     type: str
     required: true
     choices:

@@ -14,7 +14,7 @@ description:
 options:
   state:
     description:
-      - Desired state of the resource.
+      - Desired state of the resource. Possible values; present, absent.
     type: str
     choices:
       - present
@@ -40,14 +40,14 @@ options:
     type: bool
   schedule_type:
     description:
-      - Body field scheduleType.
+      - Body field scheduleType. Possible values; INTERVAL, AFTER_BACKUP.
     type: str
     choices:
       - INTERVAL
       - AFTER_BACKUP
   send_notifications_on:
     description:
-      - Body field sendNotificationsOn.
+      - Body field sendNotificationsOn. Possible values; VERIFICATION_SUCCESS, VERIFICATION_FAILED.
     type: list
     elements: str
     choices:
@@ -72,7 +72,7 @@ options:
         type: str
       type:
         description:
-          - Body field type.
+          - Body field type. Possible values; HOURLY, DAILY, WEEKLY, MONTHLY, CRON.
         type: str
         choices:
           - HOURLY

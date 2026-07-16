@@ -14,7 +14,7 @@ description:
 options:
   state:
     description:
-      - Desired state of the resource.
+      - Desired state of the resource. Possible values; present, absent.
     type: str
     choices:
       - present
@@ -91,7 +91,7 @@ options:
     required: true
   notifier_type:
     description:
-      - Body field notifierType.
+      - Body field notifierType. Possible values; EMAIL, TELEGRAM, WEBHOOK, SLACK, DISCORD, TEAMS.
     type: str
     choices:
       - EMAIL
@@ -188,7 +188,7 @@ options:
         type: str
       webhook_method:
         description:
-          - Body field webhookMethod.
+          - Body field webhookMethod. Possible values; POST, GET.
         type: str
         choices:
           - POST

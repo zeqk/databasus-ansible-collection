@@ -46,7 +46,7 @@ options:
     elements: str
   type:
     description:
-      - Filter by backup type - repeatable, matches any
+      - Filter by backup type - repeatable, matches any Possible values; FULL, INCREMENTAL, WAL.
     type: list
     elements: str
     choices:

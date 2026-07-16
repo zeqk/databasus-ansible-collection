@@ -11,12 +11,12 @@ operationId references are included in generated operation constants\.
 
 | parameter | comments |
 |---|---|
-| state | optional, str, default=present. Desired state of the resource\. |
+| state | optional, str, default=present. Desired state of the resource\. Possible values\; present\, absent\. |
 | api_url | True, str, default=None. Base API URL\. |
 | api_token | True, str, default=None. Bearer authentication token\. |
 | email | True, str, default=None. Body field email\. |
 | id | optional, str, default=None. Workspace ID |
-| role | True, str, default=None. Body field role\. |
+| role | True, str, default=None. Body field role\. Possible values\; WORKSPACE\_OWNER\, WORKSPACE\_ADMIN\, WORKSPACE\_MEMBER\, WORKSPACE\_VIEWER\. |
 | user_id | optional, str, default=None. User ID |
 
 

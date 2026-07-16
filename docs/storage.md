@@ -11,13 +11,13 @@ operationId references are included in generated operation constants\.
 
 | parameter | comments |
 |---|---|
-| state | optional, str, default=present. Desired state of the resource\. |
+| state | optional, str, default=present. Desired state of the resource\. Possible values\; present\, absent\. |
 | api_url | True, str, default=None. Base API URL\. |
 | api_token | True, str, default=None. Bearer authentication token\. |
 | azure_blob_storage | optional, dict, default=None. Body field azureBlobStorage\. |
 | azure_blob_storage.account_key | optional, str, default=None. Body field accountKey\. |
 | azure_blob_storage.account_name | optional, str, default=None. Body field accountName\. |
-| azure_blob_storage.auth_method | optional, str, default=None. Body field authMethod\. |
+| azure_blob_storage.auth_method | optional, str, default=None. Body field authMethod\. Possible values\; CONNECTION\_STRING\, ACCOUNT\_KEY\. |
 | azure_blob_storage.connection_string | optional, str, default=None. Body field connectionString\. |
 | azure_blob_storage.container_name | optional, str, default=None. Body field containerName\. |
 | azure_blob_storage.endpoint | optional, str, default=None. Body field endpoint\. |
@@ -68,7 +68,7 @@ operationId references are included in generated operation constants\.
 | s3_storage.s3_prefix | optional, str, default=None. Body field s3Prefix\. |
 | s3_storage.s3_region | optional, str, default=None. Body field s3Region\. |
 | s3_storage.s3_secret_key | optional, str, default=None. Body field s3SecretKey\. |
-| s3_storage.s3_storage_class | optional, str, default=None. Body field s3StorageClass\. |
+| s3_storage.s3_storage_class | optional, str, default=None. Body field s3StorageClass\. Possible values\; \, STANDARD\, STANDARD\_IA\, ONEZONE\_IA\, INTELLIGENT\_TIERING\, REDUCED\_REDUNDANCY\, GLACIER\_IR\. |
 | s3_storage.s3_use_virtual_hosted_style | optional, bool, default=None. Body field s3UseVirtualHostedStyle\. |
 | s3_storage.skip_tlsverify | optional, bool, default=None. Body field skipTLSVerify\. |
 | s3_storage.storage_id | optional, str, default=None. Body field storageId\. |
@@ -83,7 +83,7 @@ operationId references are included in generated operation constants\.
 | sftp_storage.storage_id | optional, str, default=None. Body field storageId\. |
 | sftp_storage.username | optional, str, default=None. Body field username\. |
 
-| type | optional, str, default=None. Body field type\. |
+| type | optional, str, default=None. Body field type\. Possible values\; LOCAL\, S3\, GOOGLE\_DRIVE\, NAS\, AZURE\_BLOB\, FTP\, SFTP\, RCLONE\. |
 | workspace_id | optional, str, default=None. Workspace ID |
 
 

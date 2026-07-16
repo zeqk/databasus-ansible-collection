@@ -14,7 +14,7 @@ description:
 options:
   state:
     description:
-      - Desired state of the resource.
+      - Desired state of the resource. Possible values; present, absent.
     type: str
     choices:
       - present
@@ -36,7 +36,7 @@ options:
     type: str
   type:
     description:
-      - Body field type.
+      - Body field type. Possible values; auto, full, incremental.
     type: str
     required: true
     choices:

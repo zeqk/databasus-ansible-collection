@@ -9,7 +9,7 @@ Allows managing agent resources using the Databasus API\.
 
 | parameter | comments |
 |---|---|
-| state | optional, str, default=present. Desired state of the resource\. |
+| state | optional, str, default=present. Desired state of the resource\. Possible values\; present\, absent\. |
 | api_url | True, str, default=None. Base API URL\. |
 | api_token | True, str, default=None. Bearer authentication token\. |
 | agent_id | optional, str, default=None. Agent UUID |
@@ -20,7 +20,7 @@ Allows managing agent resources using the Databasus API\.
 | pg_restore_exit_code | optional, int, default=None. Body field pgRestoreExitCode\. |
 | restore_duration_ms | optional, int, default=None. Body field restoreDurationMs\. |
 | schema_count | optional, int, default=None. Body field schemaCount\. |
-| status | True, str, default=None. Body field status\. |
+| status | True, str, default=None. Body field status\. Possible values\; COMPLETED\, FAILED\. |
 | table_count | optional, int, default=None. Body field tableCount\. |
 | table_stats | optional, list, default=None. Body field tableStats\. |
 | table_stats.name | True, str, default=None. Body field name\. |
