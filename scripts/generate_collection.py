@@ -35,6 +35,18 @@ PATH_RESOURCE_OVERRIDES: Dict[str, str] = {
     "/backup-configs/physical/database/{id}/transfer": "backup_config_physical",
 }
 
+# Resource/action-specific body fields to ignore while generating module input params.
+EXCLUDED_BODY_FIELDS_BY_RESOURCE_ACTION: Dict[str, Dict[str, set[str]]] = {
+    "backup_config": {
+        "create": {"storage"},
+        "update": {"storage"},
+    },
+    "backup_config_physical": {
+        "create": {"storage"},
+        "update": {"storage"},
+    },
+}
+
 
 def is_param(token: str) -> bool:
     return token.startswith("{") and token.endswith("}")
@@ -690,7 +702,7 @@ def build_resources(spec: Dict[str, Any]) -> Dict[str, Dict[str, Any]]:
                 "source": "base",
             }
 
-        for _, op in selected.items():
+        for op_name, op in selected.items():
             if not op:
                 continue
             for p in op.get("parameters", []):
@@ -699,7 +711,11 @@ def build_resources(spec: Dict[str, Any]) -> Dict[str, Dict[str, Any]]:
                     continue
 
                 if pin == "body":
-                    for k, v in extract_body_fields(p.get("schema", {}), definitions).items():
+                    body_fields = extract_body_fields(p.get("schema", {}), definitions)
+                    excluded_fields = EXCLUDED_BODY_FIELDS_BY_RESOURCE_ACTION.get(resource, {}).get(op_name, set())
+                    for k, v in body_fields.items():
+                        if k in excluded_fields:
+                            continue
                         if k in params and params[k].get("source") in {"path", "query"}:
                             continue
                         params[k] = v

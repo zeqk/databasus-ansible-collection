@@ -128,6 +128,15 @@ def _build_curl(method: str, url: str, headers: Dict[str, Any], payload: Optiona
     return ' '.join(parts)
 
 
+def _is_verbose_enabled(module: AnsibleModule) -> bool:
+    return int(getattr(module, '_verbosity', 0) or 0) >= 3
+
+
+def _verbose_http_log(module: AnsibleModule, message: str) -> None:
+    if _is_verbose_enabled(module):
+        module.warn(message)
+
+
 def _request_json(
     module: AnsibleModule,
     method: str,
@@ -141,6 +150,8 @@ def _request_json(
     }
     data = json.dumps(payload).encode('utf-8')
     response_headers: Dict[str, Any] = {}
+    equivalent_curl = _build_curl(method, url, headers, payload)
+    _verbose_http_log(module, f'Databasus API request: {equivalent_curl}')
 
     try:
         with open_url(
@@ -153,13 +164,14 @@ def _request_json(
             status = int(response.getcode())
             response_headers = dict(getattr(response, 'headers', {}) or {})
             raw = response.read().decode('utf-8')
+            _verbose_http_log(module, f'Databasus API response: HTTP {status} on {method.upper()} {url}')
     except error.HTTPError as exc:
         status = int(exc.code)
         raw = exc.read().decode('utf-8', errors='replace')
         decoded = _decode_body(raw)
         reason = str(getattr(exc, 'reason', '') or '')
         response_headers = dict(getattr(exc, 'headers', {}) or {})
-        equivalent_curl = _build_curl(method, url, headers, payload)
+        _verbose_http_log(module, f'Databasus API response: HTTP {status} on {method.upper()} {url}')
         module.fail_json(
             msg=f'HTTP {status} on {method} {url}. Reason: {reason}. Response body: {raw}. Equivalent curl: {equivalent_curl}',
             http_status=status,
@@ -173,6 +185,7 @@ def _request_json(
         )
     except error.URLError as exc:
         reason = str(getattr(exc, 'reason', exc))
+        _verbose_http_log(module, f'Databasus API connection error on {method.upper()} {url}: {reason}')
         module.fail_json(
             msg=f'Connection error on {method} {url}: {reason}',
             method=method,
@@ -182,7 +195,6 @@ def _request_json(
 
     if expected_statuses and status not in expected_statuses:
         decoded = _decode_body(raw)
-        equivalent_curl = _build_curl(method, url, headers, payload)
         module.fail_json(
             msg=f'Unexpected HTTP {status} on {method} {url}. Response body: {raw}. Equivalent curl: {equivalent_curl}',
             http_status=status,
