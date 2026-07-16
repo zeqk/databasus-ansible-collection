@@ -816,6 +816,7 @@ ID_FIELD = ''
 ID_API = ''
 MATCH_FIELDS = []
 CREATE_IS_UPSERT = False
+EXPAND_STORAGE_ID_TO_STORAGE = False
 
 
 def _build_url(api_url: str, path_template: str, path_params: Dict[str, Any], query_params: Optional[Dict[str, Any]] = None) -> str:
@@ -975,6 +976,9 @@ def _desired_payload(module_params: Dict[str, Any]) -> Dict[str, Any]:
     return _build_payload(module_params, BODY_SCHEMA)
 
 
+
+
+
 def _needs_update(current: Any, desired: Dict[str, Any]) -> bool:
     if not desired:
         return False
@@ -1099,6 +1103,7 @@ def run_module() -> None:
             current = body
 
     desired = _desired_payload(params)
+
 
     if state == 'absent':
         if not DELETE_PATH:

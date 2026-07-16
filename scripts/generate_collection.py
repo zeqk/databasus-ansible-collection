@@ -35,7 +35,12 @@ PATH_RESOURCE_OVERRIDES: Dict[str, str] = {
     "/backup-configs/physical/database/{id}/transfer": "backup_config_physical",
 }
 
-# Resource/action-specific body fields to ignore while generating module input params.
+
+EXPAND_STORAGE_ID_TO_STORAGE_RESOURCES = {
+    "backup_config",
+    "backup_config_physical",
+}
+
 EXCLUDED_BODY_FIELDS_BY_RESOURCE_ACTION: Dict[str, Dict[str, set[str]]] = {
     "backup_config": {
         "create": {"storage"},
@@ -46,6 +51,10 @@ EXCLUDED_BODY_FIELDS_BY_RESOURCE_ACTION: Dict[str, Dict[str, set[str]]] = {
         "update": {"storage"},
     },
 }
+
+
+def excluded_body_fields(resource: str, action: str) -> set[str]:
+    return EXCLUDED_BODY_FIELDS_BY_RESOURCE_ACTION.get(resource, {}).get(action, set())
 
 
 def is_param(token: str) -> bool:
@@ -702,7 +711,7 @@ def build_resources(spec: Dict[str, Any]) -> Dict[str, Dict[str, Any]]:
                 "source": "base",
             }
 
-        for op_name, op in selected.items():
+        for action, op in selected.items():
             if not op:
                 continue
             for p in op.get("parameters", []):
@@ -711,9 +720,8 @@ def build_resources(spec: Dict[str, Any]) -> Dict[str, Dict[str, Any]]:
                     continue
 
                 if pin == "body":
-                    body_fields = extract_body_fields(p.get("schema", {}), definitions)
-                    excluded_fields = EXCLUDED_BODY_FIELDS_BY_RESOURCE_ACTION.get(resource, {}).get(op_name, set())
-                    for k, v in body_fields.items():
+                    excluded_fields = excluded_body_fields(resource, action)
+                    for k, v in extract_body_fields(p.get("schema", {}), definitions).items():
                         if k in excluded_fields:
                             continue
                         if k in params and params[k].get("source") in {"path", "query"}:
@@ -817,9 +825,12 @@ def generate_collection(spec_path: Path, output_dir: Path) -> Tuple[int, List[Tu
                 elif p.get("in") == "query":
                     qnames.append(snake(p["name"]))
                 elif p.get("in") == "body":
+                    excluded_fields = excluded_body_fields(resource, opname)
                     fields = extract_body_fields(p.get("schema", {}), definitions)
-                    body_field_names.extend(fields.keys())
+                    body_field_names.extend([k for k in fields.keys() if k not in excluded_fields])
                     for field_name, field_meta in fields.items():
+                        if field_name in excluded_fields:
+                            continue
                         body_field_api_map[field_name] = field_meta.get("api_name", field_name)
             path_params_by_op[opname] = sorted(set(pnames))
             query_params_by_op[opname] = sorted(set(qnames))
@@ -966,6 +977,7 @@ def generate_collection(spec_path: Path, output_dir: Path) -> Tuple[int, List[Tu
             )
 
         module_template = template_env.get_template("module.py.j2")
+        expand_storage_id_to_storage = resource in EXPAND_STORAGE_ID_TO_STORAGE_RESOURCES
         code = module_template.render(
             resource=resource,
             desc_block="\n".join(desc_lines),
@@ -1006,6 +1018,7 @@ def generate_collection(spec_path: Path, output_dir: Path) -> Tuple[int, List[Tu
             id_api_repr=repr(id_api),
             match_fields_literal=match_fields_literal,
             create_is_upsert=str(create_is_upsert),
+            expand_storage_id_to_storage=expand_storage_id_to_storage,
             arg_lines_block="\n".join(arg_lines),
         )
 
