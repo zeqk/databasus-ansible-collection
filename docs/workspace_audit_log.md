@@ -44,7 +44,6 @@ This module is read\-only and does not support state\=absent\.
 | resource.user_name | success, str. Field userName\. |
 | resource.workspace_id | success, str. Field workspaceId\. |
 | resource.workspace_name | success, str. Field workspaceName\. |
-
 | changed | always, bool. Indicates whether any change was made\. |
 | msg | always, str. Descriptive operation message\. |
 

@@ -39,7 +39,6 @@ Allows managing auth resources using the Databasus API\.
 | resource.is_new_user | success, bool. Field isNewUser\. |
 | resource.token | success, str. Field token\. |
 | resource.user_id | success, str. Field userId\. |
-
 | changed | always, bool. Indicates whether any change was made\. |
 | msg | always, str. Descriptive operation message\. |
 

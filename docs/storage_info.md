@@ -44,7 +44,6 @@ This module is read\-only and never changes remote state\.
 | resource.azure_blob_storage.endpoint | success, str. Field endpoint\. |
 | resource.azure_blob_storage.prefix | success, str. Field prefix\. |
 | resource.azure_blob_storage.storage_id | success, str. Field storageId\. |
-
 | resource.ftp_storage | success, dict. Field ftpStorage\. |
 | resource.ftp_storage.host | success, str. Field host\. |
 | resource.ftp_storage.password | success, str. Field password\. |
@@ -54,18 +53,15 @@ This module is read\-only and never changes remote state\.
 | resource.ftp_storage.storage_id | success, str. Field storageId\. |
 | resource.ftp_storage.use_ssl | success, bool. Field useSsl\. |
 | resource.ftp_storage.username | success, str. Field username\. |
-
 | resource.google_drive_storage | success, dict. Field googleDriveStorage\. |
 | resource.google_drive_storage.client_id | success, str. Field clientId\. |
 | resource.google_drive_storage.client_secret | success, str. Field clientSecret\. |
 | resource.google_drive_storage.storage_id | success, str. Field storageId\. |
 | resource.google_drive_storage.token_json | success, str. Field tokenJson\. |
-
 | resource.id | success, str. Field id\. |
 | resource.last_save_error | success, str. Field lastSaveError\. |
 | resource.local_storage | success, dict. specific storage |
 | resource.local_storage.storage_id | success, str. Field storageId\. |
-
 | resource.name | success, str. Field name\. |
 | resource.nas_storage | success, dict. Field nasStorage\. |
 | resource.nas_storage.domain | success, str. Field domain\. |
@@ -77,12 +73,10 @@ This module is read\-only and never changes remote state\.
 | resource.nas_storage.storage_id | success, str. Field storageId\. |
 | resource.nas_storage.use_ssl | success, bool. Field useSsl\. |
 | resource.nas_storage.username | success, str. Field username\. |
-
 | resource.rclone_storage | success, dict. Field rcloneStorage\. |
 | resource.rclone_storage.config_content | success, str. Field configContent\. |
 | resource.rclone_storage.remote_path | success, str. Field remotePath\. |
 | resource.rclone_storage.storage_id | success, str. Field storageId\. |
-
 | resource.s3_storage | success, dict. Field s3Storage\. |
 | resource.s3_storage.s3_access_key | success, str. Field s3AccessKey\. |
 | resource.s3_storage.s3_bucket | success, str. Field s3Bucket\. |
@@ -94,7 +88,6 @@ This module is read\-only and never changes remote state\.
 | resource.s3_storage.s3_use_virtual_hosted_style | success, bool. Field s3UseVirtualHostedStyle\. |
 | resource.s3_storage.skip_tlsverify | success, bool. Field skipTLSVerify\. |
 | resource.s3_storage.storage_id | success, str. Field storageId\. |
-
 | resource.sftp_storage | success, dict. Field sftpStorage\. |
 | resource.sftp_storage.host | success, str. Field host\. |
 | resource.sftp_storage.password | success, str. Field password\. |
@@ -104,10 +97,8 @@ This module is read\-only and never changes remote state\.
 | resource.sftp_storage.skip_host_key_verify | success, bool. Field skipHostKeyVerify\. |
 | resource.sftp_storage.storage_id | success, str. Field storageId\. |
 | resource.sftp_storage.username | success, str. Field username\. |
-
 | resource.type | success, str. Field type\. |
 | resource.workspace_id | success, str. Field workspaceId\. |
-
 | found | always, bool. Whether a resource matching the requested name \(and scope\) was found\. |
 | changed | always, bool. Indicates whether any change was made\. |
 | msg | always, str. Descriptive operation message\. |

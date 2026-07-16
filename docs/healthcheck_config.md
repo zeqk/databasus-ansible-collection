@@ -47,7 +47,6 @@ operationId references are included in generated operation constants\.
 | resource.is_healthcheck_enabled | success, bool. Field isHealthcheckEnabled\. |
 | resource.is_sent_notification_when_unavailable | success, bool. Field isSentNotificationWhenUnavailable\. |
 | resource.store_attempts_days | success, int. Field storeAttemptsDays\. |
-
 | changed | always, bool. Indicates whether any change was made\. |
 | msg | always, str. Descriptive operation message\. |
 

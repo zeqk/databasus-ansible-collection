@@ -41,7 +41,6 @@ Allows managing verification\_heartbeat resources using the Databasus API\.
 | resource | always, dict. Resource object as returned by the API\. |
 | resource.abort_verification_ids | success, list. IDs that vanished\, were flipped to CANCELED or are no longer owned by this agent\. So it needs to drop them\. |
 | resource.last_seen_at | success, str. Field lastSeenAt\. |
-
 | changed | always, bool. Indicates whether any change was made\. |
 | msg | always, str. Descriptive operation message\. |
 

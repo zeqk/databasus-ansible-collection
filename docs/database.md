@@ -32,7 +32,6 @@ operationId references are included in generated operation constants\.
 | mariadb.privileges | optional, str, default=None. Body field privileges\. |
 | mariadb.username | optional, str, default=None. Body field username\. |
 | mariadb.version | optional, str, default=None. Body field version\. Possible values\; 5\.5\, 10\.1\, 10\.2\, 10\.3\, 10\.4\, 10\.5\, 10\.6\, 10\.11\, 11\.4\, 11\.8\, 12\.0\. |
-
 | mongodb | optional, dict, default=None. Body field mongodb\. |
 | mongodb.auth_database | optional, str, default=None. Body field authDatabase\. |
 | mongodb.cpu_count | optional, int, default=None. Body field cpuCount\. |
@@ -48,7 +47,6 @@ operationId references are included in generated operation constants\.
 | mongodb.port | optional, int, default=None. Body field port\. |
 | mongodb.username | optional, str, default=None. Body field username\. |
 | mongodb.version | optional, str, default=None. Body field version\. Possible values\; 4\, 5\, 6\, 7\, 8\. |
-
 | mysql | optional, dict, default=None. Body field mysql\. |
 | mysql.database | optional, str, default=None. Body field database\. |
 | mysql.database_id | optional, str, default=None. Body field databaseId\. |
@@ -63,13 +61,11 @@ operationId references are included in generated operation constants\.
 | mysql.privileges | optional, str, default=None. Body field privileges\. |
 | mysql.username | optional, str, default=None. Body field username\. |
 | mysql.version | optional, str, default=None. Body field version\. Possible values\; 5\.7\, 8\.0\, 8\.4\, 9\. |
-
 | name | True, str, default=None. Body field name\. |
 | notifiers | optional, list, default=None. Body field notifiers\. |
 | notifiers.discord_notifier | optional, dict, default=None. Body field discordNotifier\. |
 | notifiers.discord_notifier.channel_webhook_url | optional, str, default=None. Body field channelWebhookUrl\. |
 | notifiers.discord_notifier.notifier_id | optional, str, default=None. Body field notifierId\. |
-
 | notifiers.email_notifier | optional, dict, default=None. Body field emailNotifier\. |
 | notifiers.email_notifier.from | optional, str, default=None. Body field from\. |
 | notifiers.email_notifier.is_insecure_skip_verify | optional, bool, default=None. Body field isInsecureSkipVerify\. |
@@ -79,7 +75,6 @@ operationId references are included in generated operation constants\.
 | notifiers.email_notifier.smtp_port | optional, int, default=None. Body field smtpPort\. |
 | notifiers.email_notifier.smtp_user | optional, str, default=None. Body field smtpUser\. |
 | notifiers.email_notifier.target_email | optional, str, default=None. Body field targetEmail\. |
-
 | notifiers.id | optional, str, default=None. Body field id\. |
 | notifiers.last_send_error | optional, str, default=None. Body field lastSendError\. |
 | notifiers.name | optional, str, default=None. Body field name\. |
@@ -88,11 +83,9 @@ operationId references are included in generated operation constants\.
 | notifiers.slack_notifier.bot_token | optional, str, default=None. Body field botToken\. |
 | notifiers.slack_notifier.notifier_id | optional, str, default=None. Body field notifierId\. |
 | notifiers.slack_notifier.target_chat_id | optional, str, default=None. Body field targetChatId\. |
-
 | notifiers.teams_notifier | optional, dict, default=None. Body field teamsNotifier\. |
 | notifiers.teams_notifier.notifier_id | optional, str, default=None. Body field notifierId\. |
 | notifiers.teams_notifier.power_automate_url | optional, str, default=None. Body field powerAutomateUrl\. |
-
 | notifiers.telegram_notifier | optional, dict, default=None. specific notifier |
 | notifiers.telegram_notifier.bot_token | optional, str, default=None. Body field botToken\. |
 | notifiers.telegram_notifier.is_proxy_enabled | optional, bool, default=None. Body field isProxyEnabled\. |
@@ -100,19 +93,15 @@ operationId references are included in generated operation constants\.
 | notifiers.telegram_notifier.proxy_url | optional, str, default=None. Body field proxyUrl\. |
 | notifiers.telegram_notifier.target_chat_id | optional, str, default=None. Body field targetChatId\. |
 | notifiers.telegram_notifier.thread_id | optional, int, default=None. Body field threadId\. |
-
 | notifiers.webhook_notifier | optional, dict, default=None. Body field webhookNotifier\. |
 | notifiers.webhook_notifier.body_template | optional, str, default=None. Body field bodyTemplate\. |
 | notifiers.webhook_notifier.headers | optional, list, default=None. Body field headers\. |
 | notifiers.webhook_notifier.headers.key | optional, str, default=None. Body field key\. |
 | notifiers.webhook_notifier.headers.value | optional, str, default=None. Body field value\. |
-
 | notifiers.webhook_notifier.notifier_id | optional, str, default=None. Body field notifierId\. |
 | notifiers.webhook_notifier.webhook_method | optional, str, default=None. Body field webhookMethod\. Possible values\; POST\, GET\. |
 | notifiers.webhook_notifier.webhook_url | optional, str, default=None. Body field webhookUrl\. |
-
 | notifiers.workspace_id | optional, str, default=None. Body field workspaceId\. |
-
 | postgresql_logical | optional, dict, default=None. Body field postgresqlLogical\. |
 | postgresql_logical.cpu_count | optional, int, default=None. Body field cpuCount\. |
 | postgresql_logical.database | optional, str, default=None. Body field database\. |
@@ -133,7 +122,6 @@ operationId references are included in generated operation constants\.
 | postgresql_logical.ssl_root_cert | optional, str, default=None. Body field sslRootCert\. |
 | postgresql_logical.username | optional, str, default=None. Body field username\. |
 | postgresql_logical.version | optional, str, default=None. Body field version\. Possible values\; 12\, 13\, 14\, 15\, 16\, 17\, 18\. |
-
 | postgresql_physical | optional, dict, default=None. Body field postgresqlPhysical\. |
 | postgresql_physical.backup_type | optional, str, default=None. Body field backupType\. Possible values\; FULL\, FULL\_INCREMENTAL\, FULL\_INCREMENTAL\_WAL\_STREAM\. |
 | postgresql_physical.database_id | optional, str, default=None. Body field databaseId\. |
@@ -149,7 +137,6 @@ operationId references are included in generated operation constants\.
 | postgresql_physical.username | optional, str, default=None. Body field username\. |
 | postgresql_physical.version | optional, str, default=None. Body field version\. Possible values\; 12\, 13\, 14\, 15\, 16\, 17\, 18\. |
 | postgresql_physical.wal_segment_size_bytes | optional, int, default=None. WalSegmentSizeBytes captures the source cluster\'s wal\_segment\_size at first connect\. |
-
 | type | optional, str, default=None. Body field type\. Possible values\; POSTGRES\_LOGICAL\, POSTGRES\_PHYSICAL\, MYSQL\, MARIADB\, MONGODB\. |
 | workspace_id | optional, str, default=None. Workspace ID |
 
@@ -200,7 +187,6 @@ operationId references are included in generated operation constants\.
 | resource.mariadb.privileges | success, str. Field privileges\. |
 | resource.mariadb.username | success, str. Field username\. |
 | resource.mariadb.version | success, str. Field version\. |
-
 | resource.mongodb | success, dict. Field mongodb\. |
 | resource.mongodb.auth_database | success, str. Field authDatabase\. |
 | resource.mongodb.cpu_count | success, int. Field cpuCount\. |
@@ -216,7 +202,6 @@ operationId references are included in generated operation constants\.
 | resource.mongodb.port | success, int. Field port\. |
 | resource.mongodb.username | success, str. Field username\. |
 | resource.mongodb.version | success, str. Field version\. |
-
 | resource.mysql | success, dict. Field mysql\. |
 | resource.mysql.database | success, str. Field database\. |
 | resource.mysql.database_id | success, str. Field databaseId\. |
@@ -231,13 +216,11 @@ operationId references are included in generated operation constants\.
 | resource.mysql.privileges | success, str. Field privileges\. |
 | resource.mysql.username | success, str. Field username\. |
 | resource.mysql.version | success, str. Field version\. |
-
 | resource.name | success, str. Field name\. |
 | resource.notifiers | success, list. Field notifiers\. |
 | resource.notifiers.discord_notifier | success, dict. Field discordNotifier\. |
 | resource.notifiers.discord_notifier.channel_webhook_url | success, str. Field channelWebhookUrl\. |
 | resource.notifiers.discord_notifier.notifier_id | success, str. Field notifierId\. |
-
 | resource.notifiers.email_notifier | success, dict. Field emailNotifier\. |
 | resource.notifiers.email_notifier.from | success, str. Field from\. |
 | resource.notifiers.email_notifier.is_insecure_skip_verify | success, bool. Field isInsecureSkipVerify\. |
@@ -247,7 +230,6 @@ operationId references are included in generated operation constants\.
 | resource.notifiers.email_notifier.smtp_port | success, int. Field smtpPort\. |
 | resource.notifiers.email_notifier.smtp_user | success, str. Field smtpUser\. |
 | resource.notifiers.email_notifier.target_email | success, str. Field targetEmail\. |
-
 | resource.notifiers.id | success, str. Field id\. |
 | resource.notifiers.last_send_error | success, str. Field lastSendError\. |
 | resource.notifiers.name | success, str. Field name\. |
@@ -256,11 +238,9 @@ operationId references are included in generated operation constants\.
 | resource.notifiers.slack_notifier.bot_token | success, str. Field botToken\. |
 | resource.notifiers.slack_notifier.notifier_id | success, str. Field notifierId\. |
 | resource.notifiers.slack_notifier.target_chat_id | success, str. Field targetChatId\. |
-
 | resource.notifiers.teams_notifier | success, dict. Field teamsNotifier\. |
 | resource.notifiers.teams_notifier.notifier_id | success, str. Field notifierId\. |
 | resource.notifiers.teams_notifier.power_automate_url | success, str. Field powerAutomateUrl\. |
-
 | resource.notifiers.telegram_notifier | success, dict. specific notifier |
 | resource.notifiers.telegram_notifier.bot_token | success, str. Field botToken\. |
 | resource.notifiers.telegram_notifier.is_proxy_enabled | success, bool. Field isProxyEnabled\. |
@@ -268,19 +248,15 @@ operationId references are included in generated operation constants\.
 | resource.notifiers.telegram_notifier.proxy_url | success, str. Field proxyUrl\. |
 | resource.notifiers.telegram_notifier.target_chat_id | success, str. Field targetChatId\. |
 | resource.notifiers.telegram_notifier.thread_id | success, int. Field threadId\. |
-
 | resource.notifiers.webhook_notifier | success, dict. Field webhookNotifier\. |
 | resource.notifiers.webhook_notifier.body_template | success, str. Field bodyTemplate\. |
 | resource.notifiers.webhook_notifier.headers | success, list. Field headers\. |
 | resource.notifiers.webhook_notifier.headers.key | success, str. Field key\. |
 | resource.notifiers.webhook_notifier.headers.value | success, str. Field value\. |
-
 | resource.notifiers.webhook_notifier.notifier_id | success, str. Field notifierId\. |
 | resource.notifiers.webhook_notifier.webhook_method | success, str. Field webhookMethod\. |
 | resource.notifiers.webhook_notifier.webhook_url | success, str. Field webhookUrl\. |
-
 | resource.notifiers.workspace_id | success, str. Field workspaceId\. |
-
 | resource.postgresql_logical | success, dict. Field postgresqlLogical\. |
 | resource.postgresql_logical.cpu_count | success, int. Field cpuCount\. |
 | resource.postgresql_logical.database | success, str. Field database\. |
@@ -301,7 +277,6 @@ operationId references are included in generated operation constants\.
 | resource.postgresql_logical.ssl_root_cert | success, str. Field sslRootCert\. |
 | resource.postgresql_logical.username | success, str. Field username\. |
 | resource.postgresql_logical.version | success, str. Field version\. |
-
 | resource.postgresql_physical | success, dict. Field postgresqlPhysical\. |
 | resource.postgresql_physical.backup_type | success, str. Field backupType\. |
 | resource.postgresql_physical.database_id | success, str. Field databaseId\. |
@@ -317,10 +292,8 @@ operationId references are included in generated operation constants\.
 | resource.postgresql_physical.username | success, str. Field username\. |
 | resource.postgresql_physical.version | success, str. Field version\. |
 | resource.postgresql_physical.wal_segment_size_bytes | success, int. WalSegmentSizeBytes captures the source cluster\'s wal\_segment\_size at first connect\. |
-
 | resource.type | success, str. Field type\. |
 | resource.workspace_id | success, str. WorkspaceID can be null when a database is created via restore operation outside the context of any workspace |
-
 | changed | always, bool. Indicates whether any change was made\. |
 | msg | always, str. Descriptive operation message\. |
 

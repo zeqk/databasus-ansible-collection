@@ -54,10 +54,8 @@ This module is read\-only and never changes remote state\.
 | resource.table_stats.name | success, str. Field name\. |
 | resource.table_stats.row_count | success, int. Field rowCount\. |
 | resource.table_stats.schema_name | success, str. Field schemaName\. |
-
 | resource.trigger | success, str. Field trigger\. |
 | resource.verify_duration_ms | success, int. Field verifyDurationMs\. |
-
 | found | always, bool. Whether a resource matching the requested name \(and scope\) was found\. |
 | changed | always, bool. Indicates whether any change was made\. |
 | msg | always, str. Descriptive operation message\. |

@@ -26,7 +26,6 @@ Allows managing agent resources using the Databasus API\.
 | table_stats.name | True, str, default=None. Body field name\. |
 | table_stats.row_count | optional, int, default=None. Body field rowCount\. |
 | table_stats.schema_name | True, str, default=None. Body field schemaName\. |
-
 | verify_duration_ms | optional, int, default=None. Body field verifyDurationMs\. |
 
 

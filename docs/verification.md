@@ -63,10 +63,8 @@ operationId references are included in generated operation constants\.
 | resource.table_stats.name | success, str. Field name\. |
 | resource.table_stats.row_count | success, int. Field rowCount\. |
 | resource.table_stats.schema_name | success, str. Field schemaName\. |
-
 | resource.trigger | success, str. Field trigger\. |
 | resource.verify_duration_ms | success, int. Field verifyDurationMs\. |
-
 | changed | always, bool. Indicates whether any change was made\. |
 | msg | always, str. Descriptive operation message\. |
 

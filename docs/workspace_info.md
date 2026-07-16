@@ -37,7 +37,6 @@ This module is read\-only and never changes remote state\.
 | resource.created_at | success, str. Field createdAt\. |
 | resource.id | success, str. Field id\. |
 | resource.name | success, str. Field name\. |
-
 | found | always, bool. Whether a resource matching the requested name \(and scope\) was found\. |
 | changed | always, bool. Indicates whether any change was made\. |
 | msg | always, str. Descriptive operation message\. |

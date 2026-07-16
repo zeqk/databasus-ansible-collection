@@ -48,7 +48,6 @@ operationId references are included in generated operation constants\.
 | resource.created_at | success, str. Field createdAt\. |
 | resource.id | success, str. Field id\. |
 | resource.name | success, str. Field name\. |
-
 | changed | always, bool. Indicates whether any change was made\. |
 | msg | always, str. Descriptive operation message\. |
 

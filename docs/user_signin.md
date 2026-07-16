@@ -40,7 +40,6 @@ This module is read\-only and never changes remote state\.
 | resource.email | success, str. Field email\. |
 | resource.token | success, str. Field token\. |
 | resource.user_id | success, str. Field userId\. |
-
 | token | when available, str. JWT token returned by the signin endpoint\. |
 | changed | always, bool. Indicates whether any change was made\. |
 | msg | always, str. Descriptive operation message\. |

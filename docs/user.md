@@ -49,7 +49,6 @@ operationId references are included in generated operation constants\.
 | resource.is_active | success, bool. Field isActive\. |
 | resource.name | success, str. Field name\. |
 | resource.role | success, str. Field role\. |
-
 | changed | always, bool. Indicates whether any change was made\. |
 | msg | always, str. Descriptive operation message\. |
 

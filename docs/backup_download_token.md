@@ -36,7 +36,6 @@ Allows managing backup\_download\_token resources using the Databasus API\.
 | resource.backup_id | success, str. Field backupId\. |
 | resource.filename | success, str. Field filename\. |
 | resource.token | success, str. Field token\. |
-
 | changed | always, bool. Indicates whether any change was made\. |
 | msg | always, str. Descriptive operation message\. |
 

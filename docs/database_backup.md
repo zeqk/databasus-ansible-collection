@@ -53,7 +53,6 @@ This module is read\-only and does not support state\=absent\.
 | resource.timeline_id | success, int. Field timelineId\. |
 | resource.type | success, str. Field type\. |
 | resource.wal_filename | success, str. WalFilename is the bare PG segment name\, WAL rows only\. |
-
 | changed | always, bool. Indicates whether any change was made\. |
 | msg | always, str. Descriptive operation message\. |
 

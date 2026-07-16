@@ -61,7 +61,6 @@ operationId references are included in generated operation constants\.
 | resource.status | success, str. Field status\. |
 | resource.storage_id | success, str. Field storageId\. |
 | resource.timescaledb_version | success, str. TimescaledbVersion is the source\'s timescaledb extension version captured at backup time\, or \"\" when the source has no timescaledb\. Non\-empty marks the backup as needing the TimescaleDB restore procedure\, and the verification agent uses the exact version to pull a matching engine image \(pg\_restore cannot cross extension versions\)\. |
-
 | changed | always, bool. Indicates whether any change was made\. |
 | msg | always, str. Descriptive operation message\. |
 

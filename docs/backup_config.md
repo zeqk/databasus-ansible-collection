@@ -18,7 +18,6 @@ Allows managing backup\_config resources using the Databasus API\.
 | backup_interval.time_of_day | optional, str, default=None. Body field timeOfDay\. |
 | backup_interval.type | optional, str, default=None. Body field type\. Possible values\; HOURLY\, DAILY\, WEEKLY\, MONTHLY\, CRON\. |
 | backup_interval.weekday | optional, int, default=None. Body field weekday\. |
-
 | database_id | optional, str, default=None. Body field databaseId\. |
 | encryption | optional, str, default=None. Body field encryption\. Possible values\; NONE\, ENCRYPTED\. |
 | id | optional, str, default=None. Database ID |
@@ -44,7 +43,6 @@ Allows managing backup\_config resources using the Databasus API\.
 | storage.azure_blob_storage.endpoint | optional, str, default=None. Body field endpoint\. |
 | storage.azure_blob_storage.prefix | optional, str, default=None. Body field prefix\. |
 | storage.azure_blob_storage.storage_id | optional, str, default=None. Body field storageId\. |
-
 | storage.ftp_storage | optional, dict, default=None. Body field ftpStorage\. |
 | storage.ftp_storage.host | optional, str, default=None. Body field host\. |
 | storage.ftp_storage.password | optional, str, default=None. Body field password\. |
@@ -54,18 +52,15 @@ Allows managing backup\_config resources using the Databasus API\.
 | storage.ftp_storage.storage_id | optional, str, default=None. Body field storageId\. |
 | storage.ftp_storage.use_ssl | optional, bool, default=None. Body field useSsl\. |
 | storage.ftp_storage.username | optional, str, default=None. Body field username\. |
-
 | storage.google_drive_storage | optional, dict, default=None. Body field googleDriveStorage\. |
 | storage.google_drive_storage.client_id | optional, str, default=None. Body field clientId\. |
 | storage.google_drive_storage.client_secret | optional, str, default=None. Body field clientSecret\. |
 | storage.google_drive_storage.storage_id | optional, str, default=None. Body field storageId\. |
 | storage.google_drive_storage.token_json | optional, str, default=None. Body field tokenJson\. |
-
 | storage.id | optional, str, default=None. Body field id\. |
 | storage.last_save_error | optional, str, default=None. Body field lastSaveError\. |
 | storage.local_storage | optional, dict, default=None. specific storage |
 | storage.local_storage.storage_id | optional, str, default=None. Body field storageId\. |
-
 | storage.name | optional, str, default=None. Body field name\. |
 | storage.nas_storage | optional, dict, default=None. Body field nasStorage\. |
 | storage.nas_storage.domain | optional, str, default=None. Body field domain\. |
@@ -77,12 +72,10 @@ Allows managing backup\_config resources using the Databasus API\.
 | storage.nas_storage.storage_id | optional, str, default=None. Body field storageId\. |
 | storage.nas_storage.use_ssl | optional, bool, default=None. Body field useSsl\. |
 | storage.nas_storage.username | optional, str, default=None. Body field username\. |
-
 | storage.rclone_storage | optional, dict, default=None. Body field rcloneStorage\. |
 | storage.rclone_storage.config_content | optional, str, default=None. Body field configContent\. |
 | storage.rclone_storage.remote_path | optional, str, default=None. Body field remotePath\. |
 | storage.rclone_storage.storage_id | optional, str, default=None. Body field storageId\. |
-
 | storage.s3_storage | optional, dict, default=None. Body field s3Storage\. |
 | storage.s3_storage.s3_access_key | optional, str, default=None. Body field s3AccessKey\. |
 | storage.s3_storage.s3_bucket | optional, str, default=None. Body field s3Bucket\. |
@@ -94,7 +87,6 @@ Allows managing backup\_config resources using the Databasus API\.
 | storage.s3_storage.s3_use_virtual_hosted_style | optional, bool, default=None. Body field s3UseVirtualHostedStyle\. |
 | storage.s3_storage.skip_tlsverify | optional, bool, default=None. Body field skipTLSVerify\. |
 | storage.s3_storage.storage_id | optional, str, default=None. Body field storageId\. |
-
 | storage.sftp_storage | optional, dict, default=None. Body field sftpStorage\. |
 | storage.sftp_storage.host | optional, str, default=None. Body field host\. |
 | storage.sftp_storage.password | optional, str, default=None. Body field password\. |
@@ -104,10 +96,8 @@ Allows managing backup\_config resources using the Databasus API\.
 | storage.sftp_storage.skip_host_key_verify | optional, bool, default=None. Body field skipHostKeyVerify\. |
 | storage.sftp_storage.storage_id | optional, str, default=None. Body field storageId\. |
 | storage.sftp_storage.username | optional, str, default=None. Body field username\. |
-
 | storage.type | optional, str, default=None. Body field type\. Possible values\; LOCAL\, S3\, GOOGLE\_DRIVE\, NAS\, AZURE\_BLOB\, FTP\, SFTP\, RCLONE\. |
 | storage.workspace_id | optional, str, default=None. Body field workspaceId\. |
-
 | storage_id | optional, str, default=None. Body field storageId\. |
 
 
@@ -136,7 +126,6 @@ Allows managing backup\_config resources using the Databasus API\.
 | resource.backup_interval.time_of_day | success, str. Field timeOfDay\. |
 | resource.backup_interval.type | success, str. Field type\. |
 | resource.backup_interval.weekday | success, int. Field weekday\. |
-
 | resource.database_id | success, str. Field databaseId\. |
 | resource.encryption | success, str. Field encryption\. |
 | resource.is_backups_enabled | success, bool. Field isBackupsEnabled\. |
@@ -161,7 +150,6 @@ Allows managing backup\_config resources using the Databasus API\.
 | resource.storage.azure_blob_storage.endpoint | success, str. Field endpoint\. |
 | resource.storage.azure_blob_storage.prefix | success, str. Field prefix\. |
 | resource.storage.azure_blob_storage.storage_id | success, str. Field storageId\. |
-
 | resource.storage.ftp_storage | success, dict. Field ftpStorage\. |
 | resource.storage.ftp_storage.host | success, str. Field host\. |
 | resource.storage.ftp_storage.password | success, str. Field password\. |
@@ -171,18 +159,15 @@ Allows managing backup\_config resources using the Databasus API\.
 | resource.storage.ftp_storage.storage_id | success, str. Field storageId\. |
 | resource.storage.ftp_storage.use_ssl | success, bool. Field useSsl\. |
 | resource.storage.ftp_storage.username | success, str. Field username\. |
-
 | resource.storage.google_drive_storage | success, dict. Field googleDriveStorage\. |
 | resource.storage.google_drive_storage.client_id | success, str. Field clientId\. |
 | resource.storage.google_drive_storage.client_secret | success, str. Field clientSecret\. |
 | resource.storage.google_drive_storage.storage_id | success, str. Field storageId\. |
 | resource.storage.google_drive_storage.token_json | success, str. Field tokenJson\. |
-
 | resource.storage.id | success, str. Field id\. |
 | resource.storage.last_save_error | success, str. Field lastSaveError\. |
 | resource.storage.local_storage | success, dict. specific storage |
 | resource.storage.local_storage.storage_id | success, str. Field storageId\. |
-
 | resource.storage.name | success, str. Field name\. |
 | resource.storage.nas_storage | success, dict. Field nasStorage\. |
 | resource.storage.nas_storage.domain | success, str. Field domain\. |
@@ -194,12 +179,10 @@ Allows managing backup\_config resources using the Databasus API\.
 | resource.storage.nas_storage.storage_id | success, str. Field storageId\. |
 | resource.storage.nas_storage.use_ssl | success, bool. Field useSsl\. |
 | resource.storage.nas_storage.username | success, str. Field username\. |
-
 | resource.storage.rclone_storage | success, dict. Field rcloneStorage\. |
 | resource.storage.rclone_storage.config_content | success, str. Field configContent\. |
 | resource.storage.rclone_storage.remote_path | success, str. Field remotePath\. |
 | resource.storage.rclone_storage.storage_id | success, str. Field storageId\. |
-
 | resource.storage.s3_storage | success, dict. Field s3Storage\. |
 | resource.storage.s3_storage.s3_access_key | success, str. Field s3AccessKey\. |
 | resource.storage.s3_storage.s3_bucket | success, str. Field s3Bucket\. |
@@ -211,7 +194,6 @@ Allows managing backup\_config resources using the Databasus API\.
 | resource.storage.s3_storage.s3_use_virtual_hosted_style | success, bool. Field s3UseVirtualHostedStyle\. |
 | resource.storage.s3_storage.skip_tlsverify | success, bool. Field skipTLSVerify\. |
 | resource.storage.s3_storage.storage_id | success, str. Field storageId\. |
-
 | resource.storage.sftp_storage | success, dict. Field sftpStorage\. |
 | resource.storage.sftp_storage.host | success, str. Field host\. |
 | resource.storage.sftp_storage.password | success, str. Field password\. |
@@ -221,12 +203,9 @@ Allows managing backup\_config resources using the Databasus API\.
 | resource.storage.sftp_storage.skip_host_key_verify | success, bool. Field skipHostKeyVerify\. |
 | resource.storage.sftp_storage.storage_id | success, str. Field storageId\. |
 | resource.storage.sftp_storage.username | success, str. Field username\. |
-
 | resource.storage.type | success, str. Field type\. |
 | resource.storage.workspace_id | success, str. Field workspaceId\. |
-
 | resource.storage_id | success, str. Field storageId\. |
-
 | changed | always, bool. Indicates whether any change was made\. |
 | msg | always, str. Descriptive operation message\. |
 

@@ -45,11 +45,9 @@ This module is read\-only and does not support state\=absent\.
 | resource.audit_logs.user_name | success, str. Field userName\. |
 | resource.audit_logs.workspace_id | success, str. Field workspaceId\. |
 | resource.audit_logs.workspace_name | success, str. Field workspaceName\. |
-
 | resource.limit | success, int. Field limit\. |
 | resource.offset | success, int. Field offset\. |
 | resource.total | success, int. Field total\. |
-
 | changed | always, bool. Indicates whether any change was made\. |
 | msg | always, str. Descriptive operation message\. |
 

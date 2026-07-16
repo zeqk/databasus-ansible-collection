@@ -23,7 +23,6 @@ operationId references are included in generated operation constants\.
 | azure_blob_storage.endpoint | optional, str, default=None. Body field endpoint\. |
 | azure_blob_storage.prefix | optional, str, default=None. Body field prefix\. |
 | azure_blob_storage.storage_id | optional, str, default=None. Body field storageId\. |
-
 | ftp_storage | optional, dict, default=None. Body field ftpStorage\. |
 | ftp_storage.host | optional, str, default=None. Body field host\. |
 | ftp_storage.password | optional, str, default=None. Body field password\. |
@@ -33,17 +32,14 @@ operationId references are included in generated operation constants\.
 | ftp_storage.storage_id | optional, str, default=None. Body field storageId\. |
 | ftp_storage.use_ssl | optional, bool, default=None. Body field useSsl\. |
 | ftp_storage.username | optional, str, default=None. Body field username\. |
-
 | google_drive_storage | optional, dict, default=None. Body field googleDriveStorage\. |
 | google_drive_storage.client_id | optional, str, default=None. Body field clientId\. |
 | google_drive_storage.client_secret | optional, str, default=None. Body field clientSecret\. |
 | google_drive_storage.storage_id | optional, str, default=None. Body field storageId\. |
 | google_drive_storage.token_json | optional, str, default=None. Body field tokenJson\. |
-
 | last_save_error | optional, str, default=None. Body field lastSaveError\. |
 | local_storage | optional, dict, default=None. specific storage |
 | local_storage.storage_id | optional, str, default=None. Body field storageId\. |
-
 | name | True, str, default=None. Body field name\. |
 | nas_storage | optional, dict, default=None. Body field nasStorage\. |
 | nas_storage.domain | optional, str, default=None. Body field domain\. |
@@ -55,12 +51,10 @@ operationId references are included in generated operation constants\.
 | nas_storage.storage_id | optional, str, default=None. Body field storageId\. |
 | nas_storage.use_ssl | optional, bool, default=None. Body field useSsl\. |
 | nas_storage.username | optional, str, default=None. Body field username\. |
-
 | rclone_storage | optional, dict, default=None. Body field rcloneStorage\. |
 | rclone_storage.config_content | optional, str, default=None. Body field configContent\. |
 | rclone_storage.remote_path | optional, str, default=None. Body field remotePath\. |
 | rclone_storage.storage_id | optional, str, default=None. Body field storageId\. |
-
 | s3_storage | optional, dict, default=None. Body field s3Storage\. |
 | s3_storage.s3_access_key | optional, str, default=None. Body field s3AccessKey\. |
 | s3_storage.s3_bucket | optional, str, default=None. Body field s3Bucket\. |
@@ -72,7 +66,6 @@ operationId references are included in generated operation constants\.
 | s3_storage.s3_use_virtual_hosted_style | optional, bool, default=None. Body field s3UseVirtualHostedStyle\. |
 | s3_storage.skip_tlsverify | optional, bool, default=None. Body field skipTLSVerify\. |
 | s3_storage.storage_id | optional, str, default=None. Body field storageId\. |
-
 | sftp_storage | optional, dict, default=None. Body field sftpStorage\. |
 | sftp_storage.host | optional, str, default=None. Body field host\. |
 | sftp_storage.password | optional, str, default=None. Body field password\. |
@@ -82,7 +75,6 @@ operationId references are included in generated operation constants\.
 | sftp_storage.skip_host_key_verify | optional, bool, default=None. Body field skipHostKeyVerify\. |
 | sftp_storage.storage_id | optional, str, default=None. Body field storageId\. |
 | sftp_storage.username | optional, str, default=None. Body field username\. |
-
 | type | optional, str, default=None. Body field type\. Possible values\; LOCAL\, S3\, GOOGLE\_DRIVE\, NAS\, AZURE\_BLOB\, FTP\, SFTP\, RCLONE\. |
 | workspace_id | optional, str, default=None. Workspace ID |
 
@@ -123,7 +115,6 @@ operationId references are included in generated operation constants\.
 | resource.azure_blob_storage.endpoint | success, str. Field endpoint\. |
 | resource.azure_blob_storage.prefix | success, str. Field prefix\. |
 | resource.azure_blob_storage.storage_id | success, str. Field storageId\. |
-
 | resource.ftp_storage | success, dict. Field ftpStorage\. |
 | resource.ftp_storage.host | success, str. Field host\. |
 | resource.ftp_storage.password | success, str. Field password\. |
@@ -133,18 +124,15 @@ operationId references are included in generated operation constants\.
 | resource.ftp_storage.storage_id | success, str. Field storageId\. |
 | resource.ftp_storage.use_ssl | success, bool. Field useSsl\. |
 | resource.ftp_storage.username | success, str. Field username\. |
-
 | resource.google_drive_storage | success, dict. Field googleDriveStorage\. |
 | resource.google_drive_storage.client_id | success, str. Field clientId\. |
 | resource.google_drive_storage.client_secret | success, str. Field clientSecret\. |
 | resource.google_drive_storage.storage_id | success, str. Field storageId\. |
 | resource.google_drive_storage.token_json | success, str. Field tokenJson\. |
-
 | resource.id | success, str. Field id\. |
 | resource.last_save_error | success, str. Field lastSaveError\. |
 | resource.local_storage | success, dict. specific storage |
 | resource.local_storage.storage_id | success, str. Field storageId\. |
-
 | resource.name | success, str. Field name\. |
 | resource.nas_storage | success, dict. Field nasStorage\. |
 | resource.nas_storage.domain | success, str. Field domain\. |
@@ -156,12 +144,10 @@ operationId references are included in generated operation constants\.
 | resource.nas_storage.storage_id | success, str. Field storageId\. |
 | resource.nas_storage.use_ssl | success, bool. Field useSsl\. |
 | resource.nas_storage.username | success, str. Field username\. |
-
 | resource.rclone_storage | success, dict. Field rcloneStorage\. |
 | resource.rclone_storage.config_content | success, str. Field configContent\. |
 | resource.rclone_storage.remote_path | success, str. Field remotePath\. |
 | resource.rclone_storage.storage_id | success, str. Field storageId\. |
-
 | resource.s3_storage | success, dict. Field s3Storage\. |
 | resource.s3_storage.s3_access_key | success, str. Field s3AccessKey\. |
 | resource.s3_storage.s3_bucket | success, str. Field s3Bucket\. |
@@ -173,7 +159,6 @@ operationId references are included in generated operation constants\.
 | resource.s3_storage.s3_use_virtual_hosted_style | success, bool. Field s3UseVirtualHostedStyle\. |
 | resource.s3_storage.skip_tlsverify | success, bool. Field skipTLSVerify\. |
 | resource.s3_storage.storage_id | success, str. Field storageId\. |
-
 | resource.sftp_storage | success, dict. Field sftpStorage\. |
 | resource.sftp_storage.host | success, str. Field host\. |
 | resource.sftp_storage.password | success, str. Field password\. |
@@ -183,10 +168,8 @@ operationId references are included in generated operation constants\.
 | resource.sftp_storage.skip_host_key_verify | success, bool. Field skipHostKeyVerify\. |
 | resource.sftp_storage.storage_id | success, str. Field storageId\. |
 | resource.sftp_storage.username | success, str. Field username\. |
-
 | resource.type | success, str. Field type\. |
 | resource.workspace_id | success, str. Field workspaceId\. |
-
 | changed | always, bool. Indicates whether any change was made\. |
 | msg | always, str. Descriptive operation message\. |
 

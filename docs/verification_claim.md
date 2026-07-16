@@ -20,7 +20,6 @@ Allows managing verification\_claim resources using the Databasus API\.
 | capacity.max_ram_mb | optional, int, default=None. Body field maxRamMb\. |
 
 
-
 ## Examples
 
 ```yaml
@@ -62,7 +61,6 @@ Allows managing verification\_claim resources using the Databasus API\.
 | resource.database.mariadb.privileges | success, str. Field privileges\. |
 | resource.database.mariadb.username | success, str. Field username\. |
 | resource.database.mariadb.version | success, str. Field version\. |
-
 | resource.database.mongodb | success, dict. Field mongodb\. |
 | resource.database.mongodb.auth_database | success, str. Field authDatabase\. |
 | resource.database.mongodb.cpu_count | success, int. Field cpuCount\. |
@@ -78,7 +76,6 @@ Allows managing verification\_claim resources using the Databasus API\.
 | resource.database.mongodb.port | success, int. Field port\. |
 | resource.database.mongodb.username | success, str. Field username\. |
 | resource.database.mongodb.version | success, str. Field version\. |
-
 | resource.database.mysql | success, dict. Field mysql\. |
 | resource.database.mysql.database | success, str. Field database\. |
 | resource.database.mysql.database_id | success, str. Field databaseId\. |
@@ -93,13 +90,11 @@ Allows managing verification\_claim resources using the Databasus API\.
 | resource.database.mysql.privileges | success, str. Field privileges\. |
 | resource.database.mysql.username | success, str. Field username\. |
 | resource.database.mysql.version | success, str. Field version\. |
-
 | resource.database.name | success, str. Field name\. |
 | resource.database.notifiers | success, list. Field notifiers\. |
 | resource.database.notifiers.discord_notifier | success, dict. Field discordNotifier\. |
 | resource.database.notifiers.discord_notifier.channel_webhook_url | success, str. Field channelWebhookUrl\. |
 | resource.database.notifiers.discord_notifier.notifier_id | success, str. Field notifierId\. |
-
 | resource.database.notifiers.email_notifier | success, dict. Field emailNotifier\. |
 | resource.database.notifiers.email_notifier.from | success, str. Field from\. |
 | resource.database.notifiers.email_notifier.is_insecure_skip_verify | success, bool. Field isInsecureSkipVerify\. |
@@ -109,7 +104,6 @@ Allows managing verification\_claim resources using the Databasus API\.
 | resource.database.notifiers.email_notifier.smtp_port | success, int. Field smtpPort\. |
 | resource.database.notifiers.email_notifier.smtp_user | success, str. Field smtpUser\. |
 | resource.database.notifiers.email_notifier.target_email | success, str. Field targetEmail\. |
-
 | resource.database.notifiers.id | success, str. Field id\. |
 | resource.database.notifiers.last_send_error | success, str. Field lastSendError\. |
 | resource.database.notifiers.name | success, str. Field name\. |
@@ -118,11 +112,9 @@ Allows managing verification\_claim resources using the Databasus API\.
 | resource.database.notifiers.slack_notifier.bot_token | success, str. Field botToken\. |
 | resource.database.notifiers.slack_notifier.notifier_id | success, str. Field notifierId\. |
 | resource.database.notifiers.slack_notifier.target_chat_id | success, str. Field targetChatId\. |
-
 | resource.database.notifiers.teams_notifier | success, dict. Field teamsNotifier\. |
 | resource.database.notifiers.teams_notifier.notifier_id | success, str. Field notifierId\. |
 | resource.database.notifiers.teams_notifier.power_automate_url | success, str. Field powerAutomateUrl\. |
-
 | resource.database.notifiers.telegram_notifier | success, dict. specific notifier |
 | resource.database.notifiers.telegram_notifier.bot_token | success, str. Field botToken\. |
 | resource.database.notifiers.telegram_notifier.is_proxy_enabled | success, bool. Field isProxyEnabled\. |
@@ -130,16 +122,13 @@ Allows managing verification\_claim resources using the Databasus API\.
 | resource.database.notifiers.telegram_notifier.proxy_url | success, str. Field proxyUrl\. |
 | resource.database.notifiers.telegram_notifier.target_chat_id | success, str. Field targetChatId\. |
 | resource.database.notifiers.telegram_notifier.thread_id | success, int. Field threadId\. |
-
 | resource.database.notifiers.webhook_notifier | success, dict. Field webhookNotifier\. |
 | resource.database.notifiers.webhook_notifier.body_template | success, str. Field bodyTemplate\. |
 | resource.database.notifiers.webhook_notifier.headers | success, list. Field headers\. |
 | resource.database.notifiers.webhook_notifier.notifier_id | success, str. Field notifierId\. |
 | resource.database.notifiers.webhook_notifier.webhook_method | success, str. Field webhookMethod\. |
 | resource.database.notifiers.webhook_notifier.webhook_url | success, str. Field webhookUrl\. |
-
 | resource.database.notifiers.workspace_id | success, str. Field workspaceId\. |
-
 | resource.database.postgresql_logical | success, dict. Field postgresqlLogical\. |
 | resource.database.postgresql_logical.cpu_count | success, int. Field cpuCount\. |
 | resource.database.postgresql_logical.database | success, str. Field database\. |
@@ -160,7 +149,6 @@ Allows managing verification\_claim resources using the Databasus API\.
 | resource.database.postgresql_logical.ssl_root_cert | success, str. Field sslRootCert\. |
 | resource.database.postgresql_logical.username | success, str. Field username\. |
 | resource.database.postgresql_logical.version | success, str. Field version\. |
-
 | resource.database.postgresql_physical | success, dict. Field postgresqlPhysical\. |
 | resource.database.postgresql_physical.backup_type | success, str. Field backupType\. |
 | resource.database.postgresql_physical.database_id | success, str. Field databaseId\. |
@@ -176,14 +164,11 @@ Allows managing verification\_claim resources using the Databasus API\.
 | resource.database.postgresql_physical.username | success, str. Field username\. |
 | resource.database.postgresql_physical.version | success, str. Field version\. |
 | resource.database.postgresql_physical.wal_segment_size_bytes | success, int. WalSegmentSizeBytes captures the source cluster\'s wal\_segment\_size at first connect\. |
-
 | resource.database.type | success, str. Field type\. |
 | resource.database.workspace_id | success, str. WorkspaceID can be null when a database is created via restore operation outside the context of any workspace |
-
 | resource.max_container_disk_mb | success, float. Field maxContainerDiskMb\. |
 | resource.timescaledb_version | success, str. Field timescaledbVersion\. |
 | resource.verification_id | success, str. Field verificationId\. |
-
 | changed | always, bool. Indicates whether any change was made\. |
 | msg | always, str. Descriptive operation message\. |
 

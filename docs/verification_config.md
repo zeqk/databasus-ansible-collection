@@ -26,7 +26,6 @@ operationId references are included in generated operation constants\.
 | verification_interval.weekday | optional, int, default=None. Body field weekday\. |
 
 
-
 ## Examples
 
 ```yaml
@@ -58,8 +57,6 @@ operationId references are included in generated operation constants\.
 | resource.verification_interval.time_of_day | success, str. Field timeOfDay\. |
 | resource.verification_interval.type | success, str. Field type\. |
 | resource.verification_interval.weekday | success, int. Field weekday\. |
-
-
 | changed | always, bool. Indicates whether any change was made\. |
 | msg | always, str. Descriptive operation message\. |
 
