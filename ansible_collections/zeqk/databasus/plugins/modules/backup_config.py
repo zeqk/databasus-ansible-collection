@@ -1108,7 +1108,7 @@ NAME_API = ''
 ID_FIELD = ''
 ID_API = ''
 MATCH_FIELDS = []
-CREATE_IS_UPSERT = False
+CREATE_IS_UPSERT = True
 
 
 def _build_url(api_url: str, path_template: str, path_params: Dict[str, Any], query_params: Optional[Dict[str, Any]] = None) -> str:

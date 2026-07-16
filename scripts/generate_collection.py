@@ -820,7 +820,7 @@ def generate_collection(spec_path: Path, output_dir: Path) -> Tuple[int, List[Tu
                 sanitize_text(create_spec.get("description") or ""),
             ]
         )
-        create_is_upsert = bool(re.search(r"\bcreate\s+or\s+update\b", create_text, flags=re.IGNORECASE))
+        create_is_upsert = bool(re.search(r"\b(create|save)\s+or\s+update\b", create_text, flags=re.IGNORECASE))
 
         if name_addressable and "name" in params:
             params["name"]["required"] = True
