@@ -26,6 +26,8 @@ Ansible collection generated from `openapi.json` to manage Databasus API resourc
 
 | `backup_config` | `zeqk.databasus.backup_config` | `create, get` |
 
+| `backup_config_physical` | `zeqk.databasus.backup_config_physical` | `create, get` |
+
 | `backup_download_token` | `zeqk.databasus.backup_download_token` | `create` |
 
 | `backup_file` | `zeqk.databasus.backup_file` | `list` |

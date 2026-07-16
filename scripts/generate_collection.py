@@ -29,6 +29,12 @@ PUBLIC_ACTION_MODULES = {
     ("post", "/users/signin"): "user_signin",
 }
 
+PATH_RESOURCE_OVERRIDES: Dict[str, str] = {
+    "/backup-configs/physical/database/{id}": "backup_config_physical",
+    "/backup-configs/physical/save": "backup_config_physical",
+    "/backup-configs/physical/database/{id}/transfer": "backup_config_physical",
+}
+
 
 def is_param(token: str) -> bool:
     return token.startswith("{") and token.endswith("}")
@@ -626,7 +632,7 @@ def build_resources(spec: Dict[str, Any]) -> Dict[str, Dict[str, Any]]:
 
     resource_ops: Dict[str, Dict[str, List[Dict[str, Any]]]] = defaultdict(lambda: defaultdict(list))
     for path, op_map in paths.items():
-        resource = resource_from_path(path)
+        resource = PATH_RESOURCE_OVERRIDES.get(path) or resource_from_path(path)
         for method, op in op_map.items():
             m = method.lower()
             if m not in HTTP_METHODS:
