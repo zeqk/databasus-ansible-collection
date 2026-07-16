@@ -871,7 +871,6 @@ def _desired_payload(module_params: Dict[str, Any]) -> Dict[str, Any]:
     return _build_payload(module_params, BODY_SCHEMA)
 
 
-
 def _expand_storage_id_to_storage(
     module: AnsibleModule,
     api_url: str,
@@ -891,7 +890,6 @@ def _expand_storage_id_to_storage(
     expanded.pop('storageId', None)
     expanded['storage'] = storage_resource
     return expanded
-
 
 
 def _needs_update(current: Any, desired: Dict[str, Any]) -> bool:
@@ -1037,9 +1035,7 @@ def run_module() -> None:
             current = body
 
     desired = _desired_payload(params)
-
     desired = _expand_storage_id_to_storage(module, api_url, api_token, desired)
-
 
     if state == 'absent':
         if not DELETE_PATH:

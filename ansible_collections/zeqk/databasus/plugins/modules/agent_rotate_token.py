@@ -276,7 +276,25 @@ def _desired_payload(module_params: Dict[str, Any]) -> Dict[str, Any]:
     return _build_payload(module_params, BODY_SCHEMA)
 
 
-
+def _expand_storage_id_to_storage(
+    module: AnsibleModule,
+    api_url: str,
+    api_token: str,
+    desired: Dict[str, Any],
+) -> Dict[str, Any]:
+    if not EXPAND_STORAGE_ID_TO_STORAGE:
+        return desired
+    storage_id = desired.get('storageId')
+    if not storage_id:
+        return desired
+    storage_url = _build_url(api_url, '/storages/{id}', {'id': storage_id})
+    storage_resource = _request_json(module, 'GET', storage_url, api_token, expected_statuses=[200])[1]
+    if not isinstance(storage_resource, dict):
+        module.fail_json(msg='Unexpected storage response while resolving storage_id to storage object')
+    expanded = dict(desired)
+    expanded.pop('storageId', None)
+    expanded['storage'] = storage_resource
+    return expanded
 
 
 def _needs_update(current: Any, desired: Dict[str, Any]) -> bool:
@@ -394,7 +412,7 @@ def run_module() -> None:
             current = body
 
     desired = _desired_payload(params)
-
+    desired = _expand_storage_id_to_storage(module, api_url, api_token, desired)
 
     if state == 'absent':
         if not DELETE_PATH:
