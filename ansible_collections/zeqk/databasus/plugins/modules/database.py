@@ -1532,7 +1532,7 @@ BODY_SCHEMA = {
         },
     },
     'type': {'api': 'type', 'type': 'str'},
-    'workspace_id': {'api': 'workspace_id', 'type': 'str'},
+    'workspace_id': {'api': 'workspaceId', 'type': 'str'},
 }
 READ_ONLY = False
 API_NAME_MAP = {

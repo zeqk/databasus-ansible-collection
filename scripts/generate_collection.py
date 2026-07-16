@@ -798,11 +798,18 @@ def generate_collection(spec_path: Path, output_dir: Path) -> Tuple[int, List[Tu
 
         body_field_names = sorted(set(body_field_names))
 
-        body_schema = {
-            field_name: _meta_to_schema_info(params[field_name])
-            for field_name in body_field_names
-            if field_name in params
-        }
+        body_schema = {}
+        for field_name in body_field_names:
+            if field_name not in params:
+                continue
+            meta = dict(params[field_name])
+            # The query/path param for this field may have been recorded with a
+            # snake_case api_name (e.g. "workspace_id") while the body uses the
+            # original camelCase name (e.g. "workspaceId"). Always prefer the
+            # body's api_name so the request payload uses the correct key.
+            if field_name in body_field_api_map:
+                meta["api_name"] = body_field_api_map[field_name]
+            body_schema[field_name] = _meta_to_schema_info(meta)
         body_schema_literal = _format_schema_literal(body_schema)
 
         name_addressable = "name" in body_field_names and bool(ops.get("list"))
