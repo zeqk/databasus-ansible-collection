@@ -86,6 +86,9 @@ def classify(method: str, path: str) -> Optional[str]:
     if not parts:
         return None
     end_param = is_param(parts[-1])
+    end_literal = parts[-1].lower() if parts else ""
+    if method == "post" and end_literal in {"update", "patch", "partial-update", "partial_update"}:
+        return "update"
     if method == "post" and not end_param:
         return "create"
     if method == "get" and not end_param:

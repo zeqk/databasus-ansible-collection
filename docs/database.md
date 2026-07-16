@@ -11,6 +11,8 @@ Uses \`\`GET /databases/\{id\}\`\`\.
 
 Uses \`\`POST /databases/create\`\`\.
 
+Uses \`\`POST /databases/update\`\`\.
+
 Uses \`\`DELETE /databases/\{id\}\`\`\.
 
 

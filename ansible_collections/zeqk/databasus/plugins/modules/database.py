@@ -14,6 +14,7 @@ description:
   - Uses ``GET /databases``.
   - Uses ``GET /databases/{id}``.
   - Uses ``POST /databases/create``.
+  - Uses ``POST /databases/update``.
   - Uses ``DELETE /databases/{id}``.
 options:
   state:
@@ -1337,8 +1338,8 @@ GET_METHOD = 'GET'
 GET_PATH = '/databases/{id}'
 GET_PATH_PARAMS = ['id']
 GET_QUERY_PARAMS = []
-UPDATE_METHOD = None
-UPDATE_PATH = None
+UPDATE_METHOD = 'POST'
+UPDATE_PATH = '/databases/update'
 UPDATE_PATH_PARAMS = []
 UPDATE_QUERY_PARAMS = []
 DELETE_METHOD = 'DELETE'

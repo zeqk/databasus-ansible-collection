@@ -34,7 +34,7 @@ Ansible collection generated from `openapi.json` to manage Databasus API resourc
 
 | `backup_restore_token` | `zeqk.databasus.backup_restore_token` | `create` |
 
-| `database` | `zeqk.databasus.database` | `create, delete, get, list` |
+| `database` | `zeqk.databasus.database` | `create, delete, get, list, update` |
 
 | `database_backup` | `zeqk.databasus.database_backup` | `list` |
 
