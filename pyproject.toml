@@ -3,6 +3,7 @@ name = "databasus-ansible-collection"
 version = "1.2.2"
 description = "Ansible collection to manage Databasus resources via REST API"
 readme = "README.md"
+license = { text = "MIT" }
 requires-python = ">=3.12"
 dependencies = [
     "ansible>=14.1.0",
