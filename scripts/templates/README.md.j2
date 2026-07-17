@@ -11,7 +11,7 @@ Ansible collection generated from `openapi.json` to manage Databasus API resourc
 
 | Module | FQCN | Detected operations |
 |---|---|---|
-{% for module_name, ops_text in module_rows %}
+{% for module_name, ops_text in module_rows -%}
 | `{{ module_name }}` | `zeqk.databasus.{{ module_name }}` | `{{ ops_text }}` |
 {% endfor %}
 
