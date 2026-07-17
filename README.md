@@ -72,6 +72,15 @@ export DATABASUS_TEST_NAME="Ansible Tests"
 export DATABASUS_TEST_PASSWORD="Databasus!example123"
 ```
 
+## Publish to Ansible Galaxy (GitHub Actions)
+
+Publishing is available through a manual GitHub Actions workflow.
+
+1. In the repository settings, add a secret named `ANSIBLE_GALAXY_TOKEN` with your Galaxy API token.
+2. Open Actions in GitHub and run the workflow `Publish Ansible Collection to Galaxy`.
+
+The workflow is manual-only (`workflow_dispatch`), builds the collection artifact from `ansible_collections/zeqk/databasus`, and publishes it to Ansible Galaxy.
+
 ## Local end-to-end example
 
 A runnable example is available in `docs/example`.

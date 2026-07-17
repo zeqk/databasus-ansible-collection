@@ -1,0 +1,44 @@
+name: Publish Ansible Collection to Galaxy
+
+on:
+  workflow_dispatch:
+
+jobs:
+  publish:
+    name: Build and publish collection
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install Ansible Core
+        run: |
+          python -m pip install --upgrade pip
+          pip install ansible-core
+
+      - name: Build collection artifact
+        id: build
+        run: |
+          cd ansible_collections/zeqk/databasus
+          ansible-galaxy collection build --output-path ../../..
+          artifact=$(ls -t ../../../zeqk-databasus-*.tar.gz | head -n 1)
+          echo "artifact=$artifact" >> "$GITHUB_OUTPUT"
+
+      - name: Publish to Ansible Galaxy
+        env:
+          ANSIBLE_GALAXY_TOKEN: ${{ secrets.ANSIBLE_GALAXY_TOKEN }}
+        run: |
+          if [ -z "$ANSIBLE_GALAXY_TOKEN" ]; then
+            echo "Missing secret ANSIBLE_GALAXY_TOKEN"
+            exit 1
+          fi
+
+          ansible-galaxy collection publish "${{ steps.build.outputs.artifact }}" --token "$ANSIBLE_GALAXY_TOKEN"
