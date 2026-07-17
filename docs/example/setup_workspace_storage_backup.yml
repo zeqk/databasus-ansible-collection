@@ -1,0 +1,154 @@
+---
+- name: Configure Databasus workspace, storage, database, and backup
+  hosts: localhost
+  gather_facts: false
+  vars:
+    databasus_api_url: "{{ lookup('ansible.builtin.env', 'DATABASUS_API_URL') | default('http://127.0.0.1:4005/api/v1', true) }}"
+    databasus_admin_email: "{{ lookup('ansible.builtin.env', 'DATABASUS_ADMIN_EMAIL') | default('', true) }}"
+    databasus_admin_password: "{{ lookup('ansible.builtin.env', 'DATABASUS_ADMIN_PASSWORD') | default('', true) }}"
+
+    databasus_workspace_name: "{{ lookup('ansible.builtin.env', 'DATABASUS_EXAMPLE_WORKSPACE_NAME') | default('ansible-example-workspace', true) }}"
+    databasus_storage_name: "{{ lookup('ansible.builtin.env', 'DATABASUS_EXAMPLE_STORAGE_NAME') | default('ansible-example-local-storage', true) }}"
+    databasus_database_name: "{{ lookup('ansible.builtin.env', 'DATABASUS_EXAMPLE_DATABASE_NAME') | default('ansible-example-postgres-physical', true) }}"
+
+    databasus_pg_host: "{{ lookup('ansible.builtin.env', 'DATABASUS_EXAMPLE_POSTGRES_HOST') | default('postgres18', true) }}"
+    databasus_pg_port: "{{ lookup('ansible.builtin.env', 'DATABASUS_EXAMPLE_POSTGRES_PORT') | default('5432', true) | int }}"
+    databasus_pg_user: "{{ lookup('ansible.builtin.env', 'DATABASUS_EXAMPLE_POSTGRES_USER') | default('postgres', true) }}"
+    databasus_pg_password: "{{ lookup('ansible.builtin.env', 'DATABASUS_EXAMPLE_POSTGRES_PASSWORD') | default('postgres', true) }}"
+    databasus_pg_version: "{{ lookup('ansible.builtin.env', 'DATABASUS_EXAMPLE_POSTGRES_VERSION') | default('18', true) }}"
+
+  tasks:
+    - name: Validate required admin credentials are provided
+      ansible.builtin.assert:
+        that:
+          - databasus_admin_email | length > 0
+          - databasus_admin_password | length > 0
+        fail_msg: "Set DATABASUS_ADMIN_EMAIL and DATABASUS_ADMIN_PASSWORD before running this playbook."
+
+    - name: Wait for Databasus port
+      ansible.builtin.wait_for:
+        host: "{{ databasus_api_url | regex_replace('^https?://([^/:]+).*$', '\\1') }}"
+        port: "{{ (databasus_api_url | regex_replace('^https?://[^/:]+:?(\\d+)?/.*$', '\\1') | default('4005', true)) | int }}"
+        timeout: 180
+
+    - name: Wait for Databasus HTTP health endpoint
+      ansible.builtin.uri:
+        url: "{{ databasus_api_url }}/system/health"
+        method: GET
+        status_code: [200, 401]
+        return_content: true
+      register: databasus_health
+      retries: 30
+      delay: 4
+      until: databasus_health.status in [200, 401]
+
+    - name: Sign in with Databasus admin user
+      zeqk.databasus.user_signin:
+        api_url: "{{ databasus_api_url }}"
+        email: "{{ databasus_admin_email }}"
+        password: "{{ databasus_admin_password }}"
+      register: databasus_signin
+
+    - name: Store Databasus token
+      ansible.builtin.set_fact:
+        databasus_token: "{{ databasus_signin.token | default(databasus_signin.resource.token, true) }}"
+
+    - name: Validate token exists
+      ansible.builtin.assert:
+        that:
+          - databasus_token is string
+          - databasus_token | length > 10
+
+    - name: Create workspace
+      zeqk.databasus.workspace:
+        state: present
+        api_url: "{{ databasus_api_url }}"
+        api_token: "{{ databasus_token }}"
+        name: "{{ databasus_workspace_name }}"
+      register: databasus_workspace
+
+    - name: Validate workspace id exists
+      ansible.builtin.assert:
+        that:
+          - databasus_workspace.resource is defined
+          - databasus_workspace.resource.id is defined
+          - databasus_workspace.resource.id | length > 0
+
+    - name: Create local storage
+      zeqk.databasus.storage:
+        state: present
+        api_url: "{{ databasus_api_url }}"
+        api_token: "{{ databasus_token }}"
+        name: "{{ databasus_storage_name }}"
+        workspace_id: "{{ databasus_workspace.resource.id }}"
+        type: LOCAL
+        local_storage: {}
+      register: databasus_storage
+
+    - name: Validate storage id exists
+      ansible.builtin.assert:
+        that:
+          - databasus_storage.resource is defined
+          - databasus_storage.resource.id is defined
+          - databasus_storage.resource.id | length > 0
+
+    - name: Create PostgreSQL physical database
+      zeqk.databasus.database:
+        state: present
+        api_url: "{{ databasus_api_url }}"
+        api_token: "{{ databasus_token }}"
+        name: "{{ databasus_database_name }}"
+        workspace_id: "{{ databasus_workspace.resource.id }}"
+        type: POSTGRES_PHYSICAL
+        postgresql_physical:
+          host: "{{ databasus_pg_host }}"
+          port: "{{ databasus_pg_port }}"
+          username: "{{ databasus_pg_user }}"
+          password: "{{ databasus_pg_password }}"
+          version: "{{ databasus_pg_version }}"
+          backup_type: FULL_INCREMENTAL_WAL_STREAM
+      register: databasus_database
+
+    - name: Validate database id exists
+      ansible.builtin.assert:
+        that:
+          - databasus_database.resource is defined
+          - databasus_database.resource.id is defined
+          - databasus_database.resource.id | length > 0
+
+    - name: Configure physical backup for database
+      zeqk.databasus.backup_config_physical:
+        state: present
+        api_url: "{{ databasus_api_url }}"
+        api_token: "{{ databasus_token }}"
+        id: "{{ databasus_database.resource.id }}"
+        database_id: "{{ databasus_database.resource.id }}"
+        storage_id: "{{ databasus_storage.resource.id }}"
+        is_backups_enabled: true
+        encryption: NONE
+        retention: FULL_BACKUPS
+        full_backups_retention:
+          policy: LAST_N
+          count: 7
+        full_backup_interval:
+          type: DAILY
+          time_of_day: "02:00"
+        incremental_backup_interval:
+          type: HOURLY
+        send_notifications_on:
+          - BACKUP_FAILED
+      register: databasus_backup_config
+
+    - name: Validate backup config was returned
+      ansible.builtin.assert:
+        that:
+          - databasus_backup_config.resource is defined
+          - databasus_backup_config.resource.database_id is defined
+          - databasus_backup_config.resource.storage_id is defined
+
+    - name: Show created resource ids
+      ansible.builtin.debug:
+        msg:
+          workspace_id: "{{ databasus_workspace.resource.id }}"
+          storage_id: "{{ databasus_storage.resource.id }}"
+          database_id: "{{ databasus_database.resource.id }}"

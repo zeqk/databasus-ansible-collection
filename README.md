@@ -72,3 +72,14 @@ export DATABASUS_TEST_NAME="Ansible Tests"
 export DATABASUS_TEST_PASSWORD="Databasus!example123"
 ```
 
+## Local end-to-end example
+
+A runnable example is available in `docs/example`.
+
+It includes:
+
+- Docker Compose with Databasus and PostgreSQL 18.
+- A playbook that signs in, creates a workspace, creates a LOCAL storage, creates a POSTGRES_PHYSICAL database, and configures `FULL_INCREMENTAL_WAL_STREAM` backup.
+
+See `docs/example/README.md` for details.
+
