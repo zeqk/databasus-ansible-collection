@@ -1,0 +1,87 @@
+---
+- name: Bootstrap integration auth/session
+  ansible.builtin.include_tasks: bootstrap.yml
+
+- name: Create workspace fixture for storage tests
+  ansible.builtin.uri:
+    url: "{{ databasus_api_url }}/workspaces"
+    method: POST
+    headers:
+      Authorization: "Bearer {{ databasus_token }}"
+    body_format: json
+    body:
+      name: "ansible-storage-workspace-{{ databasus_suffix }}"
+    status_code: 200
+    return_content: true
+  register: storage_workspace
+
+- name: Assert workspace fixture has id
+  ansible.builtin.assert:
+    that:
+      - storage_workspace.json is defined
+      - storage_workspace.json.id is defined
+      - storage_workspace.json.id | length > 0
+
+- name: Create storage using module
+  zeqk.databasus.storage:
+    state: present
+    api_url: "{{ databasus_api_url }}"
+    api_token: "{{ databasus_token }}"
+    workspace_id: "{{ storage_workspace.json.id }}"
+    name: "ansible-storage-{{ databasus_suffix }}"
+    type: "LOCAL"
+    local_storage: {}
+  register: storage_created
+
+- name: Assert storage creation changed state
+  ansible.builtin.assert:
+    that:
+      - storage_created.changed == true
+      - storage_created.resource is defined
+      - storage_created.resource.id is defined
+      - storage_created.resource.id | length > 0
+
+- name: Ensure storage is idempotent when unchanged
+  zeqk.databasus.storage:
+    state: present
+    api_url: "{{ databasus_api_url }}"
+    api_token: "{{ databasus_token }}"
+    workspace_id: "{{ storage_workspace.json.id }}"
+    name: "ansible-storage-{{ databasus_suffix }}"
+    type: "LOCAL"
+    local_storage: {}
+  register: storage_same
+
+- name: Assert storage idempotency
+  ansible.builtin.assert:
+    that:
+      - storage_same.changed == false
+      - storage_same.msg == 'Resource already in desired state'
+
+- name: Delete storage using module
+  zeqk.databasus.storage:
+    state: absent
+    api_url: "{{ databasus_api_url }}"
+    api_token: "{{ databasus_token }}"
+    workspace_id: "{{ storage_workspace.json.id }}"
+    name: "ansible-storage-{{ databasus_suffix }}"
+  register: storage_deleted
+
+- name: Assert storage deletion happened
+  ansible.builtin.assert:
+    that:
+      - storage_deleted.changed == true
+      - storage_deleted.msg == 'Resource deleted'
+
+- name: Delete workspace fixture
+  zeqk.databasus.workspace:
+    state: absent
+    api_url: "{{ databasus_api_url }}"
+    api_token: "{{ databasus_token }}"
+    name: "{{ storage_workspace.json.name }}"
+  register: storage_workspace_deleted
+
+- name: Assert workspace fixture deleted
+  ansible.builtin.assert:
+    that:
+      - storage_workspace_deleted.changed == true

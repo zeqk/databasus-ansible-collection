@@ -1,0 +1,104 @@
+---
+- name: Bootstrap integration auth/session
+  ansible.builtin.include_tasks: bootstrap.yml
+
+- name: Create workspace fixture for database tests
+  ansible.builtin.uri:
+    url: "{{ databasus_api_url }}/workspaces"
+    method: POST
+    headers:
+      Authorization: "Bearer {{ databasus_token }}"
+    body_format: json
+    body:
+      name: "ansible-database-workspace-{{ databasus_suffix }}"
+    status_code: 200
+    return_content: true
+  register: database_workspace
+
+- name: Assert database workspace fixture has id
+  ansible.builtin.assert:
+    that:
+      - database_workspace.json is defined
+      - database_workspace.json.id is defined
+      - database_workspace.json.id | length > 0
+
+- name: Create database using module
+  zeqk.databasus.database:
+    state: present
+    api_url: "{{ databasus_api_url }}"
+    api_token: "{{ databasus_token }}"
+    workspace_id: "{{ database_workspace.json.id }}"
+    name: "ansible-database-{{ databasus_suffix }}"
+    type: "POSTGRES_LOGICAL"
+    postgresql_logical:
+      cpu_count: 1
+      host: "postgres"
+      port: 5432
+      username: "databasus"
+      password: "databasus"
+      database: "databasus"
+      version: "16"
+      ssl_mode: "disable"
+  register: database_created
+
+- name: Assert database creation changed state
+  ansible.builtin.assert:
+    that:
+      - database_created.changed == true
+      - database_created.resource is defined
+      - database_created.resource.id is defined
+      - database_created.resource.id | length > 0
+
+- name: Ensure database is idempotent when unchanged
+  zeqk.databasus.database:
+    state: present
+    api_url: "{{ databasus_api_url }}"
+    api_token: "{{ databasus_token }}"
+    workspace_id: "{{ database_workspace.json.id }}"
+    name: "ansible-database-{{ databasus_suffix }}"
+    type: "POSTGRES_LOGICAL"
+    postgresql_logical:
+      cpu_count: 1
+      host: "postgres"
+      port: 5432
+      username: "databasus"
+      password: "databasus"
+      database: "databasus"
+      version: "16"
+      ssl_mode: "disable"
+  register: database_same
+
+- name: Assert database reconcile call succeeded
+  ansible.builtin.assert:
+    that:
+      - database_same.resource is defined
+      - database_same.resource.id is defined
+      - database_same.msg in ['Resource already in desired state', 'Resource updated']
+
+- name: Delete database using module
+  zeqk.databasus.database:
+    state: absent
+    api_url: "{{ databasus_api_url }}"
+    api_token: "{{ databasus_token }}"
+    workspace_id: "{{ database_workspace.json.id }}"
+    name: "ansible-database-{{ databasus_suffix }}"
+  register: database_deleted
+
+- name: Assert database deletion happened
+  ansible.builtin.assert:
+    that:
+      - database_deleted.changed == true
+      - database_deleted.msg == 'Resource deleted'
+
+- name: Delete workspace fixture
+  zeqk.databasus.workspace:
+    state: absent
+    api_url: "{{ databasus_api_url }}"
+    api_token: "{{ databasus_token }}"
+    name: "{{ database_workspace.json.name }}"
+  register: database_workspace_deleted
+
+- name: Assert workspace fixture deleted
+  ansible.builtin.assert:
+    that:
+      - database_workspace_deleted.changed == true

@@ -1,0 +1,158 @@
+---
+- name: Bootstrap integration auth/session
+  ansible.builtin.include_tasks: bootstrap.yml
+
+- name: Create workspace fixture for backup tests
+  ansible.builtin.uri:
+    url: "{{ databasus_api_url }}/workspaces"
+    method: POST
+    headers:
+      Authorization: "Bearer {{ databasus_token }}"
+    body_format: json
+    body:
+      name: "ansible-backup-workspace-{{ databasus_suffix }}"
+    status_code: 200
+    return_content: true
+  register: backup_workspace
+
+- name: Assert backup workspace fixture has id
+  ansible.builtin.assert:
+    that:
+      - backup_workspace.json is defined
+      - backup_workspace.json.id is defined
+      - backup_workspace.json.id | length > 0
+
+- name: Create database fixture required by backup module
+  zeqk.databasus.database:
+    state: present
+    api_url: "{{ databasus_api_url }}"
+    api_token: "{{ databasus_token }}"
+    workspace_id: "{{ backup_workspace.json.id }}"
+    name: "ansible-backup-db-{{ databasus_suffix }}"
+    type: "POSTGRES_LOGICAL"
+    postgresql_logical:
+      cpu_count: 1
+      host: "postgres"
+      port: 5432
+      username: "databasus"
+      password: "databasus"
+      database: "databasus"
+      version: "16"
+      ssl_mode: "disable"
+  register: backup_database
+
+- name: Assert backup database fixture has id
+  ansible.builtin.assert:
+    that:
+      - backup_database.resource is defined
+      - backup_database.resource.id is defined
+      - backup_database.resource.id | length > 0
+
+- name: Trigger backup using module
+  zeqk.databasus.backup:
+    state: present
+    api_url: "{{ databasus_api_url }}"
+    api_token: "{{ databasus_token }}"
+    database_id: "{{ backup_database.resource.id }}"
+  register: backup_created
+
+- name: Assert backup creation call changed state
+  ansible.builtin.assert:
+    that:
+      - backup_created.changed == true
+      - backup_created.resource is defined
+      - backup_created.msg in ['Resource created', 'Resource updated']
+
+- name: List backups for database
+  zeqk.databasus.backup:
+    api_url: "{{ databasus_api_url }}"
+    api_token: "{{ databasus_token }}"
+    database_id: "{{ backup_database.resource.id }}"
+  register: backup_list
+
+- name: Assert backup list returned payload
+  ansible.builtin.assert:
+    that:
+      - backup_list.resource is defined
+
+- name: Resolve backup id from list response
+  ansible.builtin.set_fact:
+    backup_created_id: >-
+      {{
+        (
+          backup_list.resource.backups[0].id
+          if (
+            backup_list.resource is mapping and
+            backup_list.resource.backups is defined and
+            (backup_list.resource.backups | length) > 0 and
+            backup_list.resource.backups[0].id is defined
+          ) else
+          (
+            backup_list.resource.items[0].id
+            if (
+              backup_list.resource is mapping and
+              backup_list.resource.items is defined and
+              (backup_list.resource.items | length) > 0 and
+              backup_list.resource.items[0].id is defined
+            ) else
+            (
+              backup_list.resource[0].id
+              if (
+                backup_list.resource is sequence and
+                (backup_list.resource is not string) and
+                (backup_list.resource | length) > 0 and
+                backup_list.resource[0].id is defined
+              ) else ''
+            )
+          )
+        )
+      }}
+
+- name: Assert backup id was resolved from list
+  ansible.builtin.assert:
+    that:
+      - backup_created_id | length > 0
+
+- name: Delete created backup using module
+  zeqk.databasus.backup:
+    state: absent
+    api_url: "{{ databasus_api_url }}"
+    api_token: "{{ databasus_token }}"
+    id: "{{ backup_created_id }}"
+  register: backup_deleted
+  when: backup_created_id | length > 0
+
+- name: Assert backup delete call returned structured response
+  ansible.builtin.assert:
+    that:
+      - backup_deleted is mapping
+      - (backup_deleted.exception | default('')) is not search('Traceback')
+      - not backup_deleted.failed
+  when: backup_created_id | length > 0
+
+- name: Delete database fixture
+  zeqk.databasus.database:
+    state: absent
+    api_url: "{{ databasus_api_url }}"
+    api_token: "{{ databasus_token }}"
+    workspace_id: "{{ backup_workspace.json.id }}"
+    name: "ansible-backup-db-{{ databasus_suffix }}"
+  register: backup_database_deleted
+
+- name: Assert database fixture deleted
+  ansible.builtin.assert:
+    that:
+      - backup_database_deleted.changed == true
+
+- name: Delete workspace fixture
+  zeqk.databasus.workspace:
+    state: absent
+    api_url: "{{ databasus_api_url }}"
+    api_token: "{{ databasus_token }}"
+    name: "{{ backup_workspace.json.name }}"
+  register: backup_workspace_deleted
+
+- name: Assert workspace fixture deleted
+  ansible.builtin.assert:
+    that:
+      - backup_workspace_deleted.changed == true
