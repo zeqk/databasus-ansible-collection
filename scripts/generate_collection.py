@@ -618,6 +618,7 @@ def load_galaxy_metadata(pyproject_path: Path, output_dir: Path) -> Dict[str, An
         "repository": "https://github.com/zeqk/databasus-ansible-collection",
         "homepage": "https://github.com/zeqk/databasus-ansible-collection",
         "issues": "https://github.com/zeqk/databasus-ansible-collection/issues",
+        "requires_ansible": ">=2.16.0",
         "license": ["MIT"],
         "authors": ["zeqk"],
         "tags": ["database", "api", "crud"],
@@ -817,10 +818,13 @@ def generate_collection(spec_path: Path, output_dir: Path) -> Tuple[int, List[Tu
 
     modules_dir = output_dir / "plugins" / "modules"
     roles_dir = output_dir / "roles"
+    meta_dir = output_dir / "meta"
     modules_dir.mkdir(parents=True, exist_ok=True)
     roles_dir.mkdir(parents=True, exist_ok=True)
+    meta_dir.mkdir(parents=True, exist_ok=True)
 
     (output_dir / "galaxy.yml").write_text(template_env.get_template("galaxy.yml.j2").render(**galaxy_metadata))
+    (meta_dir / "runtime.yml").write_text(template_env.get_template("runtime.yml.j2").render(**galaxy_metadata))
 
     (roles_dir / ".gitkeep").write_text("")
 
