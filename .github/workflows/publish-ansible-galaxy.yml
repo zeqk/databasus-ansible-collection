@@ -27,9 +27,15 @@ jobs:
       - name: Build collection artifact
         id: build
         run: |
-          cd ansible_collections/zeqk/databasus
-          ansible-galaxy collection build --output-path ../../..
-          artifact=$(ls -t ../../../zeqk-databasus-*.tar.gz | head -n 1)
+          cd "$GITHUB_WORKSPACE/ansible_collections/zeqk/databasus"
+          ansible-galaxy collection build --output-path "$GITHUB_WORKSPACE"
+          artifact=$(find "$GITHUB_WORKSPACE" -maxdepth 1 -type f -name 'zeqk-databasus-*.tar.gz' | sort | tail -n 1)
+
+          if [ -z "$artifact" ]; then
+            echo "Could not find collection artifact in $GITHUB_WORKSPACE"
+            exit 1
+          fi
+
           echo "artifact=$artifact" >> "$GITHUB_OUTPUT"
 
       - name: Publish to Ansible Galaxy
