@@ -592,6 +592,21 @@ def _project_license(license_value: Any) -> Optional[str]:
     return None
 
 
+def _project_urls(urls_value: Any) -> Dict[str, str]:
+    if not isinstance(urls_value, dict):
+        return {}
+
+    out: Dict[str, str] = {}
+    for key, value in urls_value.items():
+        if not isinstance(key, str) or not isinstance(value, str):
+            continue
+        normalized_key = key.strip().lower()
+        normalized_value = value.strip()
+        if normalized_value:
+            out[normalized_key] = normalized_value
+    return out
+
+
 def load_galaxy_metadata(pyproject_path: Path, output_dir: Path) -> Dict[str, Any]:
     namespace, name = derive_collection_names(output_dir)
     metadata: Dict[str, Any] = {
@@ -600,6 +615,9 @@ def load_galaxy_metadata(pyproject_path: Path, output_dir: Path) -> Dict[str, An
         "version": "1.0.0",
         "readme": "README.md",
         "description": "Ansible collection to manage Databasus resources via REST API.",
+        "repository": "https://github.com/zeqk/databasus-ansible-collection",
+        "homepage": "https://github.com/zeqk/databasus-ansible-collection",
+        "issues": "https://github.com/zeqk/databasus-ansible-collection/issues",
         "license": ["MIT"],
         "authors": ["zeqk"],
         "tags": ["database", "api", "crud"],
@@ -646,6 +664,11 @@ def load_galaxy_metadata(pyproject_path: Path, output_dir: Path) -> Dict[str, An
         parsed_keywords = [k.strip() for k in keywords if isinstance(k, str) and k.strip()]
         if parsed_keywords:
             metadata["tags"] = parsed_keywords
+
+    urls = _project_urls(project.get("urls"))
+    metadata["repository"] = urls.get("repository", metadata["repository"])
+    metadata["homepage"] = urls.get("homepage", metadata["homepage"])
+    metadata["issues"] = urls.get("issues", metadata["issues"])
 
     return metadata
 

@@ -1,6 +1,6 @@
 [project]
 name = "databasus-ansible-collection"
-version = "1.2.0"
+version = "1.2.1"
 description = "Ansible collection to manage Databasus resources via REST API"
 readme = "README.md"
 requires-python = ">=3.12"
@@ -10,3 +10,8 @@ dependencies = [
     "argparse>=1.4.0",
     "jinja2>=3.1.0",
 ]
+
+[project.urls]
+Homepage = "https://github.com/zeqk/databasus-ansible-collection"
+Repository = "https://github.com/zeqk/databasus-ansible-collection"
+Issues = "https://github.com/zeqk/databasus-ansible-collection/issues"
